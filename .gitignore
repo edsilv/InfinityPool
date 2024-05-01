@@ -1,0 +1,7 @@
+dist
+.build
+.idea
+node_modules
+coverage
+.DS_Store
+yarn-error.log

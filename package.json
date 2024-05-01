@@ -1,0 +1,104 @@
+{
+  "name": "infinitypool",
+  "private": false,
+  "version": "0.0.21",
+  "repository": "git@github.com:edsilv/infinitypool.git",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.umd.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./dist/style.css": {
+      "import": "./dist/style.css"
+    },
+    "./dist/index.d.ts": {
+      "import": "./dist/index.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "/dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "prepare": "npm run build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.4",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.17",
+    "@types/three": "^0.159.0",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "autoprefixer": "^10.4.16",
+    "chalk": "^5.2.0",
+    "cross-fetch": "^3.1.5",
+    "eslint": "^8.55.0",
+    "eslint-plugin-json": "^3.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "jsdom": "^21.1.1",
+    "node-fetch": "^3.3.0",
+    "postcss": "^8.4.32",
+    "prettier": "^3.0.3",
+    "prettier-plugin-tailwindcss": "^0.5.6",
+    "r3f-perf": "^7.2.1",
+    "react-test-renderer": "^18.2.0",
+    "simple-zustand-devtools": "^1.1.0",
+    "tailwindcss": "^3.3.6",
+    "terser": "^5.16.1",
+    "tslib": "^2.4.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "vite-plugin-dts": "^3.6.4",
+    "zustand": "^4.4.7"
+  },
+  "dependencies": {
+    "@radix-ui/react-accordion": "^1.1.2",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-hover-card": "^1.0.6",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-slider": "^1.1.2",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-switch": "^1.0.3",
+    "@radix-ui/react-tabs": "^1.0.4",
+    "@react-three/drei": "^9.77.4",
+    "@react-three/fiber": "^8.15.12",
+    "@use-gesture/react": "^10.3.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "leva": "^0.9.34",
+    "lodash.throttle": "^4.1.1",
+    "lucide-react": "^0.263.1",
+    "next-themes": "^0.3.0",
+    "path": "^0.12.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sonner": "^1.4.41",
+    "tailwind-merge": "^1.14.0",
+    "tailwindcss-animate": "^1.0.6",
+    "three": "0.153.0",
+    "zustand": "^4.4.7"
+  }
+}
