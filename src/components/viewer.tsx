@@ -35,6 +35,7 @@ import useTimeout from "@/lib/hooks/use-timeout";
 import { normalizeSrc } from "@/lib/utils";
 import { Perf } from "r3f-perf";
 import Thing from "./thing";
+import IIIFCollection from "./iiif-collection";
 
 function Scene({ onLoad, src }: ViewerProps) {
   const boundsRef = useRef<Group | null>(null);
@@ -250,7 +251,8 @@ function Scene({ onLoad, src }: ViewerProps) {
       <ambientLight intensity={ambientLightIntensity} />
       <Bounds lineVisible={boundsEnabled}>
         <Suspense fallback={<Loader />}>
-          <Thing />
+          <IIIFCollection />
+          {/* <Thing /> */}
           {/* {srcs.map((src, index) => {
             return <></>;
             // return <GLTF key={index} {...src} />;
