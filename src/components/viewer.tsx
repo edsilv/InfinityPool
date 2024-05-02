@@ -34,7 +34,6 @@ import { useEventListener, useEventTrigger } from "@/lib/hooks/use-event";
 import useTimeout from "@/lib/hooks/use-timeout";
 import { normalizeSrc } from "@/lib/utils";
 import { Perf } from "r3f-perf";
-import Thing from "./thing";
 import IIIFCollection from "./iiif-collection";
 
 function Scene({ onLoad, src }: ViewerProps) {
