@@ -89,17 +89,18 @@ export default function Thing() {
         const id = i++;
         o.position.set(
           count / 2 - x,
-          Math.sin(i + clock.elapsedTime * 5) / 25,
+          0, //Math.sin(i + clock.elapsedTime * 5) / 25,
           count / 2 - y
         );
         o.lookAt(camera.position);
-        o.scale.set(1, 1.5 + Math.sin(i + clock.elapsedTime * 5) / 12, 1);
+        //o.scale.set(1, 1.5 + Math.sin(i + clock.elapsedTime * 5) / 12, 1);
         o.updateMatrix();
         ref.current.setMatrixAt(id, o.matrix);
       }
     }
     ref.current.instanceMatrix.needsUpdate = true;
   });
+
   return (
     <>
       <instancedMesh ref={ref} args={[null, null, count * count]}>
