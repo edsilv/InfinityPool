@@ -250,7 +250,7 @@ function Scene({ onLoad, src }: ViewerProps) {
       <ambientLight intensity={ambientLightIntensity} />
       <Bounds lineVisible={boundsEnabled}>
         <Suspense fallback={<Loader />}>
-          <IIIFCollection />
+          <IIIFCollection src={src} />
           {/* <Thing /> */}
           {/* {srcs.map((src, index) => {
             return <></>;
