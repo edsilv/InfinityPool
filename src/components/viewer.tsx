@@ -18,7 +18,7 @@ import {
   useHelper,
   useProgress,
 } from "@react-three/drei";
-import { BoxHelper, Group, Object3D, Vector3 } from "three";
+import { BoxHelper, Group, Object3D, Vector3, Camera, Clock } from "three";
 import useStore from "@/Store";
 import {
   ViewerProps as ViewerProps,
@@ -35,6 +35,7 @@ import useTimeout from "@/lib/hooks/use-timeout";
 import { normalizeSrc } from "@/lib/utils";
 import { Perf } from "r3f-perf";
 import IIIFCollection from "./iiif-collection";
+import InstancedPoints from "./instanced-points";
 
 function Scene({ onLoad, src }: ViewerProps) {
   const boundsRef = useRef<Group | null>(null);
@@ -250,7 +251,94 @@ function Scene({ onLoad, src }: ViewerProps) {
       <ambientLight intensity={ambientLightIntensity} />
       <Bounds lineVisible={boundsEnabled}>
         <Suspense fallback={<Loader />}>
-          <IIIFCollection src={src} />
+          <InstancedPoints
+            points={[
+              {
+                thumbnail: {
+                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-44%20W.tif/full/77,100/0/default.jpg",
+                  width: 77,
+                  height: 100,
+                },
+              },
+              {
+                thumbnail: {
+                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-45%20W.tif/full/77,100/0/default.jpg",
+                  width: 77,
+                  height: 100,
+                },
+              },
+              {
+                thumbnail: {
+                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-48%20W-O.tif/full/77,100/0/default.jpg",
+                  width: 77,
+                  height: 100,
+                },
+              },
+              {
+                thumbnail: {
+                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-48%20W.tif/full/77,100/0/default.jpg",
+                  width: 77,
+                  height: 100,
+                },
+              },
+              {
+                thumbnail: {
+                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-50%20W.tif/full/77,100/0/default.jpg",
+                  width: 77,
+                  height: 100,
+                },
+              },
+              {
+                thumbnail: {
+                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-53%20W.tif/full/77,100/0/default.jpg",
+                  width: 77,
+                  height: 100,
+                },
+              },
+              {
+                thumbnail: {
+                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-56%20W.tif/full/77,100/0/default.jpg",
+                  width: 77,
+                  height: 100,
+                },
+              },
+              {
+                thumbnail: {
+                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-44%20W.tif/full/77,100/0/default.jpg",
+                  width: 77,
+                  height: 100,
+                },
+              },
+              {
+                thumbnail: {
+                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-45%20W.tif/full/77,100/0/default.jpg",
+                  width: 77,
+                  height: 100,
+                },
+              },
+            ]}
+            layout={(
+              ref: any,
+              camera: Camera,
+              clock: Clock,
+              delta: number,
+              count: number,
+              o: any
+            ): void => {
+              const gridSize = Math.round(Math.sqrt(count));
+              const spacing = 2; // Adjust this value to change the spacing
+              for (let i = 0; i < count; i++) {
+                const x = ((i % gridSize) - gridSize / 2 + 0.5) * spacing;
+                const y =
+                  (Math.floor(i / gridSize) - gridSize / 2 + 0.5) * spacing;
+                o.position.set(x, y, 0);
+                // o.lookAt(camera.position);
+                o.updateMatrix();
+                ref.current.setMatrixAt(i, o.matrix);
+              }
+              ref.current!.instanceMatrix.needsUpdate = true;
+            }}
+          />
           {/* <Thing /> */}
           {/* {srcs.map((src, index) => {
             return <></>;
