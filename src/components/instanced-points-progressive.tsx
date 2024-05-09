@@ -41,17 +41,17 @@ export default function InstancedPointsProgressive({
   // const thumbnails = useLoader(ImageBitmapLoader, thumbnailSrcs);
   const [texture, setTexture] = useState<any>(null);
 
-  let width = 0;
-  let height = 0;
+  let width = 90;
+  let height = 90;
 
   // set the width and height to the largest of all thumbnail widths and heights
-  points.forEach((point: Point) => {
-    const thumbnail = point.thumbnail;
-    width = Math.max(width, thumbnail.width);
-    height = Math.max(height, thumbnail.height);
-  });
+  // points.forEach((point: Point) => {
+  //   const thumbnail = point.thumbnail;
+  //   width = Math.max(width, thumbnail.width);
+  //   height = Math.max(height, thumbnail.height);
+  // });
 
-  height = width;
+  // height = width;
 
   useLayoutEffect(() => {
     const canvas = document.createElement("canvas");
@@ -70,8 +70,34 @@ export default function InstancedPointsProgressive({
         canvas.height = img.height;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.translate(0, canvas.height);
+
+        // Calculate the scale factor
+        const scale = Math.min(width / img.width, height / img.height);
+
+        // Calculate the scaled width and height
+        const scaledWidth = img.width * scale;
+        const scaledHeight = img.height * scale;
+
+        // Calculate the position to center the image
+        const posX = (width - scaledWidth) / 2;
+        const posY = (height - scaledHeight) / 2;
+
         ctx.scale(1, -1);
-        ctx.drawImage(img, 0, 0);
+
+        // // Set the fill style to white
+        // ctx.fillStyle = "white";
+
+        // // Draw a rectangle with the same dimensions as the canvas
+        // ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the image scaled and centered
+        ctx.drawImage(
+          img,
+          posX,
+          canvas.height - posY - scaledHeight,
+          scaledWidth,
+          scaledHeight
+        );
 
         const imgData: ImageData = ctx.getImageData(0, 0, width, height);
         imgsToData.push(imgData);
