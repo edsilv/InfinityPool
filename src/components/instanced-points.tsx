@@ -82,18 +82,21 @@ export default function InstancedPoints({
     const size = width * height;
     const data = new Uint8Array(4 * size * count);
 
+    // populate the data array with the image data
     for (let i = 0; i < count; i++) {
       // thumbnails length
       const img = imgsToData[i % imgsToData.length];
       data.set(img.data, i * size * 4);
     }
 
+    // create the DataArrayTexture
     const texture = new DataArrayTexture(data, width, height, count);
 
+    // apply the texture to the shader
     texture.needsUpdate = true;
-
     setImg(texture);
 
+    // update the instanceMatrix
     instancesRef.current!.instanceMatrix.needsUpdate = true;
 
     return () => {
