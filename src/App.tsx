@@ -1,9 +1,9 @@
-import './App.css';
-import { useEffect, useRef } from 'react';
-import { useControls } from 'leva';
-import { normalizeSrc, ViewerRef, SrcObj, Viewer, ControlPanel } from '../index';
-import { Toaster } from '@/components/ui/sonner';
-import { toast } from 'sonner';
+import "./App.css";
+import { useEffect, useRef } from "react";
+import { useControls } from "leva";
+import { ViewerRef, SrcObj, Viewer, ControlPanel } from "../index";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 function App() {
   const viewerRef = useRef<ViewerRef>(null);
@@ -14,57 +14,22 @@ function App() {
   const [{ src }, _setLevaControls] = useControls(() => ({
     src: {
       options: {
-        // 'Measurement Cube': {
-        //   url: 'https://cdn.glitch.global/afd88411-0206-477e-b65f-3d1f201de994/measurement_cube.glb?v=1710500461208',
-        //   label: 'Measurement Cube',
+        "National Gallery Highlights": {
+          url: "https://media.nga.gov/public/manifests/nga_highlights.json",
+          type: "iiif",
+        },
+        "Design Archives": {
+          url: "https://culturedigitalskills.org/presentation/2023-08-25T15-57-38.json",
+          type: "iiif",
+        },
+        "Codex Forster": {
+          url: "https://iiif.vam.ac.uk/collections/MSL:1876:Forster:141:II/manifest.json",
+          type: "iiif",
+        },
+        // "Shakespeare First Folio": {
+        //   url: "https://iiif.bodleian.ox.ac.uk/iiif/manifest/390fd0e8-9eae-475d-9564-ed916ab9035c.json",
+        //   type: "iiif",
         // },
-        'Flight Helmet':
-          'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/FlightHelmet/glTF/FlightHelmet.gltf',
-        Shoe: {
-          url: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
-          requiredStatement:
-            '© 2021, Shopify. <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0 International</a> <br/> - Shopify for Everthing',
-        },
-        'Mosquito in Amber': {
-          url: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/MosquitoInAmber/glTF-Binary/MosquitoInAmber.glb',
-          requiredStatement:
-            '© 2018, Sketchfab. <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0 International</a> <br/> - Loic Norgeot for Model <br/> - Sketchfab for Real-time refraction',
-        },
-        'Thor and the Midgard Serpent': {
-          url: 'https://modelviewer.dev/assets/SketchfabModels/ThorAndTheMidgardSerpent.glb',
-          position: [0, 0, 0],
-          rotation: [0, 0, 0],
-          scale: [1, 1, 1],
-          requiredStatement:
-            '© 2019, <a href="https://sketchfab.com/MrTheRich">Mr. The Rich</a>. <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0 International</a>',
-        } as SrcObj,
-        'Multiple Objects': [
-          {
-            url: 'https://modelviewer.dev/assets/ShopifyModels/Mixer.glb',
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-          },
-          {
-            url: 'https://modelviewer.dev/assets/ShopifyModels/GeoPlanter.glb',
-            position: [0.5, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-          },
-          {
-            url: 'https://modelviewer.dev/assets/ShopifyModels/ToyTrain.glb',
-            position: [1, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-          },
-          {
-            url: 'https://modelviewer.dev/assets/ShopifyModels/Chair.glb',
-            position: [1.5, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-          },
-        ] as SrcObj[],
-        // 'Frog (Draco) URL': 'https://aleph-gltf-models.netlify.app/Frog.glb',
       },
     },
     // Recenter: button((_get) => {
@@ -74,9 +39,8 @@ function App() {
 
   // src changed
   useEffect(() => {
-    const normalizedSrc = normalizeSrc(src);
     // if the src is already loaded, recenter the camera
-    if (normalizedSrc.every((src) => loadedUrlsRef.current.includes(src.url))) {
+    if (loadedUrlsRef.current.includes(src.url)) {
       setTimeout(() => {
         viewerRef.current?.recenter();
       }, 100);
@@ -92,17 +56,13 @@ function App() {
         <Viewer
           ref={viewerRef}
           src={src}
-          onLoad={(srcs: SrcObj[]) => {
-            console.log(`model${srcs.length > 1 ? 's' : ''} loaded`, srcs);
+          onLoad={(src: SrcObj) => {
+            console.log(`src loaded`, src);
             // add loaded urls to array of already loaded urls
-            loadedUrlsRef.current = [...loadedUrlsRef.current, ...srcs.map((src) => src.url)];
+            loadedUrlsRef.current = [...loadedUrlsRef.current, src.url];
 
-            // loop through each src and show the required statement if it exists
-            srcs
-              .filter((srcObj) => srcObj.requiredStatement)
-              .forEach((srcObj) => {
-                toast(srcObj.requiredStatement);
-              });
+            // show the required statement if it exists
+            src.requiredStatement && toast(src.requiredStatement);
           }}
         />
       </div>

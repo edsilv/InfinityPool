@@ -8,7 +8,7 @@ import {
   ImageBitmapLoader,
   Object3D,
 } from "three";
-import { Point } from "./Point";
+import { Point } from "../lib/Point";
 
 const o = new Object3D();
 
@@ -34,7 +34,7 @@ export default function InstancedPoints({
   const thumbnails = useLoader(ImageBitmapLoader, thumbnailSrcs);
   const [img, setImg] = useState<any>(null);
 
-  let width = 0;
+  let width = 90;
   let height = 0;
 
   // set the width and height to the largest of all thumbnail widths and heights
@@ -44,7 +44,13 @@ export default function InstancedPoints({
     height = Math.max(height, thumbnail.height);
   });
 
+  height = width;
+
   useLayoutEffect(() => {
+    if (!points || !points.length) {
+      return;
+    }
+
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d")!;
     const imgsToData: any[] = [];
@@ -102,7 +108,7 @@ export default function InstancedPoints({
     return () => {
       texture.dispose();
     };
-  }, []);
+  }, [points]);
 
   useFrame(({ camera, clock }, delta) => {
     layout(instancesRef, camera, clock, delta, count, o);

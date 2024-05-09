@@ -32,10 +32,12 @@ import {
 import useDoubleClick from "@/lib/hooks/use-double-click";
 import { useEventListener, useEventTrigger } from "@/lib/hooks/use-event";
 import useTimeout from "@/lib/hooks/use-timeout";
-import { normalizeSrc } from "@/lib/utils";
 import { Perf } from "r3f-perf";
-import IIIFCollection from "./iiif-collection";
 import InstancedPoints from "./instanced-points";
+import InstancedPointsProgressive from "./instanced-points-progressive";
+import { loadManifest } from "manifesto.js";
+import { Point } from "@/lib/Point";
+import { IIIFLoader } from "@/lib/IIIFLoader";
 
 function Scene({ onLoad, src }: ViewerProps) {
   const boundsRef = useRef<Group | null>(null);
@@ -57,9 +59,9 @@ function Scene({ onLoad, src }: ViewerProps) {
     boundsEnabled,
     loading,
     orthographicEnabled,
+    points,
     setLoading,
-    setSrcs,
-    srcs,
+    setPoints,
     upVector,
   } = useStore();
 
@@ -72,8 +74,79 @@ function Scene({ onLoad, src }: ViewerProps) {
 
   // src changed
   useEffect(() => {
-    const srcs: SrcObj[] = normalizeSrc(src);
-    setSrcs(srcs);
+    let loader;
+    // if the src is of type iiif, load the manifest and parse the thumbnails into a points array
+    if (src.type === "iiif") {
+      loader = new IIIFLoader();
+      loader.load(src.url).then((points: Point[]) => {
+        setPoints(points);
+      });
+    }
+    // [
+    //   {
+    //     thumbnail: {
+    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-44%20W.tif/full/77,100/0/default.jpg",
+    //       width: 77,
+    //       height: 100,
+    //     },
+    //   },
+    //   {
+    //     thumbnail: {
+    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-45%20W.tif/full/77,100/0/default.jpg",
+    //       width: 77,
+    //       height: 100,
+    //     },
+    //   },
+    //   {
+    //     thumbnail: {
+    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-48%20W-O.tif/full/77,100/0/default.jpg",
+    //       width: 77,
+    //       height: 100,
+    //     },
+    //   },
+    //   {
+    //     thumbnail: {
+    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-48%20W.tif/full/77,100/0/default.jpg",
+    //       width: 77,
+    //       height: 100,
+    //     },
+    //   },
+    //   {
+    //     thumbnail: {
+    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-50%20W.tif/full/77,100/0/default.jpg",
+    //       width: 77,
+    //       height: 100,
+    //     },
+    //   },
+    //   {
+    //     thumbnail: {
+    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-53%20W.tif/full/77,100/0/default.jpg",
+    //       width: 77,
+    //       height: 100,
+    //     },
+    //   },
+    //   {
+    //     thumbnail: {
+    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-56%20W.tif/full/77,100/0/default.jpg",
+    //       width: 77,
+    //       height: 100,
+    //     },
+    //   },
+    //   {
+    //     thumbnail: {
+    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-44%20W.tif/full/77,100/0/default.jpg",
+    //       width: 77,
+    //       height: 100,
+    //     },
+    //   },
+    //   {
+    //     thumbnail: {
+    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-45%20W.tif/full/77,100/0/default.jpg",
+    //       width: 77,
+    //       height: 100,
+    //     },
+    //   },
+    // ];
   }, [src]);
 
   // when loaded or camera type changed, zoom to object(s) instantaneously
@@ -151,19 +224,15 @@ function Scene({ onLoad, src }: ViewerProps) {
 
     // zoom to object on double click in scene mode
     const handleDoubleClickEvent = (e: any) => {
-      // if (mode === 'scene') {
       e.stopPropagation();
       if (e.delta <= 2) {
         zoomToObject(e.object);
       }
-      //}
     };
 
     // zoom to fit bounds on double click on background
     const handleOnPointerMissed = useDoubleClick(() => {
-      //if (mode === 'scene' || mode === 'annotation') {
       recenter();
-      //}
     });
 
     return (
@@ -190,7 +259,7 @@ function Scene({ onLoad, src }: ViewerProps) {
     if (progress === 100) {
       setTimeout(() => {
         if (onLoad) {
-          onLoad(srcs);
+          onLoad(src);
           setLoading(false);
         }
       }, 1);
@@ -251,72 +320,8 @@ function Scene({ onLoad, src }: ViewerProps) {
       <ambientLight intensity={ambientLightIntensity} />
       <Bounds lineVisible={boundsEnabled}>
         <Suspense fallback={<Loader />}>
-          <InstancedPoints
-            points={[
-              {
-                thumbnail: {
-                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-44%20W.tif/full/77,100/0/default.jpg",
-                  width: 77,
-                  height: 100,
-                },
-              },
-              {
-                thumbnail: {
-                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-45%20W.tif/full/77,100/0/default.jpg",
-                  width: 77,
-                  height: 100,
-                },
-              },
-              {
-                thumbnail: {
-                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-48%20W-O.tif/full/77,100/0/default.jpg",
-                  width: 77,
-                  height: 100,
-                },
-              },
-              {
-                thumbnail: {
-                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-48%20W.tif/full/77,100/0/default.jpg",
-                  width: 77,
-                  height: 100,
-                },
-              },
-              {
-                thumbnail: {
-                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-50%20W.tif/full/77,100/0/default.jpg",
-                  width: 77,
-                  height: 100,
-                },
-              },
-              {
-                thumbnail: {
-                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-53%20W.tif/full/77,100/0/default.jpg",
-                  width: 77,
-                  height: 100,
-                },
-              },
-              {
-                thumbnail: {
-                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-56%20W.tif/full/77,100/0/default.jpg",
-                  width: 77,
-                  height: 100,
-                },
-              },
-              {
-                thumbnail: {
-                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-44%20W.tif/full/77,100/0/default.jpg",
-                  width: 77,
-                  height: 100,
-                },
-              },
-              {
-                thumbnail: {
-                  src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-45%20W.tif/full/77,100/0/default.jpg",
-                  width: 77,
-                  height: 100,
-                },
-              },
-            ]}
+          <InstancedPointsProgressive
+            points={points}
             layout={(
               ref: any,
               camera: Camera,
@@ -347,7 +352,7 @@ function Scene({ onLoad, src }: ViewerProps) {
         </Suspense>
       </Bounds>
       <Environment preset={environment} />
-      <Perf />
+      {/* <Perf /> */}
     </>
   );
 }

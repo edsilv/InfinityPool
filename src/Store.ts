@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { SrcObj } from "./types/";
+import { Point } from "./lib/Point";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 type State = {
@@ -7,13 +8,13 @@ type State = {
   boundsEnabled: boolean;
   loading: boolean;
   orthographicEnabled: boolean;
-  srcs: SrcObj[];
+  points: Point[];
   upVector: [number, number, number];
   setAmbientLightIntensity: (ambientLightIntensity: number) => void;
   setBoundsEnabled: (boundsEnabled: boolean) => void;
   setLoading: (loading: boolean) => void;
   setOrthographicEnabled: (orthographicEnabled: boolean) => void;
-  setSrcs: (srcs: SrcObj[]) => void;
+  setPoints: (points: Point[]) => void;
   setUpVector: (upVector: [number, number, number]) => void;
 };
 
@@ -22,7 +23,7 @@ const useStore = create<State>((set) => ({
   boundsEnabled: false,
   loading: true,
   orthographicEnabled: false,
-  srcs: [],
+  points: [],
   upVector: [0, 1, 0],
 
   setAmbientLightIntensity: (ambientLightIntensity: number) =>
@@ -45,9 +46,9 @@ const useStore = create<State>((set) => ({
       orthographicEnabled,
     }),
 
-  setSrcs: (srcs: SrcObj[]) =>
+  setPoints: (points: Point[]) =>
     set({
-      srcs,
+      points,
       loading: true,
     }),
 
