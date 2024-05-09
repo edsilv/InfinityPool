@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import Shader from "./shader";
+import ThumbnailMaterial from "./shader";
 import {
   Camera,
   Clock,
@@ -38,20 +38,10 @@ export default function InstancedPointsProgressive({
   const thumbnailSrcsGenerator = getThumbnailSrcsIterator(thumbnailSrcs);
 
   const count = points.length;
-  // const thumbnails = useLoader(ImageBitmapLoader, thumbnailSrcs);
   const [texture, setTexture] = useState<any>(null);
 
   let width = 90;
   let height = 90;
-
-  // set the width and height to the largest of all thumbnail widths and heights
-  // points.forEach((point: Point) => {
-  //   const thumbnail = point.thumbnail;
-  //   width = Math.max(width, thumbnail.width);
-  //   height = Math.max(height, thumbnail.height);
-  // });
-
-  // height = width;
 
   useLayoutEffect(() => {
     const canvas = document.createElement("canvas");
@@ -60,12 +50,12 @@ export default function InstancedPointsProgressive({
 
     const loadImages = async () => {
       for (let src of thumbnailSrcsGenerator) {
-        const img = await new Promise<ImageBitmap>((resolve, reject) => {
-          // setTimeout(() => {
-          const loader = new ImageBitmapLoader();
-          loader.load(src, resolve, undefined, reject);
-          // }, 0);
-        });
+        const img: ImageBitmap = await new Promise<ImageBitmap>(
+          (resolve, reject) => {
+            const loader = new ImageBitmapLoader();
+            loader.load(src, resolve, undefined, reject);
+          }
+        );
         canvas.width = img.width;
         canvas.height = img.height;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -145,7 +135,7 @@ export default function InstancedPointsProgressive({
     <>
       <instancedMesh ref={instancesRef} args={[undefined, undefined, count]}>
         <planeGeometry args={[1, 1]} />
-        <Shader map={texture} />
+        <ThumbnailMaterial map={texture} brightness={1.4} contrast={0.75} />
       </instancedMesh>
     </>
   );

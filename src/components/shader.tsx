@@ -5,11 +5,12 @@ import { useFrame, extend } from "@react-three/fiber";
 import { useRef } from "react";
 import { shaderMaterial } from "@react-three/drei";
 
-const ColorShiftMaterial = shaderMaterial(
+const CustomMaterial = shaderMaterial(
   {
     time: 0,
     map: null,
-    color: new THREE.Color(0.05, 0.0, 0.025),
+    brightness: 1.0,
+    contrast: 1.0,
   },
   /* glsl */ `
   out vec2 vUv;
@@ -27,6 +28,8 @@ const ColorShiftMaterial = shaderMaterial(
   uniform float time;
   uniform vec3 color;
   uniform sampler2DArray map;
+  uniform float brightness;
+  uniform float contrast;
 
   in vec2 vUv;
   flat in int instanceID;
@@ -34,6 +37,9 @@ const ColorShiftMaterial = shaderMaterial(
   void main() {
     vec4 color = texture( map, vec3( vUv, instanceID ) );
     if (color.a < 0.5) discard;
+
+    color.rgb *= brightness;
+    color.rgb = ((color.rgb - 0.5) * max(contrast, 0.0)) + 0.5;
 
     gl_FragColor.rgba = color;
     // gl_FragColor.rgba = vec4(vec3(0.), 1.);
@@ -45,24 +51,26 @@ const ColorShiftMaterial = shaderMaterial(
 // This is the 🔑 that HMR will renew if this file is edited
 // It works for THREE.ShaderMaterial as well as for drei/shaderMaterial
 // @ts-ignore
-ColorShiftMaterial.key = THREE.MathUtils.generateUUID();
+CustomMaterial.key = THREE.MathUtils.generateUUID();
 
-extend({ ColorShiftMaterial });
+extend({ CustomMaterial });
 
-const Shader = (props) => {
+const ThumbnailMaterial = (props) => {
   const ref = useRef();
   useFrame((_, delta) => {
     ref.current.time += delta;
   });
 
   return (
-    <colorShiftMaterial
+    <customMaterial
       ref={ref}
-      key={ColorShiftMaterial.key}
+      key={CustomMaterial.key}
       time={3}
+      brightness={1.0}
+      contrast={1.0}
       {...props}
     />
   );
 };
 
-export default Shader;
+export default ThumbnailMaterial;

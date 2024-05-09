@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { SrcObj } from "./types/";
 import { Point } from "./lib/Point";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
 
@@ -19,7 +18,7 @@ type State = {
 };
 
 const useStore = create<State>((set) => ({
-  ambientLightIntensity: 0,
+  ambientLightIntensity: 1,
   boundsEnabled: false,
   loading: true,
   orthographicEnabled: false,

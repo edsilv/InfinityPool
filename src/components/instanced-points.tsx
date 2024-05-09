@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
-import Shader from "./shader";
+import ThumbnailMaterial from "./shader";
 import {
   Camera,
   Clock,
@@ -118,7 +118,7 @@ export default function InstancedPoints({
     <>
       <instancedMesh ref={instancesRef} args={[undefined, undefined, count]}>
         <planeGeometry args={[1, 1]} />
-        <Shader map={img} />
+        <ThumbnailMaterial map={img} />
       </instancedMesh>
     </>
   );

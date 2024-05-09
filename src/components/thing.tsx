@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
-import Shader from "./shader";
+import ThumbnailMaterial from "./shader";
 
 const o = new THREE.Object3D();
 
@@ -105,7 +105,7 @@ export default function Thing() {
     <>
       <instancedMesh ref={ref} args={[null, null, count * count]}>
         <planeGeometry args={[0.5, 0.5]} />
-        <Shader map={img} />
+        <ThumbnailMaterial map={img} />
       </instancedMesh>
     </>
   );

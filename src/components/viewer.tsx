@@ -342,7 +342,6 @@ function Scene({ onLoad, src }: ViewerProps) {
                     0.5) *
                   spacing;
                 o.position.set(x, y, 0);
-                // o.lookAt(camera.position);
                 o.updateMatrix();
                 ref.current.setMatrixAt(i, o.matrix);
               }

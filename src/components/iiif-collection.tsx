@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, useState, useMemo } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
-import Shader from "./shader";
+import ThumbnailMaterial from "./shader";
 import { SrcObj } from "@/types";
 import { suspend } from "suspend-react";
 import { CanvasWorld } from "./CanvasWorld";
@@ -139,7 +139,7 @@ export default function IIIFCollection({
     <>
       <instancedMesh ref={instancedMeshRef} args={[null, null, count]}>
         <planeGeometry args={[1, 1]} />
-        <Shader map={img} />
+        <ThumbnailMaterial map={img} />
       </instancedMesh>
     </>
   );
