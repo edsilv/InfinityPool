@@ -335,7 +335,12 @@ function Scene({ onLoad, src }: ViewerProps) {
               for (let i = 0; i < count; i++) {
                 const x = ((i % gridSize) - gridSize / 2 + 0.5) * spacing;
                 const y =
-                  (Math.floor(i / gridSize) - gridSize / 2 + 0.5) * spacing;
+                  (gridSize -
+                    1 -
+                    Math.floor(i / gridSize) -
+                    gridSize / 2 +
+                    0.5) *
+                  spacing;
                 o.position.set(x, y, 0);
                 // o.lookAt(camera.position);
                 o.updateMatrix();
