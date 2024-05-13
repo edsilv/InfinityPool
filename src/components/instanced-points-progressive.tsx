@@ -21,6 +21,7 @@ function* getThumbnailSrcsIterator(thumbnailSrcs: string[]) {
 export default function InstancedPointsProgressive({
   points,
   layout,
+  updateFrequency,
 }: {
   points: Point[];
   layout: (
@@ -31,6 +32,7 @@ export default function InstancedPointsProgressive({
     count: number,
     o: Object3D
   ) => void;
+  updateFrequency?: number; // Optional prop
 }) {
   const instancesRef = useRef<any>();
 
@@ -38,6 +40,10 @@ export default function InstancedPointsProgressive({
   const thumbnailSrcsGenerator = getThumbnailSrcsIterator(thumbnailSrcs);
 
   const count = points.length;
+
+  // Adjust updateFrequency based on the number of images
+  updateFrequency = updateFrequency || Math.ceil(count / 10);
+
   const [texture, setTexture] = useState<any>(null);
 
   let width = 90;
@@ -48,7 +54,25 @@ export default function InstancedPointsProgressive({
     const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
     const imgsToData: ImageData[] = [];
 
+    const size: number = width * height;
+    const textureData: Uint8Array = new Uint8Array(4 * size * count);
+
+    const updateTexture = () => {
+      const t: DataArrayTexture = new DataArrayTexture(
+        textureData,
+        width,
+        height,
+        count
+      );
+      t.needsUpdate = true;
+      setTexture(t);
+      if (instancesRef.current?.instanceMatrix) {
+        instancesRef.current.instanceMatrix.needsUpdate = true;
+      }
+    };
+
     const loadImages = async () => {
+      let i = 0;
       for (let src of thumbnailSrcsGenerator) {
         const img: ImageBitmap = await new Promise<ImageBitmap>(
           (resolve, reject) => {
@@ -74,12 +98,6 @@ export default function InstancedPointsProgressive({
 
         ctx.scale(1, -1);
 
-        // // Set the fill style to white
-        // ctx.fillStyle = "white";
-
-        // // Draw a rectangle with the same dimensions as the canvas
-        // ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         // Draw the image scaled and centered
         ctx.drawImage(
           img,
@@ -92,32 +110,22 @@ export default function InstancedPointsProgressive({
         const imgData: ImageData = ctx.getImageData(0, 0, width, height);
         imgsToData.push(imgData);
 
-        const size: number = width * height;
-        const textureData: Uint8Array = new Uint8Array(4 * size * count);
-
         // populate the data array with the image data
-        for (let i = 0; i < imgsToData.length; i++) {
-          const img: ImageData = imgsToData[i];
-          textureData.set(img.data, i * size * 4);
+        for (let j = 0; j < imgsToData.length; j++) {
+          const img: ImageData = imgsToData[j];
+          textureData.set(img.data, j * size * 4);
         }
 
-        // create the DataArrayTexture
-        const t: DataArrayTexture = new DataArrayTexture(
-          textureData,
-          width,
-          height,
-          count
-        );
-
-        // apply the texture to the shader
-        t.needsUpdate = true;
-        setTexture(t);
-
-        // update the instanceMatrix
-        if (instancesRef.current?.instanceMatrix) {
-          instancesRef.current.instanceMatrix.needsUpdate = true;
+        // Update the texture after every 'updateFrequency' images
+        if (i % updateFrequency === 0) {
+          updateTexture();
         }
+
+        i++;
       }
+
+      // Final update to ensure all images are displayed
+      updateTexture();
     };
 
     loadImages();
