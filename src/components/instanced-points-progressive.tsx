@@ -34,8 +34,8 @@ export default function InstancedPointsProgressive({
     count: number,
     o: Object3D
   ) => void;
-  thumbnailWidth: number;
-  thumbnailHeight: number;
+  thumbnailWidth?: number;
+  thumbnailHeight?: number;
   loadingBatchSize?: number; // Optional prop
 }) {
   const instancesRef = useRef<any>();
