@@ -21,7 +21,9 @@ function* getThumbnailSrcsIterator(thumbnailSrcs: string[]) {
 export default function InstancedPointsProgressive({
   points,
   layout,
-  updateFrequency,
+  thumbnailWidth = 90,
+  thumbnailHeight = 90,
+  loadingBatchSize,
 }: {
   points: Point[];
   layout: (
@@ -32,7 +34,9 @@ export default function InstancedPointsProgressive({
     count: number,
     o: Object3D
   ) => void;
-  updateFrequency?: number; // Optional prop
+  thumbnailWidth: number;
+  thumbnailHeight: number;
+  loadingBatchSize?: number; // Optional prop
 }) {
   const instancesRef = useRef<any>();
 
@@ -42,26 +46,23 @@ export default function InstancedPointsProgressive({
   const count = points.length;
 
   // Adjust updateFrequency based on the number of images
-  updateFrequency = updateFrequency || Math.ceil(count / 10);
+  loadingBatchSize = loadingBatchSize || Math.ceil(count / 10);
 
   const [texture, setTexture] = useState<any>(null);
-
-  let width = 90;
-  let height = 90;
 
   useLayoutEffect(() => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
     const imgsToData: ImageData[] = [];
 
-    const size: number = width * height;
+    const size: number = thumbnailWidth * thumbnailHeight;
     const textureData: Uint8Array = new Uint8Array(4 * size * count);
 
     const updateTexture = () => {
       const t: DataArrayTexture = new DataArrayTexture(
         textureData,
-        width,
-        height,
+        thumbnailWidth,
+        thumbnailHeight,
         count
       );
       t.needsUpdate = true;
@@ -86,15 +87,18 @@ export default function InstancedPointsProgressive({
         ctx.translate(0, canvas.height);
 
         // Calculate the scale factor
-        const scale = Math.min(width / img.width, height / img.height);
+        const scale = Math.min(
+          thumbnailWidth / img.width,
+          thumbnailHeight / img.height
+        );
 
         // Calculate the scaled width and height
         const scaledWidth = img.width * scale;
         const scaledHeight = img.height * scale;
 
         // Calculate the position to center the image
-        const posX = (width - scaledWidth) / 2;
-        const posY = (height - scaledHeight) / 2;
+        const posX = (thumbnailWidth - scaledWidth) / 2;
+        const posY = (thumbnailHeight - scaledHeight) / 2;
 
         ctx.scale(1, -1);
 
@@ -107,7 +111,12 @@ export default function InstancedPointsProgressive({
           scaledHeight
         );
 
-        const imgData: ImageData = ctx.getImageData(0, 0, width, height);
+        const imgData: ImageData = ctx.getImageData(
+          0,
+          0,
+          thumbnailWidth,
+          thumbnailHeight
+        );
         imgsToData.push(imgData);
 
         // populate the data array with the image data
@@ -117,7 +126,7 @@ export default function InstancedPointsProgressive({
         }
 
         // Update the texture after every 'updateFrequency' images
-        if (i % updateFrequency === 0) {
+        if (i % loadingBatchSize === 0) {
           updateTexture();
         }
 
