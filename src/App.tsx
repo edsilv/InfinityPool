@@ -19,7 +19,7 @@ function App() {
           type: "iiif",
         },
         "Design Archives": {
-          url: "https://culturedigitalskills.org/presentation/2023-08-25T15-57-38.json",
+          url: "https://culturedigitalskills.org/presentation/designarchives-collection-5-05-24.json",
           type: "iiif",
         },
         "Codex Forster": {

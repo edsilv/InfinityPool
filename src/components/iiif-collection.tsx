@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, useState, useMemo } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
-import ThumbnailMaterial from "./shader";
+import ThumbnailMaterial from "./thumbnail-material";
 import { SrcObj } from "@/types";
 import { suspend } from "suspend-react";
 import { CanvasWorld } from "./CanvasWorld";

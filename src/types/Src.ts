@@ -1,5 +1,5 @@
 // import { Euler, Vector3 } from "@react-three/fiber";
-import { Point } from "../lib/Point";
+import { Point } from "./Point";
 
 export type Src = SrcObj[];
 

@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
-import ThumbnailMaterial from "./shader";
+import ThumbnailMaterial from "./thumbnail-material";
 import {
   Camera,
   Clock,
@@ -8,7 +8,7 @@ import {
   ImageBitmapLoader,
   Object3D,
 } from "three";
-import { Point } from "../lib/Point";
+import { Point } from "../types/Point";
 
 const o = new Object3D();
 

@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { useFrame, useLoader } from "@react-three/fiber";
 import * as THREE from "three";
-import ThumbnailMaterial from "./shader";
+import ThumbnailMaterial from "./thumbnail-material";
 
 const o = new THREE.Object3D();
 

@@ -18,11 +18,10 @@ import {
   useHelper,
   useProgress,
 } from "@react-three/drei";
-import { BoxHelper, Group, Object3D, Vector3, Camera, Clock } from "three";
+import { BoxHelper, Group, Object3D, Vector3 } from "three";
 import useStore from "@/Store";
 import {
   ViewerProps as ViewerProps,
-  SrcObj,
   CAMERA_UPDATE,
   DBL_CLICK,
   CameraRefs,
@@ -32,12 +31,12 @@ import {
 import useDoubleClick from "@/lib/hooks/use-double-click";
 import { useEventListener, useEventTrigger } from "@/lib/hooks/use-event";
 import useTimeout from "@/lib/hooks/use-timeout";
-import { Perf } from "r3f-perf";
-import InstancedPoints from "./instanced-points";
+// import { Perf } from "r3f-perf";
+// import InstancedPoints from "./instanced-points";
 import InstancedPointsProgressive from "./instanced-points-progressive";
-import { loadManifest } from "manifesto.js";
-import { Point } from "@/lib/Point";
+import { Point } from "@/types/Point";
 import { IIIFLoader } from "@/lib/IIIFLoader";
+import { GridLayout } from "@/lib/GridLayout";
 
 function Scene({ onLoad, src }: ViewerProps) {
   const boundsRef = useRef<Group | null>(null);
@@ -320,34 +319,7 @@ function Scene({ onLoad, src }: ViewerProps) {
       <ambientLight intensity={ambientLightIntensity} />
       <Bounds lineVisible={boundsEnabled}>
         <Suspense fallback={<Loader />}>
-          <InstancedPointsProgressive
-            points={points}
-            layout={(
-              ref: any,
-              camera: Camera,
-              clock: Clock,
-              delta: number,
-              count: number,
-              o: any
-            ): void => {
-              const gridSize = Math.round(Math.sqrt(count));
-              const spacing = 2; // Adjust this value to change the spacing
-              for (let i = 0; i < count; i++) {
-                const x = ((i % gridSize) - gridSize / 2 + 0.5) * spacing;
-                const y =
-                  (gridSize -
-                    1 -
-                    Math.floor(i / gridSize) -
-                    gridSize / 2 +
-                    0.5) *
-                  spacing;
-                o.position.set(x, y, 0);
-                o.updateMatrix();
-                ref.current.setMatrixAt(i, o.matrix);
-              }
-              ref.current!.instanceMatrix.needsUpdate = true;
-            }}
-          />
+          <InstancedPointsProgressive points={points} layout={GridLayout} />
           {/* <Thing /> */}
           {/* {srcs.map((src, index) => {
             return <></>;

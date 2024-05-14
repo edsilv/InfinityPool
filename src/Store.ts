@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Point } from "./lib/Point";
+import { Point } from "./types/Point";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 type State = {
