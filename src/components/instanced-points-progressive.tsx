@@ -19,13 +19,13 @@ export default function InstancedPointsProgressive({
   layout = GridLayout,
   thumbnailWidth = 90,
   thumbnailHeight = 90,
-  loadingBatchSize = 10,
+  loadingPagedSize = 10,
 }: {
   points: Point[];
   layout?: PointsLayout;
   thumbnailWidth?: number;
   thumbnailHeight?: number;
-  loadingBatchSize?: number;
+  loadingPagedSize?: number;
 }) {
   const instancesRef = useRef<any>();
 
@@ -43,14 +43,18 @@ export default function InstancedPointsProgressive({
   // In this case, we can fit 2025 90x90px thumbnails within a 4096 x 4096 texture
   if (count > maxThumbnailsInTexture) {
     count = maxThumbnailsInTexture;
+    console.warn(
+      "Too many thumbnails to fit into a 4k x 4k texture. Limiting to",
+      count
+    );
   }
 
   // console.log("count", count);
   // console.log("thumbnailWidth", thumbnailWidth);
   // console.log("thumbnailHeight", thumbnailHeight);
 
-  // Adjust loadingBatchSize based on the number of images
-  // loadingBatchSize = loadingBatchSize || Math.ceil(count / 10);
+  // Adjust loadingPagedSize based on the number of images
+  // loadingPagedSize = loadingPagedSize || Math.ceil(count / 10);
 
   const [texture, setTexture] = useState<any>(null);
 
@@ -133,8 +137,8 @@ export default function InstancedPointsProgressive({
           textureData.set(img.data, j * size * 4);
         }
 
-        // Update the texture after every 'loadingBatchSize' images
-        if (i % loadingBatchSize === 0) {
+        // Update the texture after every 'loadingPagedSize' images
+        if (i % loadingPagedSize === 0) {
           updateTexture();
         }
 
