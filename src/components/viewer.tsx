@@ -35,7 +35,7 @@ import useTimeout from "@/lib/hooks/use-timeout";
 // import InstancedPoints from "./instanced-points";
 import InstancedPointsProgressive from "./instanced-points-progressive";
 import { Point } from "@/types/Point";
-import { IIIFLoader } from "@/lib/IIIFLoader";
+import { IIIFLoader } from "@/lib/IIIFLoader2";
 import { GridLayout } from "@/lib/GridLayout";
 
 function Scene({ onLoad, src }: ViewerProps) {

@@ -19,7 +19,7 @@ export default function InstancedPointsProgressive({
   layout = GridLayout,
   thumbnailWidth = 90,
   thumbnailHeight = 90,
-  loadingPagedSize = 10,
+  loadingPagedSize = 4,
 }: {
   points: Point[];
   layout?: PointsLayout;
