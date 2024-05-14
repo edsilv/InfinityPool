@@ -10,7 +10,7 @@ export const GridLayout: PointsLayout = (
   _delta: number
 ) => {
   const gridSize = Math.round(Math.sqrt(count));
-  const spacing = 2; // Adjust this value to change the spacing
+  const spacing = 0.15; // Adjust this value to change the spacing
   for (let i = 0; i < count; i++) {
     const x = ((i % gridSize) - gridSize / 2 + 0.5) * spacing;
     const y =

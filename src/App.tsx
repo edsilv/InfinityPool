@@ -18,12 +18,12 @@ function App() {
           url: "https://media.nga.gov/public/manifests/nga_highlights.json",
           type: "iiif",
         },
-        "Design Archives": {
-          url: "https://culturedigitalskills.org/presentation/designarchives-collection-5-05-24.json",
-          type: "iiif",
-        },
         "Codex Forster": {
           url: "https://iiif.vam.ac.uk/collections/MSL:1876:Forster:141:II/manifest.json",
+          type: "iiif",
+        },
+        "Design Archives": {
+          url: "https://culturedigitalskills.org/presentation/designarchives-collection-5-05-24.json",
           type: "iiif",
         },
         // "Shakespeare First Folio": {

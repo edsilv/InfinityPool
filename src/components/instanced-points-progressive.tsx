@@ -65,10 +65,10 @@ export default function InstancedPointsProgressive({
 
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
-    const imgsToData: ImageData[] = [];
 
     const size: number = thumbnailWidth * thumbnailHeight;
     const textureData: Uint8Array = new Uint8Array(4 * size * count).fill(128);
+    const imgsToData: ImageData[] = [];
 
     const updateTexture = () => {
       const t: DataArrayTexture = new DataArrayTexture(
@@ -163,7 +163,7 @@ export default function InstancedPointsProgressive({
   return (
     <>
       <instancedMesh ref={instancesRef} args={[undefined, undefined, count]}>
-        <planeGeometry args={[1, 1]} />
+        <planeGeometry args={[0.1, 0.1]} />
         <ThumbnailMaterial map={texture} brightness={1.4} contrast={0.75} />
       </instancedMesh>
     </>
