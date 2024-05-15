@@ -1,7 +1,7 @@
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import ThumbnailMaterial from "./thumbnail-material";
-import { DataArrayTexture, ImageBitmapLoader, Object3D } from "three";
+import { DataArrayTexture, Object3D } from "three";
 import { Point } from "@/types/Point";
 import { GridLayout } from "@/lib/GridLayout";
 import { PointsLayout } from "@/types/PointsLayout";
@@ -106,32 +106,28 @@ export default function InstancedPointsProgressive({
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.translate(0, canvas.height);
 
-        // Calculate the scale factor
+        // Calculate the scale factor to fit the image within the canvas
         const scale = Math.min(
           thumbnailWidth / img.width,
           thumbnailHeight / img.height
         );
 
-        // Calculate the scaled width and height
         const scaledWidth = img.width * scale;
         const scaledHeight = img.height * scale;
 
         // Calculate the position to center the image
-        const posX = (thumbnailWidth - scaledWidth) / 2;
-        const posY = (thumbnailHeight - scaledHeight) / 2;
-
-        // let posX = 0, posY = 0;
+        let posX, posY;
 
         // Check if the image is portrait or landscape
-        // if (img.width < img.height) {
-        //   // If the image is portrait
-        //   posX = (thumbnailWidth - scaledWidth) / 2 - 1;
-        //   posY = 0;
-        // } else {
-        //   // If the image is landscape
-        //   posX = 0;
-        //   posY = (thumbnailHeight - scaledHeight) / 2;
-        // }
+        if (img.width < img.height) {
+          // If the image is portrait
+          posX = (thumbnailWidth - scaledWidth) / 2;
+          posY = 0;
+        } else {
+          // If the image is landscape
+          posX = 0;
+          posY = (thumbnailHeight - scaledHeight) / 2;
+        }
 
         ctx.scale(1, -1);
 
@@ -147,7 +143,12 @@ export default function InstancedPointsProgressive({
         // Draw a white border around the image
         // ctx.strokeStyle = "white";
         // ctx.lineWidth = 2; // Adjust border thickness here
-        // ctx.strokeRect(0, 0, 100, 100);
+        // ctx.strokeRect(
+        //   posX,
+        //   canvas.height - posY - scaledHeight,
+        //   scaledWidth,
+        //   scaledHeight
+        // );
 
         const imgData: ImageData = ctx.getImageData(
           0,
