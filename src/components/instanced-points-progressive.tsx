@@ -18,8 +18,8 @@ function* getThumbnailSrcsIterator(thumbnailSrcs: string[]) {
 export default function InstancedPointsProgressive({
   points = [],
   layout = GridLayout,
-  thumbnailWidth = 90,
-  thumbnailHeight = 90,
+  thumbnailWidth = 100,
+  thumbnailHeight = 100,
   loadingPagedSize = 4,
 }: {
   points: Point[];
@@ -88,7 +88,7 @@ export default function InstancedPointsProgressive({
     };
 
     const loadImages = async () => {
-      console.log(`Loading ${count} images`);
+      console.log(`Loading ${count} images...`);
       let i = 0;
       for (let src of thumbnailSrcsGenerator) {
         // Create a new cancel token source for each image load
@@ -120,6 +120,19 @@ export default function InstancedPointsProgressive({
         const posX = (thumbnailWidth - scaledWidth) / 2;
         const posY = (thumbnailHeight - scaledHeight) / 2;
 
+        // let posX = 0, posY = 0;
+
+        // Check if the image is portrait or landscape
+        // if (img.width < img.height) {
+        //   // If the image is portrait
+        //   posX = (thumbnailWidth - scaledWidth) / 2 - 1;
+        //   posY = 0;
+        // } else {
+        //   // If the image is landscape
+        //   posX = 0;
+        //   posY = (thumbnailHeight - scaledHeight) / 2;
+        // }
+
         ctx.scale(1, -1);
 
         // Draw the image scaled and centered
@@ -130,6 +143,11 @@ export default function InstancedPointsProgressive({
           scaledWidth,
           scaledHeight
         );
+
+        // Draw a white border around the image
+        // ctx.strokeStyle = "white";
+        // ctx.lineWidth = 2; // Adjust border thickness here
+        // ctx.strokeRect(0, 0, 100, 100);
 
         const imgData: ImageData = ctx.getImageData(
           0,

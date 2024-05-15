@@ -13,36 +13,54 @@ const CustomMaterial = shaderMaterial(
     contrast: 1.0,
   },
   /* glsl */ `
-  out vec2 vUv;
-  flat out int instanceID;
+  // Vertex shader
+  // Define output variables that will be passed to the fragment shader
+  out vec2 vUv; // The UV coordinates of the current vertex
+  flat out int instanceID; // The ID of the current instance
+
   void main() {
+    // Set the UV coordinates and instance ID
     vUv = uv;
     instanceID = gl_InstanceID;
+
+    // Compute the position of the current vertex
+    // The position is transformed from model space to clip space
     gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0);
   }
 
   `,
   /* glsl */ `
+  // Fragment shader
+  // Define the precision for sampler2DArray
   precision highp sampler2DArray;
 
-  uniform float time;
-  uniform vec3 color;
-  uniform sampler2DArray map;
-  uniform float brightness;
-  uniform float contrast;
+  // Define uniform variables that will be set from JavaScript
+  uniform float time; // The current time
+  uniform vec3 color; // The color of the material
+  uniform sampler2DArray map; // The texture map
+  uniform float brightness; // The brightness of the material
+  uniform float contrast; // The contrast of the material
 
-  in vec2 vUv;
-  flat in int instanceID;
+  // Define input variables that were passed from the vertex shader
+  in vec2 vUv; // The UV coordinates of the current fragment
+  flat in int instanceID; // The ID of the current instance
 
   void main() {
+    // Sample the texture map at the UV coordinates of the current fragment
+    // The third component of the texture coordinates is the instance ID
     vec4 color = texture( map, vec3( vUv, instanceID ) );
+
+    // If the alpha component of the color is less than 0.5, discard the fragment
     if (color.a < 0.5) discard;
 
+    // Multiply the RGB components of the color by the brightness
     color.rgb *= brightness;
+
+    // Adjust the contrast of the color
     color.rgb = ((color.rgb - 0.5) * max(contrast, 0.0)) + 0.5;
 
+    // Set the color of the fragment
     gl_FragColor.rgba = color;
-    // gl_FragColor.rgba = vec4(vec3(0.), 1.);
   }
 
   `

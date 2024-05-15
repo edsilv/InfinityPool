@@ -1,54 +1,63 @@
 import { Point } from "@/types/Point";
-import { Canvas, loadManifest, parseManifest } from "manifesto.js";
+import { Vault, createThumbnailHelper } from "@iiif/helpers";
+import { ImageServiceLoader } from "@atlas-viewer/iiif-image-api";
+import { ContentLoader } from "@/types/ContentLoader";
 
-export class IIIFLoader {
-  private lowResWidth: number = 90;
-  // private highResWidth: number = 200;
+export class IIIFLoader implements ContentLoader {
+  private width: number = 100;
+  private height: number = 100;
 
   constructor() {}
 
   async load(url: string): Promise<Point[]> {
-    const json = await loadManifest(url);
-    const iiifResource: any = parseManifest(json);
+    const vault = new Vault();
+
+    vault.on("error", (error) => {
+      throw new Error(error.action.error.message);
+    });
+
+    const loader = new ImageServiceLoader({
+      verificationsRequired: 2,
+      approximateServices: true,
+      enableFetching: true,
+      disableThrottling: false,
+    });
+
+    const thumbHelper = createThumbnailHelper(vault, {
+      imageServiceLoader: loader,
+    });
+
+    const manifest = await vault.loadManifest(url);
 
     const thumbnailSrcs: string[] = [];
 
-    // todo: look for thumbnails on the canvases before resorting to generating image server requests
-    // https://iiif.wellcomecollection.org/presentation/v2/b18035723
-    // if no thumbnails are present, load the info.json for the first canvas and get the image server id to use when constructing the thumbnail src
+    const thumbnailPromises = manifest!.items.map((item) =>
+      thumbHelper.getBestThumbnailAtSize(
+        item,
+        { width: this.width, height: this.height },
+        true
+      )
+    );
 
-    if (iiifResource.isCollection()) {
-      // if it's a collection, get the thumbnails
-      for (const manifest of iiifResource.items) {
-        const thumbnail = manifest.getThumbnail();
-        thumbnailSrcs.push(thumbnail.id);
-      }
-    } else {
-      const sequence = iiifResource.getSequenceByIndex(0);
-      const canvases = sequence.getCanvases();
-
-      canvases.forEach((canvas: Canvas) => {
-        const images = canvas.getImages();
-        const firstImage = images[0];
-        const resource = firstImage.getResource();
-        const imgSrc = resource.id.replace(
-          "full/full",
-          `full/${this.lowResWidth},`
-        );
-        thumbnailSrcs.push(imgSrc);
+    await Promise.all(thumbnailPromises).then((cvThumbs) => {
+      cvThumbs.forEach((cvThumb: any) => {
+        thumbnailSrcs.push(cvThumb.best.id);
       });
-    }
+    });
 
     const points = thumbnailSrcs.map((src: string) => {
       return {
         thumbnail: {
           src,
-          width: this.lowResWidth,
+          width: this.width,
         },
       } as Point;
     });
 
-    // console.log(points);
     return points;
+  }
+
+  dispose() {
+    console.log("dispose");
   }
 }

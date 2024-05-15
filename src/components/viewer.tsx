@@ -2,9 +2,7 @@ import "@/viewer.css";
 import "../index.css";
 import React, {
   RefObject,
-  Suspense,
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useRef,
 } from "react";
@@ -12,11 +10,9 @@ import { Canvas, useThree } from "@react-three/fiber";
 import {
   CameraControls,
   Environment,
-  Html,
   OrthographicCamera,
   PerspectiveCamera,
   useHelper,
-  useProgress,
 } from "@react-three/drei";
 import { BoxHelper, Group, Object3D, Vector3 } from "three";
 import useStore from "@/Store";
@@ -30,14 +26,9 @@ import {
 } from "@/types";
 import useDoubleClick from "@/lib/hooks/use-double-click";
 import { useEventListener, useEventTrigger } from "@/lib/hooks/use-event";
-import useTimeout from "@/lib/hooks/use-timeout";
 // import { Perf } from "r3f-perf";
 // import InstancedPoints from "./instanced-points";
-import InstancedPointsProgressive from "./instanced-points-progressive";
-import { Point } from "@/types/Point";
-import { IIIFLoader } from "@/lib/IIIFLoader2";
-import { GridLayout } from "@/lib/GridLayout";
-import { ContentLoader } from "@/types/ContentLoader";
+import { IIIF } from "./iiif";
 
 function Scene({ onLoad, src }: ViewerProps) {
   const boundsRef = useRef<Group | null>(null);
@@ -52,16 +43,16 @@ function Scene({ onLoad, src }: ViewerProps) {
   const cameraTarget = new Vector3();
   const environment = "apartment";
   const minDistance = 0.1;
-  const { camera, gl } = useThree();
+  const { camera } = useThree();
 
   const {
     ambientLightIntensity,
     boundsEnabled,
-    loading,
+    // loading,
     orthographicEnabled,
-    points,
-    setLoading,
-    setPoints,
+    // points,
+    // setLoading,
+    // setPoints,
     upVector,
   } = useStore();
 
@@ -72,35 +63,16 @@ function Scene({ onLoad, src }: ViewerProps) {
   camera.up.copy(new Vector3(upVector[0], upVector[1], upVector[2]));
   cameraRefs.controls.current?.updateCameraUp();
 
-  // src changed
-  useEffect(() => {
-    let loader: ContentLoader | undefined;
-    // if the src is of type iiif, load the manifest and parse the thumbnails into a points array
-    if (src.type === "iiif") {
-      loader = new IIIFLoader();
-      loader.load(src.url).then((points: Point[]) => {
-        console.log("set points", points.length);
-        setPoints(points);
-      });
-    }
-
-    // Cleanup function
-    return () => {
-      // Destroy the loader
-      loader?.dispose?.();
-    };
-  }, [src]);
-
   // when loaded or camera type changed, zoom to object(s) instantaneously
-  useTimeout(
-    () => {
-      if (!loading) {
-        recenter(true);
-      }
-    },
-    1,
-    [loading, orthographicEnabled]
-  );
+  // useTimeout(
+  //   () => {
+  //     if (!loading) {
+  //       recenter(true);
+  //     }
+  //   },
+  //   1,
+  //   [loading, orthographicEnabled]
+  // );
 
   const handleRecenterEvent = () => {
     recenter();
@@ -196,41 +168,6 @@ function Scene({ onLoad, src }: ViewerProps) {
     );
   }
 
-  function Loader() {
-    const { progress } = useProgress();
-    if (progress === 100) {
-      setTimeout(() => {
-        if (onLoad) {
-          onLoad(src);
-          setLoading(false);
-        }
-      }, 1);
-    }
-
-    return (
-      <Html
-        wrapperClass="loading"
-        calculatePosition={() => {
-          return [
-            gl.domElement.clientWidth / 2,
-            gl.domElement.clientHeight / 2,
-          ];
-        }}
-      >
-        <div className="flex justify-center">
-          <div className="h-1 w-24 bg-black rounded-full overflow-hidden transform translate-x-[-50%]">
-            <div
-              className="h-full bg-white"
-              style={{
-                width: `${Math.ceil(progress)}%`,
-              }}
-            />
-          </div>
-        </div>
-      </Html>
-    );
-  }
-
   function onCameraChange(e: any) {
     if (e.type !== "update") {
       return;
@@ -261,14 +198,7 @@ function Scene({ onLoad, src }: ViewerProps) {
       />
       <ambientLight intensity={ambientLightIntensity} />
       <Bounds lineVisible={boundsEnabled}>
-        <Suspense fallback={<Loader />}>
-          <InstancedPointsProgressive points={points} layout={GridLayout} />
-          {/* <Thing /> */}
-          {/* {srcs.map((src, index) => {
-            return <></>;
-            // return <GLTF key={index} {...src} />;
-          })} */}
-        </Suspense>
+        <IIIF src={src} />
       </Bounds>
       <Environment preset={environment} />
       {/* <Perf /> */}
