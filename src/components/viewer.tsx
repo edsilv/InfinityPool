@@ -37,6 +37,7 @@ import InstancedPointsProgressive from "./instanced-points-progressive";
 import { Point } from "@/types/Point";
 import { IIIFLoader } from "@/lib/IIIFLoader2";
 import { GridLayout } from "@/lib/GridLayout";
+import { ContentLoader } from "@/types/ContentLoader";
 
 function Scene({ onLoad, src }: ViewerProps) {
   const boundsRef = useRef<Group | null>(null);
@@ -73,79 +74,21 @@ function Scene({ onLoad, src }: ViewerProps) {
 
   // src changed
   useEffect(() => {
-    let loader;
+    let loader: ContentLoader | undefined;
     // if the src is of type iiif, load the manifest and parse the thumbnails into a points array
     if (src.type === "iiif") {
       loader = new IIIFLoader();
       loader.load(src.url).then((points: Point[]) => {
+        console.log("set points", points.length);
         setPoints(points);
       });
     }
-    // [
-    //   {
-    //     thumbnail: {
-    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-44%20W.tif/full/77,100/0/default.jpg",
-    //       width: 77,
-    //       height: 100,
-    //     },
-    //   },
-    //   {
-    //     thumbnail: {
-    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-45%20W.tif/full/77,100/0/default.jpg",
-    //       width: 77,
-    //       height: 100,
-    //     },
-    //   },
-    //   {
-    //     thumbnail: {
-    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-48%20W-O.tif/full/77,100/0/default.jpg",
-    //       width: 77,
-    //       height: 100,
-    //     },
-    //   },
-    //   {
-    //     thumbnail: {
-    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-48%20W.tif/full/77,100/0/default.jpg",
-    //       width: 77,
-    //       height: 100,
-    //     },
-    //   },
-    //   {
-    //     thumbnail: {
-    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-50%20W.tif/full/77,100/0/default.jpg",
-    //       width: 77,
-    //       height: 100,
-    //     },
-    //   },
-    //   {
-    //     thumbnail: {
-    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-53%20W.tif/full/77,100/0/default.jpg",
-    //       width: 77,
-    //       height: 100,
-    //     },
-    //   },
-    //   {
-    //     thumbnail: {
-    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-56%20W.tif/full/77,100/0/default.jpg",
-    //       width: 77,
-    //       height: 100,
-    //     },
-    //   },
-    //   {
-    //     thumbnail: {
-    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-44%20W.tif/full/77,100/0/default.jpg",
-    //       width: 77,
-    //       height: 100,
-    //     },
-    //   },
-    //   {
-    //     thumbnail: {
-    //       src: "https://culturedigital.brighton.ac.uk:8183/iiif/2/31-45%20W.tif/full/77,100/0/default.jpg",
-    //       width: 77,
-    //       height: 100,
-    //     },
-    //   },
-    // ];
+
+    // Cleanup function
+    return () => {
+      // Destroy the loader
+      loader?.dispose?.();
+    };
   }, [src]);
 
   // when loaded or camera type changed, zoom to object(s) instantaneously
@@ -304,6 +247,14 @@ function Scene({ onLoad, src }: ViewerProps) {
     triggerCameraUpdateEvent({ cameraPosition, cameraTarget });
   }
 
+  const MemoizedInstancedPointsProgressive = React.memo(
+    InstancedPointsProgressive,
+    (prevProps, nextProps) => {
+      // Only re-render if points prop changes
+      return prevProps.points === nextProps.points;
+    }
+  );
+
   return (
     <>
       {orthographicEnabled ? (
@@ -319,7 +270,10 @@ function Scene({ onLoad, src }: ViewerProps) {
       <ambientLight intensity={ambientLightIntensity} />
       <Bounds lineVisible={boundsEnabled}>
         <Suspense fallback={<Loader />}>
-          <InstancedPointsProgressive points={points} layout={GridLayout} />
+          <MemoizedInstancedPointsProgressive
+            points={points}
+            layout={GridLayout}
+          />
           {/* <Thing /> */}
           {/* {srcs.map((src, index) => {
             return <></>;

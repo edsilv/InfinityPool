@@ -30,6 +30,10 @@ function App() {
           url: "https://iiif.bodleian.ox.ac.uk/iiif/manifest/390fd0e8-9eae-475d-9564-ed916ab9035c.json",
           type: "iiif",
         },
+        "Wunder der Vererbung": {
+          url: "https://wellcomelibrary.org/iiif/b18035723/manifest",
+          type: "iiif",
+        },
       },
     },
     // Recenter: button((_get) => {

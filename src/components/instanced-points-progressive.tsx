@@ -1,10 +1,11 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import ThumbnailMaterial from "./thumbnail-material";
 import { DataArrayTexture, ImageBitmapLoader, Object3D } from "three";
 import { Point } from "@/types/Point";
 import { GridLayout } from "@/lib/GridLayout";
 import { PointsLayout } from "@/types/PointsLayout";
+import axios, { CancelTokenSource } from "axios";
 
 const o = new Object3D();
 
@@ -58,6 +59,8 @@ export default function InstancedPointsProgressive({
 
   const [texture, setTexture] = useState<any>(null);
 
+  const cancelTokenSourceRef = useRef<CancelTokenSource | null>(null);
+
   useLayoutEffect(() => {
     if (count === 0) {
       return;
@@ -85,14 +88,19 @@ export default function InstancedPointsProgressive({
     };
 
     const loadImages = async () => {
+      console.log(`Loading ${count} images`);
       let i = 0;
       for (let src of thumbnailSrcsGenerator) {
-        const img: ImageBitmap = await new Promise<ImageBitmap>(
-          (resolve, reject) => {
-            const loader = new ImageBitmapLoader();
-            loader.load(src, resolve, undefined, reject);
-          }
-        );
+        // Create a new cancel token source for each image load
+        cancelTokenSourceRef.current = axios.CancelToken.source();
+
+        const response = await axios.get(src, {
+          responseType: "blob",
+          cancelToken: cancelTokenSourceRef.current.token,
+        });
+
+        const img = await createImageBitmap(response.data);
+
         canvas.width = img.width;
         canvas.height = img.height;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -149,12 +157,21 @@ export default function InstancedPointsProgressive({
       updateTexture();
     };
 
-    loadImages();
+    loadImages().catch((error) => {
+      if (axios.isCancel(error)) {
+        console.log("Image load cancelled");
+      } else {
+        // Handle the error
+      }
+    });
 
     return () => {
       texture?.dispose();
+      // Cancel the image load
+      cancelTokenSourceRef.current?.cancel();
+      count = 0;
     };
-  }, []);
+  }, [points]);
 
   useFrame(({ camera, clock }, delta) => {
     layout(instancesRef, count, o, camera, clock, delta);

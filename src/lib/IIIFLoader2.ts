@@ -1,8 +1,9 @@
 import { Point } from "@/types/Point";
 import { Vault, createThumbnailHelper } from "@iiif/helpers";
 import { ImageServiceLoader } from "@atlas-viewer/iiif-image-api";
+import { ContentLoader } from "@/types/ContentLoader";
 
-export class IIIFLoader {
+export class IIIFLoader implements ContentLoader {
   private maxWidth: number = 90;
 
   constructor() {}
@@ -28,12 +29,8 @@ export class IIIFLoader {
 
     const thumbnailSrcs: string[] = [];
 
-    const thumbnailPromises = manifest!.items.map((canvas) =>
-      thumbHelper.getBestThumbnailAtSize(
-        canvas,
-        { width: 90, height: 90 },
-        true
-      )
+    const thumbnailPromises = manifest!.items.map((item) =>
+      thumbHelper.getBestThumbnailAtSize(item, { width: 90, height: 90 }, true)
     );
 
     await Promise.all(thumbnailPromises).then((cvThumbs) => {
@@ -54,5 +51,9 @@ export class IIIFLoader {
     });
 
     return points;
+  }
+
+  dispose() {
+    console.log("dispose");
   }
 }
