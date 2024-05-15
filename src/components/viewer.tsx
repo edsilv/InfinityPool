@@ -247,14 +247,6 @@ function Scene({ onLoad, src }: ViewerProps) {
     triggerCameraUpdateEvent({ cameraPosition, cameraTarget });
   }
 
-  const MemoizedInstancedPointsProgressive = React.memo(
-    InstancedPointsProgressive,
-    (prevProps, nextProps) => {
-      // Only re-render if points prop changes
-      return prevProps.points === nextProps.points;
-    }
-  );
-
   return (
     <>
       {orthographicEnabled ? (
@@ -270,10 +262,7 @@ function Scene({ onLoad, src }: ViewerProps) {
       <ambientLight intensity={ambientLightIntensity} />
       <Bounds lineVisible={boundsEnabled}>
         <Suspense fallback={<Loader />}>
-          <MemoizedInstancedPointsProgressive
-            points={points}
-            layout={GridLayout}
-          />
+          <InstancedPointsProgressive points={points} layout={GridLayout} />
           {/* <Thing /> */}
           {/* {srcs.map((src, index) => {
             return <></>;
