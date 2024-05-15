@@ -20,12 +20,14 @@ export default function InstancedPointsProgressive({
   layout = GridLayout,
   thumbnailWidth = 100,
   thumbnailHeight = 100,
+  padding = 18,
   loadingPagedSize = 4,
 }: {
   points: Point[];
   layout?: PointsLayout;
   thumbnailWidth?: number;
   thumbnailHeight?: number;
+  padding?: number;
   loadingPagedSize?: number;
 }) {
   const instancesRef = useRef<any>();
@@ -69,6 +71,9 @@ export default function InstancedPointsProgressive({
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
 
+    thumbnailWidth = thumbnailWidth - padding;
+    thumbnailHeight = thumbnailHeight - padding;
+
     const size: number = thumbnailWidth * thumbnailHeight;
     const textureData: Uint8Array = new Uint8Array(4 * size * count).fill(128);
     const imgsToData: ImageData[] = [];
@@ -106,32 +111,26 @@ export default function InstancedPointsProgressive({
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.translate(0, canvas.height);
 
-        // Calculate the scale factor to fit the image within the canvas
+        // Determine the longest edge of the image
+        const longestEdge = Math.max(img.width, img.height);
+
+        // Calculate the scale factor to fit the longest edge of the image within the thumbnail
         const scale = Math.min(
-          thumbnailWidth / img.width,
-          thumbnailHeight / img.height
+          thumbnailWidth / longestEdge,
+          thumbnailHeight / longestEdge
         );
 
+        // Calculate the dimensions of the image after scaling
         const scaledWidth = img.width * scale;
         const scaledHeight = img.height * scale;
 
-        // Calculate the position to center the image
-        let posX, posY;
-
-        // Check if the image is portrait or landscape
-        if (img.width < img.height) {
-          // If the image is portrait
-          posX = (thumbnailWidth - scaledWidth) / 2;
-          posY = 0;
-        } else {
-          // If the image is landscape
-          posX = 0;
-          posY = (thumbnailHeight - scaledHeight) / 2;
-        }
+        // Calculate the position to center the image within the thumbnail, taking into account the offset
+        const posX = (thumbnailWidth - scaledWidth) / 2;
+        const posY = (thumbnailHeight - scaledHeight) / 2;
 
         ctx.scale(1, -1);
 
-        // Draw the image scaled and centered
+        // Draw the image scaled and centered within the thumbnail, taking into account the offset
         ctx.drawImage(
           img,
           posX,
@@ -156,6 +155,7 @@ export default function InstancedPointsProgressive({
           thumbnailWidth,
           thumbnailHeight
         );
+
         imgsToData.push(imgData);
 
         // populate the data array with the image data
