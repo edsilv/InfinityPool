@@ -34,6 +34,14 @@ function App() {
           url: "https://wellcomelibrary.org/iiif/b18035723/manifest",
           type: "iiif",
         },
+        "The Biocrats": {
+          url: "https://wellcomelibrary.org/iiif/b18035978/manifest",
+          type: "iiif",
+        },
+        "The Holy Bible": {
+          url: "https://digital.library.villanova.edu/Item/vudl:60609/Manifest",
+          type: "iiif",
+        },
       },
     },
     // Recenter: button((_get) => {
