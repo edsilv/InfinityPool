@@ -4,8 +4,8 @@ import { ImageServiceLoader } from "@atlas-viewer/iiif-image-api";
 import { ContentLoader } from "@/types/ContentLoader";
 
 export class IIIFLoader implements ContentLoader {
-  private width: number = 100;
-  private height: number = 100;
+  private thumbailWidth: number = 100;
+  private thumbnailHeight: number = 100;
 
   constructor() {}
 
@@ -34,7 +34,7 @@ export class IIIFLoader implements ContentLoader {
     const thumbnailPromises = manifest!.items.map((item) =>
       thumbHelper.getBestThumbnailAtSize(
         item,
-        { width: this.width, height: this.height },
+        { width: this.thumbailWidth, height: this.thumbnailHeight },
         true
       )
     );
@@ -49,15 +49,11 @@ export class IIIFLoader implements ContentLoader {
       return {
         thumbnail: {
           src,
-          width: this.width,
+          width: this.thumbailWidth,
         },
       } as Point;
     });
 
     return points;
-  }
-
-  dispose() {
-    console.log("dispose");
   }
 }

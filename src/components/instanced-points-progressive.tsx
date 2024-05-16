@@ -38,9 +38,9 @@ export default function InstancedPointsProgressive({
   let count = points.length;
 
   // Calculate the maximum number of thumbnails that can fit into a 4k x 4k texture
-  const maxThumbnailsInRow = Math.floor(4096 / thumbnailWidth); // 4096 / 90 = ~45.5, but we can only fit whole thumbnails, so we round down to 45
-  const maxThumbnailsInColumn = Math.floor(4096 / thumbnailHeight); // 4096 / 90 = ~45.5, again we round down to 45
-  const maxThumbnailsInTexture = maxThumbnailsInRow * maxThumbnailsInColumn; // 45 * 45 = 2025
+  const maxThumbnailsInRow = Math.floor(4096 / thumbnailWidth);
+  const maxThumbnailsInColumn = Math.floor(4096 / thumbnailHeight);
+  const maxThumbnailsInTexture = maxThumbnailsInRow * maxThumbnailsInColumn;
 
   // If there are more thumbnails than can fit into a 4k x 4k texture, limit the count
   // In this case, we can fit 2025 90x90px thumbnails within a 4096 x 4096 texture
