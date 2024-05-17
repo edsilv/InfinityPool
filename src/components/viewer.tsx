@@ -23,12 +23,12 @@ import {
   CameraRefs,
   RECENTER,
   CAMERA_CONTROLS_ENABLED,
+  SrcObj,
 } from "@/types";
 import useDoubleClick from "@/lib/hooks/use-double-click";
 import { useEventListener, useEventTrigger } from "@/lib/hooks/use-event";
+import IIIF from "./visualisers/iiif";
 // import { Perf } from "r3f-perf";
-// import InstancedPoints from "./instanced-points";
-import { IIIF } from "./visualisers/iiif";
 
 function Scene({ onLoad, src }: ViewerProps) {
   const boundsRef = useRef<Group | null>(null);
@@ -198,13 +198,26 @@ function Scene({ onLoad, src }: ViewerProps) {
       />
       <ambientLight intensity={ambientLightIntensity} />
       <Bounds lineVisible={boundsEnabled}>
-        <IIIF src={src} />
+        <Visualiser src={src} />
       </Bounds>
       <Environment preset={environment} />
       {/* <Perf /> */}
     </>
   );
 }
+
+const Visualiser = ({ src }: { src: SrcObj }) => {
+  function renderVisualizer(src: SrcObj) {
+    switch (src.type) {
+      case "iiif":
+        return <IIIF src={src} />;
+      default:
+        return null;
+    }
+  }
+
+  return <>{renderVisualizer(src)}</>;
+};
 
 const Viewer = (
   props: ViewerProps,

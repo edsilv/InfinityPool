@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
 import InstancedPoints from "../../instanced-points";
 import { Point } from "@/types/Point";
 import { suspend } from "suspend-react";
@@ -34,48 +34,28 @@ function updateInstancedMeshMatrices({
   mesh.instanceMatrix.needsUpdate = true;
 }
 
-const IIIF = ({ src }: { src: SrcObj }) => {
-  const { url } = src;
+const Points = ({ src }: { src: string }) => {
+  // const { layout } = useStore();
 
-  console.log("url", url);
+  const pointsRef = useRef<Point[] | null>(null);
 
-  const points = suspend(async () => {
-    console.log("load", url);
+  pointsRef.current = suspend(async () => {
+    // console.log("load", url);
     const loader = new IIIFLoader();
-    const points: Point[] = await loader.load(url);
+    const points: Point[] = await loader.load(src);
     return points;
     // setPoints(points);
-  }, [url]);
+  }, [src]);
 
+  return <InstancedPoints points={pointsRef.current} />;
+};
+
+const IIIF = ({ src }: { src: SrcObj }) => {
   return (
     <Suspense fallback={null}>
-      <InstancedPoints points={points} />
+      <Points src={src.url} />
     </Suspense>
   );
 };
-
-// const Points = ({ src }: { src: string }) => {
-//   // const { layout } = useStore();
-
-//   const points = suspend(async () => {
-//     // console.log("load", url);
-//     const loader = new IIIFLoader();
-//     const points: Point[] = await loader.load(src);
-//     return points;
-//     // setPoints(points);
-//   }, [src]);
-
-//   return <InstancedPoints points={points} />;
-// };
-
-// const IIIF = () => {
-//   const src = useAppContext((state: AppState) => state.src)!;
-
-//   return (
-//     <Suspense fallback={null}>
-//       <Points src={src.url} />
-//     </Suspense>
-//   );
-// };
 
 export default IIIF;

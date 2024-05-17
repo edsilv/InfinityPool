@@ -1,5 +1,10 @@
 import "../index.css";
+import { LayoutSelector } from "./layout-selector";
 
 export function ControlPanel() {
-  return <div></div>;
+  return (
+    <div>
+      <LayoutSelector />
+    </div>
+  );
 }
