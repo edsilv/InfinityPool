@@ -28,7 +28,7 @@ import useDoubleClick from "@/lib/hooks/use-double-click";
 import { useEventListener, useEventTrigger } from "@/lib/hooks/use-event";
 // import { Perf } from "r3f-perf";
 // import InstancedPoints from "./instanced-points";
-import { IIIF } from "./iiif";
+import { IIIF } from "./visualisers/iiif";
 
 function Scene({ onLoad, src }: ViewerProps) {
   const boundsRef = useRef<Group | null>(null);
