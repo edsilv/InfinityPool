@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
 import ThumbnailMaterial from "./thumbnail-material";
 import { DataArrayTexture, Object3D } from "three";
@@ -6,6 +6,8 @@ import { Point } from "@/types/Point";
 import { GridLayout } from "@/lib/GridLayout";
 import { PointsLayout } from "@/types/PointsLayout";
 import axios, { CancelTokenSource } from "axios";
+import { Layout } from "@/types";
+import useStore from "@/Store";
 
 const o = new Object3D();
 
@@ -15,22 +17,85 @@ function* getThumbnailSrcsIterator(thumbnailSrcs: string[]) {
   }
 }
 
+function updateInstancedMeshMatrices({
+  o,
+  mesh,
+  points,
+}: {
+  o: Object3D;
+  mesh: THREE.InstancedMesh;
+  points: Point[];
+}) {
+  if (!mesh) return;
+
+  // set the transform matrix for each instance
+  for (let i = 0; i < points.length; ++i) {
+    const { position, scale } = points[i];
+
+    if (position && scale) {
+      o.position.set(position[0], position[1], position[2]);
+      // o.rotation.set(0.5 * Math.PI, 0, 0); // cylinders face z direction
+      o.scale.set(scale[0], scale[1], scale[2]);
+      o.updateMatrix();
+
+      mesh.setMatrixAt(i, o.matrix);
+    }
+  }
+
+  mesh.instanceMatrix.needsUpdate = true;
+}
+
+const useLayout = ({
+  layout,
+  points,
+}: {
+  layout: Layout;
+  points: Point[] | null;
+}) => {
+  useEffect(() => {
+    if (!points) return;
+
+    console.log("layout");
+
+    // apply layout to points
+    let layoutFn;
+
+    switch (layout) {
+      case "grid":
+        layoutFn = GridLayout;
+        break;
+      default:
+        layoutFn = GridLayout;
+    }
+
+    layoutFn(points);
+
+    console.log("points", points);
+
+    return () => {
+      console.log("layout cleanup");
+    };
+  }, [layout, points]);
+};
+
 export default function InstancedPoints({
   points = [],
-  layout = GridLayout,
   thumbnailWidth = 100,
   thumbnailHeight = 100,
   padding = 18,
   loadingPagedSize = 4,
 }: {
   points: Point[];
-  layout?: PointsLayout;
   thumbnailWidth?: number;
   thumbnailHeight?: number;
   padding?: number;
   loadingPagedSize?: number;
 }) {
   const instancesRef = useRef<any>();
+
+  const { layout } = useStore();
+
+  useLayout({ layout, points });
 
   const thumbnailSrcs = points.map((point) => point.thumbnail.src);
   const thumbnailSrcsGenerator = getThumbnailSrcsIterator(thumbnailSrcs);
@@ -174,6 +239,8 @@ export default function InstancedPoints({
 
       // Final update to ensure all images are displayed
       updateTexture();
+
+      console.log("Images loaded");
     };
 
     loadImages().catch((error) => {
@@ -191,10 +258,6 @@ export default function InstancedPoints({
       count = 0;
     };
   }, [points]);
-
-  useFrame(({ camera, clock }, delta) => {
-    layout(instancesRef, count, o, camera, clock, delta);
-  });
 
   return (
     <>
