@@ -43,6 +43,7 @@ function updateInstancedMeshMatrices({
 
 function useThumbnails({
   instancesRef,
+  src,
   thumbnailWidth,
   thumbnailHeight,
   padding,
@@ -50,182 +51,193 @@ function useThumbnails({
   points,
 }: {
   instancesRef: InstancedMesh;
+  src: string;
   thumbnailWidth: number;
   thumbnailHeight: number;
   padding: number;
   loadingPagedSize: number;
   points: Point[];
 }) {
+  const prevSrcRef = useRef<string>();
   const [texture, setTexture] = useState<any>(null);
   const cancelTokenSourceRef = useRef<CancelTokenSource | null>(null);
 
   useEffect(() => {
-    let count = points.length;
+    // Only load the thumbnail images if the points have changed
+    if (prevSrcRef.current !== src) {
+      prevSrcRef.current = src;
 
-    if (count === 0) {
-      return;
-    }
+      let count = points.length;
 
-    const thumbnailSrcs = points.map((point: Point) => point.thumbnail.src);
-    const thumbnailSrcsGenerator = getThumbnailSrcsIterator(thumbnailSrcs);
-
-    // Calculate the maximum number of thumbnails that can fit into a 4k x 4k texture
-    const maxThumbnailsInRow = Math.floor(4096 / thumbnailWidth);
-    const maxThumbnailsInColumn = Math.floor(4096 / thumbnailHeight);
-    const maxThumbnailsInTexture = maxThumbnailsInRow * maxThumbnailsInColumn;
-
-    // If there are more thumbnails than can fit into a 4k x 4k texture, limit the count
-    // In this case, we can fit 2025 90x90px thumbnails within a 4096 x 4096 texture
-    if (count > maxThumbnailsInTexture) {
-      count = maxThumbnailsInTexture;
-      console.warn(
-        "Too many thumbnails to fit into a 4k x 4k texture. Limiting to",
-        count
-      );
-    }
-
-    console.log("useEffect");
-
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
-
-    thumbnailWidth = thumbnailWidth - padding;
-    thumbnailHeight = thumbnailHeight - padding;
-
-    const size: number = thumbnailWidth * thumbnailHeight;
-    const textureData: Uint8Array = new Uint8Array(4 * size * count).fill(128);
-    const imgsToData: ImageData[] = [];
-
-    const updateTexture = () => {
-      const t: DataArrayTexture = new DataArrayTexture(
-        textureData,
-        thumbnailWidth,
-        thumbnailHeight,
-        count
-      );
-      t.needsUpdate = true;
-      setTexture(t);
-      if (instancesRef?.instanceMatrix) {
-        instancesRef.instanceMatrix.needsUpdate = true;
+      if (count === 0) {
+        return;
       }
-    };
 
-    const loadImages = async () => {
-      console.log(`Loading ${count} images...`);
-      let i = 0;
-      for (let src of thumbnailSrcsGenerator) {
-        // Create a new cancel token source for each image load
-        cancelTokenSourceRef.current = axios.CancelToken.source();
+      const thumbnailSrcs = points.map((point: Point) => point.thumbnail.src);
+      const thumbnailSrcsGenerator = getThumbnailSrcsIterator(thumbnailSrcs);
 
-        // console.log(`Loading image ${i + 1} of ${count}...`);
+      // Calculate the maximum number of thumbnails that can fit into a 4k x 4k texture
+      const maxThumbnailsInRow = Math.floor(4096 / thumbnailWidth);
+      const maxThumbnailsInColumn = Math.floor(4096 / thumbnailHeight);
+      const maxThumbnailsInTexture = maxThumbnailsInRow * maxThumbnailsInColumn;
 
-        const response = await axios.get(src, {
-          responseType: "blob",
-          cancelToken: cancelTokenSourceRef.current.token,
-        });
-
-        // console.log(`Image ${i + 1} loaded`);
-
-        const img = await createImageBitmap(response.data);
-
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.translate(0, canvas.height);
-
-        // Determine the longest edge of the image
-        const longestEdge = Math.max(img.width, img.height);
-
-        // Calculate the scale factor to fit the longest edge of the image within the thumbnail
-        const scale = Math.min(
-          thumbnailWidth / longestEdge,
-          thumbnailHeight / longestEdge
+      // If there are more thumbnails than can fit into a 4k x 4k texture, limit the count
+      // In this case, we can fit 2025 90x90px thumbnails within a 4096 x 4096 texture
+      if (count > maxThumbnailsInTexture) {
+        count = maxThumbnailsInTexture;
+        console.warn(
+          "Too many thumbnails to fit into a 4k x 4k texture. Limiting to",
+          count
         );
+      }
 
-        // Calculate the dimensions of the image after scaling
-        const scaledWidth = img.width * scale;
-        const scaledHeight = img.height * scale;
+      console.log("useEffect");
 
-        // Calculate the position to center the image within the thumbnail, taking into account the offset
-        const posX = (thumbnailWidth - scaledWidth) / 2;
-        const posY = (thumbnailHeight - scaledHeight) / 2;
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
 
-        ctx.scale(1, -1);
+      thumbnailWidth = thumbnailWidth - padding;
+      thumbnailHeight = thumbnailHeight - padding;
 
-        // Draw the image scaled and centered within the thumbnail, taking into account the offset
-        ctx.drawImage(
-          img,
-          posX,
-          canvas.height - posY - scaledHeight,
-          scaledWidth,
-          scaledHeight
-        );
+      const size: number = thumbnailWidth * thumbnailHeight;
+      const textureData: Uint8Array = new Uint8Array(4 * size * count).fill(
+        128
+      );
+      const imgsToData: ImageData[] = [];
 
-        // Draw a white border around the image
-        // ctx.strokeStyle = "white";
-        // ctx.lineWidth = 2; // Adjust border thickness here
-        // ctx.strokeRect(
-        //   posX,
-        //   canvas.height - posY - scaledHeight,
-        //   scaledWidth,
-        //   scaledHeight
-        // );
-
-        const imgData: ImageData = ctx.getImageData(
-          0,
-          0,
+      const updateTexture = () => {
+        const t: DataArrayTexture = new DataArrayTexture(
+          textureData,
           thumbnailWidth,
-          thumbnailHeight
+          thumbnailHeight,
+          count
         );
+        t.needsUpdate = true;
+        setTexture(t);
+        if (instancesRef?.instanceMatrix) {
+          instancesRef.instanceMatrix.needsUpdate = true;
+        }
+      };
 
-        imgsToData.push(imgData);
+      const loadImages = async () => {
+        console.log(`Loading ${count} images...`);
+        let i = 0;
+        for (let src of thumbnailSrcsGenerator) {
+          // Create a new cancel token source for each image load
+          cancelTokenSourceRef.current = axios.CancelToken.source();
 
-        // populate the data array with the image data
-        for (let j = 0; j < imgsToData.length; j++) {
-          const img: ImageData = imgsToData[j];
-          textureData.set(img.data, j * size * 4);
+          // console.log(`Loading image ${i + 1} of ${count}...`);
+
+          const response = await axios.get(src, {
+            responseType: "blob",
+            cancelToken: cancelTokenSourceRef.current.token,
+          });
+
+          // console.log(`Image ${i + 1} loaded`);
+
+          const img = await createImageBitmap(response.data);
+
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.translate(0, canvas.height);
+
+          // Determine the longest edge of the image
+          const longestEdge = Math.max(img.width, img.height);
+
+          // Calculate the scale factor to fit the longest edge of the image within the thumbnail
+          const scale = Math.min(
+            thumbnailWidth / longestEdge,
+            thumbnailHeight / longestEdge
+          );
+
+          // Calculate the dimensions of the image after scaling
+          const scaledWidth = img.width * scale;
+          const scaledHeight = img.height * scale;
+
+          // Calculate the position to center the image within the thumbnail, taking into account the offset
+          const posX = (thumbnailWidth - scaledWidth) / 2;
+          const posY = (thumbnailHeight - scaledHeight) / 2;
+
+          ctx.scale(1, -1);
+
+          // Draw the image scaled and centered within the thumbnail, taking into account the offset
+          ctx.drawImage(
+            img,
+            posX,
+            canvas.height - posY - scaledHeight,
+            scaledWidth,
+            scaledHeight
+          );
+
+          // Draw a white border around the image
+          // ctx.strokeStyle = "white";
+          // ctx.lineWidth = 2; // Adjust border thickness here
+          // ctx.strokeRect(
+          //   posX,
+          //   canvas.height - posY - scaledHeight,
+          //   scaledWidth,
+          //   scaledHeight
+          // );
+
+          const imgData: ImageData = ctx.getImageData(
+            0,
+            0,
+            thumbnailWidth,
+            thumbnailHeight
+          );
+
+          imgsToData.push(imgData);
+
+          // populate the data array with the image data
+          for (let j = 0; j < imgsToData.length; j++) {
+            const img: ImageData = imgsToData[j];
+            textureData.set(img.data, j * size * 4);
+          }
+
+          // Update the texture after every 'loadingPagedSize' images
+          if (i % loadingPagedSize === 0) {
+            updateTexture();
+          }
+
+          i++;
         }
 
-        // Update the texture after every 'loadingPagedSize' images
-        if (i % loadingPagedSize === 0) {
-          updateTexture();
+        // Final update to ensure all images are displayed
+        updateTexture();
+
+        console.log("Images loaded");
+      };
+
+      loadImages().catch((error) => {
+        if (axios.isCancel(error)) {
+          console.log("Image load cancelled");
+        } else {
+          // Handle the error
         }
+      });
 
-        i++;
-      }
-
-      // Final update to ensure all images are displayed
-      updateTexture();
-
-      console.log("Images loaded");
-    };
-
-    loadImages().catch((error) => {
-      if (axios.isCancel(error)) {
-        console.log("Image load cancelled");
-      } else {
-        // Handle the error
-      }
-    });
-
-    return () => {
-      texture?.dispose();
-      // Cancel the image load
-      cancelTokenSourceRef.current?.cancel();
-      count = 0;
-    };
-  }, [points]);
+      return () => {
+        texture?.dispose();
+        // Cancel the image load
+        cancelTokenSourceRef.current?.cancel();
+        count = 0;
+      };
+    }
+  }, [src]);
 
   return { texture };
 }
 
 export default function InstancedPoints({
+  src,
   points,
   thumbnailWidth = 100,
   thumbnailHeight = 100,
   padding = 18,
   loadingPagedSize = 4,
 }: {
+  src: string;
   points: Point[];
   thumbnailWidth?: number;
   thumbnailHeight?: number;
@@ -234,7 +246,16 @@ export default function InstancedPoints({
 }) {
   const instancesRef = useRef<any>();
 
-  // layout, animating on change
+  const { texture } = useThumbnails({
+    instancesRef: instancesRef.current,
+    src,
+    points,
+    thumbnailWidth,
+    thumbnailHeight,
+    padding,
+    loadingPagedSize,
+  });
+
   useAnimatedTransition({
     points,
     onStart: () => {},
@@ -242,15 +263,6 @@ export default function InstancedPoints({
       updateInstancedMeshMatrices({ o, mesh: instancesRef.current, points });
     },
     onRest: () => {},
-  });
-
-  const { texture } = useThumbnails({
-    instancesRef: instancesRef.current,
-    points,
-    thumbnailWidth,
-    thumbnailHeight,
-    padding,
-    loadingPagedSize,
   });
 
   return (

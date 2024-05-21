@@ -17,7 +17,7 @@ const Points = memo(({ src }: { src: string }) => {
 
   const memoizedPoints = useMemo(() => pointsRef.current, [pointsRef.current]);
 
-  return <InstancedPoints points={memoizedPoints as Point[]} />;
+  return <InstancedPoints src={src} points={memoizedPoints as Point[]} />;
 });
 
 const IIIF = ({ src }: { src: SrcObj }) => {
