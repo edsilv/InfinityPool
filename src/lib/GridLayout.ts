@@ -23,7 +23,7 @@ import { Point } from "@/types";
 //   ref.current!.instanceMatrix.needsUpdate = true;
 // };
 
-export const GridLayout = (points: Point[]) => {
+export const gridLayout = (points: Point[]) => {
   const numPoints = points.length;
   const numCols = Math.ceil(Math.sqrt(numPoints));
   const numRows = numCols;

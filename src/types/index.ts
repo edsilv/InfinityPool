@@ -6,6 +6,7 @@ export * from "./Layout";
 export * from "./MeasurementMode";
 export * from "./Mode";
 export * from "./ObjectMeasurement";
+export * from "./Point";
 export * from "./ScreenMeasurement";
 export * from "./Src";
 export * from "./ViewerProps";

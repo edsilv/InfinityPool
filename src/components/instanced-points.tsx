@@ -1,13 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useFrame } from "@react-three/fiber";
 import ThumbnailMaterial from "./thumbnail-material";
-import { DataArrayTexture, Object3D } from "three";
+import { DataArrayTexture, InstancedMesh, Object3D } from "three";
 import { Point } from "@/types/Point";
-import { GridLayout } from "@/lib/GridLayout";
-import { PointsLayout } from "@/types/PointsLayout";
 import axios, { CancelTokenSource } from "axios";
-import { Layout } from "@/types";
-import useStore from "@/Store";
+import { useAnimatedTransition } from "@/lib/Transition";
 
 const o = new Object3D();
 
@@ -23,19 +19,19 @@ function updateInstancedMeshMatrices({
   points,
 }: {
   o: Object3D;
-  mesh: THREE.InstancedMesh;
+  mesh: InstancedMesh;
   points: Point[];
 }) {
   if (!mesh) return;
 
   // set the transform matrix for each instance
   for (let i = 0; i < points.length; ++i) {
-    const { position, scale } = points[i];
+    const { position } = points[i];
 
-    if (position && scale) {
+    if (position) {
       o.position.set(position[0], position[1], position[2]);
       // o.rotation.set(0.5 * Math.PI, 0, 0); // cylinders face z direction
-      o.scale.set(scale[0], scale[1], scale[2]);
+      // o.scale.set(scale[0], scale[1], scale[2]);
       o.updateMatrix();
 
       mesh.setMatrixAt(i, o.matrix);
@@ -45,93 +41,50 @@ function updateInstancedMeshMatrices({
   mesh.instanceMatrix.needsUpdate = true;
 }
 
-const useLayout = ({
-  layout,
+function useThumbnails({
+  instancesRef,
+  thumbnailWidth,
+  thumbnailHeight,
+  padding,
+  loadingPagedSize,
   points,
 }: {
-  layout: Layout;
-  points: Point[] | null;
-}) => {
-  useEffect(() => {
-    if (!points) return;
-
-    console.log("layout");
-
-    // apply layout to points
-    let layoutFn;
-
-    switch (layout) {
-      case "grid":
-        layoutFn = GridLayout;
-        break;
-      default:
-        layoutFn = GridLayout;
-    }
-
-    layoutFn(points);
-
-    console.log("points", points);
-
-    return () => {
-      console.log("layout cleanup");
-    };
-  }, [layout, points]);
-};
-
-export default function InstancedPoints({
-  points = [],
-  thumbnailWidth = 100,
-  thumbnailHeight = 100,
-  padding = 18,
-  loadingPagedSize = 4,
-}: {
+  instancesRef: InstancedMesh;
+  thumbnailWidth: number;
+  thumbnailHeight: number;
+  padding: number;
+  loadingPagedSize: number;
   points: Point[];
-  thumbnailWidth?: number;
-  thumbnailHeight?: number;
-  padding?: number;
-  loadingPagedSize?: number;
 }) {
-  const instancesRef = useRef<any>();
-
-  const { layout } = useStore();
-
-  useLayout({ layout, points });
-
-  const thumbnailSrcs = points.map((point) => point.thumbnail.src);
-  const thumbnailSrcsGenerator = getThumbnailSrcsIterator(thumbnailSrcs);
-
-  let count = points.length;
-
-  // Calculate the maximum number of thumbnails that can fit into a 4k x 4k texture
-  const maxThumbnailsInRow = Math.floor(4096 / thumbnailWidth);
-  const maxThumbnailsInColumn = Math.floor(4096 / thumbnailHeight);
-  const maxThumbnailsInTexture = maxThumbnailsInRow * maxThumbnailsInColumn;
-
-  // If there are more thumbnails than can fit into a 4k x 4k texture, limit the count
-  // In this case, we can fit 2025 90x90px thumbnails within a 4096 x 4096 texture
-  if (count > maxThumbnailsInTexture) {
-    count = maxThumbnailsInTexture;
-    console.warn(
-      "Too many thumbnails to fit into a 4k x 4k texture. Limiting to",
-      count
-    );
-  }
-
-  // console.log("count", count);
-  // console.log("thumbnailWidth", thumbnailWidth);
-  // console.log("thumbnailHeight", thumbnailHeight);
-
-  // Adjust loadingPagedSize based on the number of images
-  // loadingPagedSize = loadingPagedSize || Math.ceil(count / 10);
-
   const [texture, setTexture] = useState<any>(null);
-
   const cancelTokenSourceRef = useRef<CancelTokenSource | null>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    let count = points.length;
+
     if (count === 0) {
       return;
     }
+
+    const thumbnailSrcs = points.map((point: Point) => point.thumbnail.src);
+    const thumbnailSrcsGenerator = getThumbnailSrcsIterator(thumbnailSrcs);
+
+    // Calculate the maximum number of thumbnails that can fit into a 4k x 4k texture
+    const maxThumbnailsInRow = Math.floor(4096 / thumbnailWidth);
+    const maxThumbnailsInColumn = Math.floor(4096 / thumbnailHeight);
+    const maxThumbnailsInTexture = maxThumbnailsInRow * maxThumbnailsInColumn;
+
+    // If there are more thumbnails than can fit into a 4k x 4k texture, limit the count
+    // In this case, we can fit 2025 90x90px thumbnails within a 4096 x 4096 texture
+    if (count > maxThumbnailsInTexture) {
+      count = maxThumbnailsInTexture;
+      console.warn(
+        "Too many thumbnails to fit into a 4k x 4k texture. Limiting to",
+        count
+      );
+    }
+
+    console.log("useEffect");
 
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
@@ -152,8 +105,8 @@ export default function InstancedPoints({
       );
       t.needsUpdate = true;
       setTexture(t);
-      if (instancesRef.current?.instanceMatrix) {
-        instancesRef.current.instanceMatrix.needsUpdate = true;
+      if (instancesRef?.instanceMatrix) {
+        instancesRef.instanceMatrix.needsUpdate = true;
       }
     };
 
@@ -164,10 +117,14 @@ export default function InstancedPoints({
         // Create a new cancel token source for each image load
         cancelTokenSourceRef.current = axios.CancelToken.source();
 
+        // console.log(`Loading image ${i + 1} of ${count}...`);
+
         const response = await axios.get(src, {
           responseType: "blob",
           cancelToken: cancelTokenSourceRef.current.token,
         });
+
+        // console.log(`Image ${i + 1} loaded`);
 
         const img = await createImageBitmap(response.data);
 
@@ -259,9 +216,49 @@ export default function InstancedPoints({
     };
   }, [points]);
 
+  return { texture };
+}
+
+export default function InstancedPoints({
+  points,
+  thumbnailWidth = 100,
+  thumbnailHeight = 100,
+  padding = 18,
+  loadingPagedSize = 4,
+}: {
+  points: Point[];
+  thumbnailWidth?: number;
+  thumbnailHeight?: number;
+  padding?: number;
+  loadingPagedSize?: number;
+}) {
+  const instancesRef = useRef<any>();
+
+  // layout, animating on change
+  useAnimatedTransition({
+    points,
+    onStart: () => {},
+    onChange: () => {
+      updateInstancedMeshMatrices({ o, mesh: instancesRef.current, points });
+    },
+    onRest: () => {},
+  });
+
+  const { texture } = useThumbnails({
+    instancesRef: instancesRef.current,
+    points,
+    thumbnailWidth,
+    thumbnailHeight,
+    padding,
+    loadingPagedSize,
+  });
+
   return (
     <>
-      <instancedMesh ref={instancesRef} args={[undefined, undefined, count]}>
+      <instancedMesh
+        ref={instancesRef}
+        args={[undefined, undefined, points.length]}
+      >
         <planeGeometry args={[0.1, 0.1]} />
         <ThumbnailMaterial map={texture} brightness={1.4} contrast={0.75} />
       </instancedMesh>

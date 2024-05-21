@@ -1,10 +1,11 @@
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, memo, useMemo } from "react";
 import InstancedPoints from "../../instanced-points";
 import { Point } from "@/types/Point";
 import { suspend } from "suspend-react";
 import { IIIFLoader } from "./Loader";
+import { SrcObj } from "@/types";
 
-const Points = ({ src }: { src: string }) => {
+const Points = memo(({ src }: { src: string }) => {
   const pointsRef = useRef<Point[] | null>(null);
 
   pointsRef.current = suspend(async () => {
@@ -14,8 +15,10 @@ const Points = ({ src }: { src: string }) => {
     return points;
   }, [src]);
 
-  return <InstancedPoints points={pointsRef.current} />;
-};
+  const memoizedPoints = useMemo(() => pointsRef.current, [pointsRef.current]);
+
+  return <InstancedPoints points={memoizedPoints as Point[]} />;
+});
 
 const IIIF = ({ src }: { src: SrcObj }) => {
   return (
