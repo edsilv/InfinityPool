@@ -206,7 +206,9 @@ function Scene({ onLoad, src }: ViewerProps) {
   );
 }
 
-const Visualiser = ({ src }: { src: SrcObj }) => {
+const Visualiser = React.memo(({ src }: { src: SrcObj }) => {
+  console.log("rendering visualiser", src);
+
   function renderVisualizer(src: SrcObj) {
     switch (src.type) {
       case "iiif":
@@ -217,7 +219,7 @@ const Visualiser = ({ src }: { src: SrcObj }) => {
   }
 
   return <>{renderVisualizer(src)}</>;
-};
+});
 
 const Viewer = (
   props: ViewerProps,
