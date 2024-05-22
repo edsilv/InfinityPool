@@ -1,28 +1,25 @@
 import { create } from "zustand";
-import { Point } from "./types/Point";
+import { Layout } from "./types";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 type State = {
   ambientLightIntensity: number;
   boundsEnabled: boolean;
-  loading: boolean;
+  layout: Layout;
   orthographicEnabled: boolean;
-  points: Point[];
   upVector: [number, number, number];
   setAmbientLightIntensity: (ambientLightIntensity: number) => void;
   setBoundsEnabled: (boundsEnabled: boolean) => void;
-  setLoading: (loading: boolean) => void;
+  setLayout: (layout: Layout) => void;
   setOrthographicEnabled: (orthographicEnabled: boolean) => void;
-  setPoints: (points: Point[]) => void;
   setUpVector: (upVector: [number, number, number]) => void;
 };
 
 const useStore = create<State>((set) => ({
   ambientLightIntensity: 1,
   boundsEnabled: false,
-  loading: true,
+  layout: "grid",
   orthographicEnabled: false,
-  points: [],
   upVector: [0, 1, 0],
 
   setAmbientLightIntensity: (ambientLightIntensity: number) =>
@@ -35,20 +32,14 @@ const useStore = create<State>((set) => ({
       boundsEnabled,
     }),
 
-  setLoading: (loading: boolean) =>
+  setLayout: (layout: Layout) =>
     set({
-      loading,
+      layout,
     }),
 
   setOrthographicEnabled: (orthographicEnabled: boolean) =>
     set({
       orthographicEnabled,
-    }),
-
-  setPoints: (points: Point[]) =>
-    set({
-      points,
-      loading: true,
     }),
 
   setUpVector: (upVector: [number, number, number]) =>

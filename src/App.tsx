@@ -23,7 +23,6 @@ function App() {
           type: "iiif",
         },
         "Design Archives": {
-          // url: "https://culturedigitalskills.org/presentation/designarchives-collection-5-05-24.json",
           url: "https://culturedigitalskills.org/presentation/testcompressed/2024-05-19T17-49-24.json",
           type: "iiif",
         },
