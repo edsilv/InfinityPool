@@ -26,6 +26,8 @@ const useLayout = ({ points }: { points: Point[] }) => {
   // only the date layout needs a measurement pass right now.
   // then we loop through the final points scales/positions and set them for each point.
   useEffect(() => {
+    console.log("layout");
+
     if (layout) {
       switch (layout) {
         case "list":
@@ -45,6 +47,7 @@ export function useSourceTargetLayout({ points }) {
 
   // prep for new animation by storing source
   useEffect(() => {
+    console.log("source positions");
     for (let i = 0; i < points.length; ++i) {
       const point: Point = points[i];
       point.sourcePosition = { ...point.position } || [0, 0, 0];
@@ -59,6 +62,7 @@ export function useSourceTargetLayout({ points }) {
 
   // store target positions and scales
   useEffect(() => {
+    console.log("target positions");
     for (let i = 0; i < points.length; ++i) {
       const point = points[i];
       point.targetPosition = { ...point.position };
