@@ -3,7 +3,6 @@ import "../index.css";
 import React, {
   RefObject,
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useRef,
 } from "react";

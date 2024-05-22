@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { useHelper } from "@react-three/drei";
 import { BoxHelper, Group } from "three";
 import useDoubleClick from "@/lib/hooks/use-double-click";

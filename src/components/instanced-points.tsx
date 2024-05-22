@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ThumbnailMaterial from "./thumbnail-material";
 import { DataArrayTexture, InstancedMesh, Object3D } from "three";
 import { Point } from "@/types/Point";
