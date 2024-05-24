@@ -1,26 +1,28 @@
-/* eslint-disable */
-// @ts-nocheck
 import { useEffect } from "react";
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { gridLayout } from "./GridLayout";
 import { listLayout } from "./ListLayout";
 import { Point } from "@/types";
+import { AppState } from "@/Store";
 
-const useLayout = ({ points }: { points: Point[] }) => {
+export function useSourceTargetLayout({ points }: { points: Point[] }) {
+  const src = useAppContext((state: AppState) => state.src)!;
   const layout = useAppContext((state: AppState) => state.layout)!;
-
-  // set the scale to 0 for all filtered out points
-  //console.log("hideFilteredOutPoints")
-  //hideFilteredOutPoints(points);
 
   let layoutProps;
 
-  // layouts take the points array, calculate all new point scales and positions, and decorators (labels, lines).
-  // these scales/positions can be used to measure the needed space, before running the layout again to fit within those bounds.
-  // only the date layout needs a measurement pass right now.
-  // then we loop through the final points scales/positions and set them for each point.
+  // prep for new animation by storing source
   useEffect(() => {
-    console.log("layout");
+    console.log("get source positions");
+    for (let i = 0; i < points.length; ++i) {
+      const point: Point = points[i];
+      point.sourcePosition = { ...point.position! } || [0, 0, 0];
+    }
+  }, [src, layout]);
+
+  // run layout (get target positions)
+  useEffect(() => {
+    console.log("apply layout");
 
     if (layout) {
       switch (layout) {
@@ -33,36 +35,19 @@ const useLayout = ({ points }: { points: Point[] }) => {
         }
       }
     }
-  }, [layout]);
-};
+  }, [src, layout]);
 
-export function useSourceTargetLayout({ points }) {
-  const layout = useAppContext((state: AppState) => state.layout)!;
-
-  // prep for new animation by storing source
+  // store target positions
   useEffect(() => {
-    console.log("source positions");
-    for (let i = 0; i < points.length; ++i) {
-      const point: Point = points[i];
-      point.sourcePosition = { ...point.position } || [0, 0, 0];
-      // point.sourceScale = { ...point.scale } || [1, 1, 1];
-    }
-  }, [layout]);
-
-  // run layout (get target positions and scales)
-  useLayout({
-    points,
-  });
-
-  // store target positions and scales
-  useEffect(() => {
-    console.log("target positions");
+    console.log("get target positions");
     for (let i = 0; i < points.length; ++i) {
       const point = points[i];
-      point.targetPosition = { ...point.position };
+      point.targetPosition = { ...point.position! };
       // point.targetScale = point.filteredOut ? [0, 0, 0] : { ...point.scale };
     }
-  }, [layout]);
+  }, [src, layout]);
+
+  return layoutProps;
 }
 
 export function interpolateSourceTargetPosition(
@@ -76,31 +61,19 @@ export function interpolateSourceTargetPosition(
 
     if (point.position) {
       point.position[0] =
-        (1 - progress) * point.sourcePosition[0] +
-        progress * point.targetPosition[0];
+        (1 - progress) * point.sourcePosition![0] +
+        progress * point.targetPosition![0];
       point.position[1] =
-        (1 - progress) * point.sourcePosition[1] +
-        progress * point.targetPosition[1];
+        (1 - progress) * point.sourcePosition![1] +
+        progress * point.targetPosition![1];
       point.position[2] =
-        (1 - progress) * point.sourcePosition[2] +
-        progress * point.targetPosition[2];
+        (1 - progress) * point.sourcePosition![2] +
+        progress * point.targetPosition![2];
     }
-
-    // if (point.scale) {
-    //   point.scale[0] =
-    //     (1 - progress) * point.sourceScale[0] + progress * point.targetScale[0];
-    //   point.scale[1] =
-    //     (1 - progress) * point.sourceScale[1] + progress * point.targetScale[1];
-    //   point.scale[2] =
-    //     (1 - progress) * point.sourceScale[2] + progress * point.targetScale[2];
-    // }
   }
 }
 
 export function resetSourcePositionScale(point: Point) {
-  if (point.scale) {
-    point.sourceScale = { ...point.scale };
-  }
   if (point.position) {
     point.sourcePosition = { ...point.position };
   }

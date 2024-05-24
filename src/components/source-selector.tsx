@@ -67,35 +67,3 @@ export function SourceSelector() {
     />
   );
 }
-
-// options: {
-//         "National Gallery Highlights": {
-//           url: "https://media.nga.gov/public/manifests/nga_highlights.json",
-//           type: "iiif",
-//         },
-//         "Codex Forster": {
-//           url: "https://iiif.vam.ac.uk/collections/MSL:1876:Forster:141:II/manifest.json",
-//           type: "iiif",
-//         },
-//         "Design Archives": {
-//           url: "https://culturedigitalskills.org/presentation/testcompressed/2024-05-19T17-49-24.json",
-//           type: "iiif",
-//         },
-//         "Shakespeare First Folio": {
-//           url: "https://iiif.bodleian.ox.ac.uk/iiif/manifest/390fd0e8-9eae-475d-9564-ed916ab9035c.json",
-//           type: "iiif",
-//         },
-//         "Wunder der Vererbung": {
-//           url: "https://wellcomelibrary.org/iiif/b18035723/manifest",
-//           type: "iiif",
-//         },
-//         "The Biocrats": {
-//           url: "https://wellcomelibrary.org/iiif/b18035978/manifest",
-//           type: "iiif",
-//         },
-//         "The Holy Bible": {
-//           url: "https://digital.library.villanova.edu/Item/vudl:60609/Manifest",
-//           type: "iiif",
-//         },
-//       },
-//     },
