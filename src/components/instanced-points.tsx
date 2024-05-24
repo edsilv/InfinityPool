@@ -62,17 +62,7 @@ function useThumbnails({
   const [texture, setTexture] = useState<any>(null);
   const cancelTokenSourceRef = useRef<CancelTokenSource | null>(null);
 
-  // const prevSrcRef = useRef<string | null>(null);
-
   useEffect(() => {
-    // console.log("src", src);
-    // if (prevSrcRef.current === src) {
-    //   console.log("Skipping");
-    //   return;
-    // }
-
-    // prevSrcRef.current = src;
-
     let count = points.length;
 
     if (count === 0) {
@@ -285,7 +275,6 @@ const InstancedPoints: React.FC<{
   },
   (prevProps, nextProps) => {
     // Only re-render if the src changes
-    console.log("prevProps.src", prevProps.src);
     return prevProps.src === nextProps.src;
   }
 );
