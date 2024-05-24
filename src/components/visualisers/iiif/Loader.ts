@@ -47,6 +47,9 @@ export class IIIFLoader implements ContentLoader {
 
     const points = thumbnailSrcs.map((src: string) => {
       return {
+        position: [0, 0, 0],
+        sourcePosition: [0, 0, 0],
+        targetPosition: [0, 0, 0],
         thumbnail: {
           src,
           width: this.thumbailWidth,

@@ -5,7 +5,7 @@ import { Point } from "@/types/Point";
 import { suspend } from "suspend-react";
 import { IIIFLoader } from "./Loader";
 // @ts-ignore
-import data from "./points";
+// import data from "./points";
 
 const Points = React.memo(
   ({ src }: { src: string }) => {
@@ -15,12 +15,7 @@ const Points = React.memo(
       const loader = new IIIFLoader();
       const points: Point[] = await loader.load(src);
 
-      // initialise points
-      points.forEach((point) => {
-        point.position = [0, 0, 0];
-        point.sourcePosition = [0, 0, 0];
-        point.targetPosition = [0, 0, 0];
-      });
+      // todo: set loaded state to true, and trigger useAnimatedTransition
 
       return points;
     }, [src]);
