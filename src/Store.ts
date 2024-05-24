@@ -1,56 +1,57 @@
 import { create } from "zustand";
-import { Layout } from "./types";
+import { SrcObj } from "./types";
+import { createContext } from "react";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
 
-type State = {
-  ambientLightIntensity: number;
-  boundsEnabled: boolean;
-  layout: Layout;
-  orthographicEnabled: boolean;
-  upVector: [number, number, number];
+// https://docs.pmnd.rs/zustand/guides/initialize-state-with-props
+export interface AppProps {
+  ambientLightIntensity?: number;
+  boundsEnabled?: boolean;
+  orthographicEnabled?: boolean;
+  src: SrcObj | undefined;
+  upVector?: [number, number, number];
+}
+
+export interface AppState extends AppProps {
   setAmbientLightIntensity: (ambientLightIntensity: number) => void;
   setBoundsEnabled: (boundsEnabled: boolean) => void;
-  setLayout: (layout: Layout) => void;
   setOrthographicEnabled: (orthographicEnabled: boolean) => void;
   setUpVector: (upVector: [number, number, number]) => void;
+}
+
+export type AppStore = ReturnType<typeof createAppStore>;
+
+export const createAppStore = (initProps?: Partial<AppProps>) => {
+  const DEFAULT_PROPS: AppProps = {
+    ambientLightIntensity: 1,
+    boundsEnabled: false,
+    orthographicEnabled: false,
+    src: undefined,
+    upVector: [0, 1, 0],
+  };
+  return create<AppState>()((set) => ({
+    ...DEFAULT_PROPS,
+    ...initProps,
+    setAmbientLightIntensity: (ambientLightIntensity: number) =>
+      set({
+        ambientLightIntensity,
+      }),
+
+    setBoundsEnabled: (boundsEnabled: boolean) =>
+      set({
+        boundsEnabled,
+      }),
+
+    setOrthographicEnabled: (orthographicEnabled: boolean) =>
+      set({
+        orthographicEnabled,
+      }),
+
+    setUpVector: (upVector: [number, number, number]) =>
+      set({
+        upVector,
+      }),
+  }));
 };
 
-const useStore = create<State>((set) => ({
-  ambientLightIntensity: 1,
-  boundsEnabled: false,
-  layout: "grid",
-  orthographicEnabled: false,
-  upVector: [0, 1, 0],
-
-  setAmbientLightIntensity: (ambientLightIntensity: number) =>
-    set({
-      ambientLightIntensity,
-    }),
-
-  setBoundsEnabled: (boundsEnabled: boolean) =>
-    set({
-      boundsEnabled,
-    }),
-
-  setLayout: (layout: Layout) =>
-    set({
-      layout,
-    }),
-
-  setOrthographicEnabled: (orthographicEnabled: boolean) =>
-    set({
-      orthographicEnabled,
-    }),
-
-  setUpVector: (upVector: [number, number, number]) =>
-    set({
-      upVector,
-    }),
-}));
-
-// if (process.env.NODE_ENV === 'development') {
-//   console.log('zustand devtools');
-//   mountStoreDevtool('Store', useStore);
-// }
-
-export default useStore;
+export const AppContext = createContext<AppStore | null>(null);

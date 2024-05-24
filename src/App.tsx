@@ -4,6 +4,7 @@ import { useControls } from "leva";
 import { ViewerRef, SrcObj, Viewer, ControlPanel } from "../index";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
+import { AppProvider } from "./AppProvider";
 
 function App() {
   const viewerRef = useRef<ViewerRef>(null);
@@ -60,26 +61,27 @@ function App() {
   }, [src]);
 
   return (
-    <div id="container">
-      <div id="control-panel">
-        <ControlPanel></ControlPanel>
-      </div>
-      <div id="viewer">
-        <Viewer
-          ref={viewerRef}
-          src={src}
-          onLoad={(src: SrcObj) => {
-            console.log(`src loaded`, src);
-            // add loaded urls to array of already loaded urls
-            loadedUrlsRef.current = [...loadedUrlsRef.current, src.url];
+    <AppProvider src={src}>
+      <div id="container">
+        <div id="control-panel">
+          <ControlPanel></ControlPanel>
+        </div>
+        <div id="viewer">
+          <Viewer
+            ref={viewerRef}
+            onLoad={(src: SrcObj) => {
+              console.log(`src loaded`, src);
+              // add loaded urls to array of already loaded urls
+              loadedUrlsRef.current = [...loadedUrlsRef.current, src.url];
 
-            // show the required statement if it exists
-            src.requiredStatement && toast(src.requiredStatement);
-          }}
-        />
+              // show the required statement if it exists
+              src.requiredStatement && toast(src.requiredStatement);
+            }}
+          />
+        </div>
+        <Toaster />
       </div>
-      <Toaster />
-    </div>
+    </AppProvider>
   );
 }
 
