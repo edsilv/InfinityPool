@@ -9,7 +9,7 @@ export interface AppProps {
   boundsEnabled?: boolean;
   layout?: Layout;
   orthographicEnabled?: boolean;
-  src: SrcObj | undefined;
+  src?: SrcObj | undefined;
   upVector?: [number, number, number];
 }
 
@@ -18,6 +18,7 @@ export interface AppState extends AppProps {
   setBoundsEnabled: (boundsEnabled: boolean) => void;
   setLayout: (layout: Layout) => void;
   setOrthographicEnabled: (orthographicEnabled: boolean) => void;
+  setSrc: (src: SrcObj) => void;
   setUpVector: (upVector: [number, number, number]) => void;
 }
 
@@ -53,6 +54,11 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
     setOrthographicEnabled: (orthographicEnabled: boolean) =>
       set({
         orthographicEnabled,
+      }),
+
+    setSrc: (src: SrcObj) =>
+      set({
+        src,
       }),
 
     setUpVector: (upVector: [number, number, number]) =>

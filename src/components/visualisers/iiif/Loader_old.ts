@@ -2,7 +2,7 @@ import { Point } from "@/types/Point";
 import { Canvas, loadManifest, parseManifest } from "manifesto.js";
 
 export class IIIFLoader {
-  private lowResWidth: number = 90;
+  private lowResWidth: number = 100;
   // private highResWidth: number = 200;
 
   constructor() {}
@@ -12,10 +12,6 @@ export class IIIFLoader {
     const iiifResource: any = parseManifest(json);
 
     const thumbnailSrcs: string[] = [];
-
-    // todo: look for thumbnails on the canvases before resorting to generating image server requests
-    // https://iiif.wellcomecollection.org/presentation/v2/b18035723
-    // if no thumbnails are present, load the info.json for the first canvas and get the image server id to use when constructing the thumbnail src
 
     if (iiifResource.isCollection()) {
       // if it's a collection, get the thumbnails

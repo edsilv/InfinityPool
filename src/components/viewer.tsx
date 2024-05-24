@@ -32,7 +32,7 @@ import { useAppContext } from "@/lib/hooks/use-app-context";
 import { Loader } from "./loader";
 // import { Perf } from "r3f-perf";
 
-const Scene = ({ onLoad }: { onLoad?: (src: SrcObj) => void }) => {
+const Scene = () => {
   const boundsRef = useRef<Group | null>(null);
 
   const cameraRefs: CameraRefs = {
@@ -159,7 +159,7 @@ const Scene = ({ onLoad }: { onLoad?: (src: SrcObj) => void }) => {
         zoomToObject={zoomToObject}
         recenter={recenter}
       >
-        <Suspense fallback={<Loader onLoad={onLoad} />}>
+        <Suspense fallback={<Loader />}>
           <Visualiser />
         </Suspense>
       </Bounds>
@@ -171,6 +171,10 @@ const Scene = ({ onLoad }: { onLoad?: (src: SrcObj) => void }) => {
 
 const Visualiser = () => {
   const src = useAppContext((state: AppState) => state.src)!;
+
+  if (!src) {
+    return null;
+  }
 
   function renderVisualizer(src: SrcObj) {
     switch (src.type) {
@@ -185,11 +189,9 @@ const Visualiser = () => {
 };
 
 const Viewer = (
-  props: ViewerProps,
+  _props: ViewerProps,
   ref: ((instance: unknown) => void) | RefObject<unknown> | null | undefined
 ) => {
-  const { onLoad } = props;
-
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const triggerDoubleClickEvent = useEventTrigger(DBL_CLICK);
@@ -210,7 +212,7 @@ const Viewer = (
           triggerDoubleClickEvent(e);
         }}
       >
-        <Scene onLoad={onLoad} />
+        <Scene />
       </Canvas>
     </>
   );

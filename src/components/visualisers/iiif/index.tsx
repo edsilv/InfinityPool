@@ -1,5 +1,4 @@
-import React from "react";
-import { Suspense, useRef } from "react";
+import { useRef } from "react";
 import InstancedPoints from "../../instanced-points";
 import { Point } from "@/types/Point";
 import { suspend } from "suspend-react";
