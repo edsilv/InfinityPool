@@ -285,6 +285,7 @@ const InstancedPoints: React.FC<{
   },
   (prevProps, nextProps) => {
     // Only re-render if the src changes
+    console.log("prevProps.src", prevProps.src);
     return prevProps.src === nextProps.src;
   }
 );

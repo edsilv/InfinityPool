@@ -7,6 +7,7 @@ import { AppState } from "@/Store";
 
 export function LayoutSelector() {
   const layout = useAppContext((state: AppState) => state.layout)!;
+  const setLayout = useAppContext((state: AppState) => state.setLayout);
 
   return (
     <OptionSelector

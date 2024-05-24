@@ -1,6 +1,7 @@
 /* eslint-disable */
 // @ts-nocheck
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
+import { useAppContext } from "@/lib/hooks/use-app-context";
 import { gridLayout } from "./GridLayout";
 import { listLayout } from "./ListLayout";
 import { Point } from "@/types";
@@ -36,7 +37,7 @@ const useLayout = ({ points }: { points: Point[] }) => {
 };
 
 export function useSourceTargetLayout({ points }) {
-  const { layout } = useStore();
+  const layout = useAppContext((state: AppState) => state.layout)!;
 
   // prep for new animation by storing source
   useEffect(() => {

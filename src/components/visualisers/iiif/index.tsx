@@ -4,42 +4,25 @@ import InstancedPoints from "../../instanced-points";
 import { Point } from "@/types/Point";
 import { suspend } from "suspend-react";
 import { IIIFLoader } from "./Loader";
+import { useAppContext } from "@/lib/hooks/use-app-context";
+import { AppState } from "@/Store";
 // @ts-ignore
 // import data from "./points";
 
-const Points = React.memo(
-  ({ src }: { src: string }) => {
-    const pointsRef = useRef<Point[] | null>(null);
+const IIIF = () => {
+  const src = useAppContext((state: AppState) => state.src)!;
+  const pointsRef = useRef<Point[] | null>(null);
 
-    pointsRef.current = suspend(async () => {
-      const loader = new IIIFLoader();
-      const points: Point[] = await loader.load(src);
+  pointsRef.current = suspend(async () => {
+    const loader = new IIIFLoader();
+    const points: Point[] = await loader.load(src.url);
 
-      // todo: set loaded state to true, and trigger useAnimatedTransition
+    // todo: set loaded state to true, and trigger useAnimatedTransition
 
-      return points;
-    }, [src]);
+    return points;
+  }, [src]);
 
-    return <InstancedPoints src={src} points={pointsRef.current} />;
-  },
-  (prevProps, nextProps) => {
-    // only re-render if src changes
-    return prevProps.src === nextProps.src;
-  }
-);
-
-const IIIF = React.memo(
-  ({ src }: { src: string }) => {
-    return (
-      <Suspense fallback={null}>
-        <Points src={src} />
-      </Suspense>
-    );
-  },
-  (prevProps, nextProps) => {
-    // only re-render if src changes
-    return prevProps.src === nextProps.src;
-  }
-);
+  return <InstancedPoints src={src.url} points={pointsRef.current} />;
+};
 
 export default IIIF;

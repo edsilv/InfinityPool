@@ -25,7 +25,6 @@ import {
   CAMERA_CONTROLS_ENABLED,
   SrcObj,
 } from "@/types";
-
 import { useEventListener, useEventTrigger } from "@/lib/hooks/use-event";
 import IIIF from "./visualisers/iiif";
 import Bounds from "./bounds";
@@ -176,7 +175,7 @@ const Visualiser = () => {
   function renderVisualizer(src: SrcObj) {
     switch (src.type) {
       case "iiif":
-        return <IIIF src={src.url} />;
+        return <IIIF />;
       default:
         return null;
     }

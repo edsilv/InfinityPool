@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { SrcObj } from "./types";
+import { Layout, SrcObj } from "./types";
 import { createContext } from "react";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
 
@@ -7,6 +7,7 @@ import { createContext } from "react";
 export interface AppProps {
   ambientLightIntensity?: number;
   boundsEnabled?: boolean;
+  layout?: Layout;
   orthographicEnabled?: boolean;
   src: SrcObj | undefined;
   upVector?: [number, number, number];
@@ -15,6 +16,7 @@ export interface AppProps {
 export interface AppState extends AppProps {
   setAmbientLightIntensity: (ambientLightIntensity: number) => void;
   setBoundsEnabled: (boundsEnabled: boolean) => void;
+  setLayout: (layout: Layout) => void;
   setOrthographicEnabled: (orthographicEnabled: boolean) => void;
   setUpVector: (upVector: [number, number, number]) => void;
 }
@@ -25,6 +27,7 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
   const DEFAULT_PROPS: AppProps = {
     ambientLightIntensity: 1,
     boundsEnabled: false,
+    layout: "grid",
     orthographicEnabled: false,
     src: undefined,
     upVector: [0, 1, 0],
@@ -40,6 +43,11 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
     setBoundsEnabled: (boundsEnabled: boolean) =>
       set({
         boundsEnabled,
+      }),
+
+    setLayout: (layout: Layout) =>
+      set({
+        layout,
       }),
 
     setOrthographicEnabled: (orthographicEnabled: boolean) =>
