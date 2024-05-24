@@ -1,4 +1,3 @@
-import React from "react";
 import { useEffect, useRef, useState } from "react";
 import ThumbnailMaterial from "./thumbnail-material";
 import { DataArrayTexture, InstancedMesh, Object3D } from "three";
