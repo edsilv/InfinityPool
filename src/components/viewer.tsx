@@ -2,6 +2,7 @@ import "@/viewer.css";
 import "../index.css";
 import React, {
   RefObject,
+  Suspense,
   forwardRef,
   useImperativeHandle,
   useRef,
@@ -14,7 +15,7 @@ import {
   PerspectiveCamera,
 } from "@react-three/drei";
 import { Group, Object3D, Vector3 } from "three";
-import useStore, { AppState } from "@/Store";
+import { AppState } from "@/Store";
 import {
   ViewerProps as ViewerProps,
   CAMERA_UPDATE,
@@ -28,11 +29,11 @@ import {
 import { useEventListener, useEventTrigger } from "@/lib/hooks/use-event";
 import IIIF from "./visualisers/iiif";
 import Bounds from "./bounds";
+import { useAppContext } from "@/lib/hooks/use-app-context";
+import { Loader } from "./loader";
 // import { Perf } from "r3f-perf";
 
-const Scene = React.memo((props: ViewerProps) => {
-  const src = useAppContext((state: AppState) => state.src)!;
-
+const Scene = ({ onLoad }: { onLoad?: (src: SrcObj) => void }) => {
   const boundsRef = useRef<Group | null>(null);
 
   const cameraRefs: CameraRefs = {
@@ -47,16 +48,14 @@ const Scene = React.memo((props: ViewerProps) => {
   const minDistance = 0.1;
   const { camera } = useThree();
 
-  const {
-    ambientLightIntensity,
-    boundsEnabled,
-    // loading,
-    orthographicEnabled,
-    // points,
-    // setLoading,
-    // setPoints,
-    upVector,
-  } = useStore();
+  const ambientLightIntensity = useAppContext(
+    (state: AppState) => state.ambientLightIntensity
+  );
+  const boundsEnabled = useAppContext((state: AppState) => state.boundsEnabled);
+  const orthographicEnabled = useAppContext(
+    (state: AppState) => state.orthographicEnabled
+  );
+  const upVector = useAppContext((state: AppState) => state.upVector)!;
 
   const triggerCameraUpdateEvent = useEventTrigger(CAMERA_UPDATE);
   // const triggerCameraSleepEvent = useEventTrigger(CAMERA_SLEEP);
@@ -161,37 +160,37 @@ const Scene = React.memo((props: ViewerProps) => {
         zoomToObject={zoomToObject}
         recenter={recenter}
       >
-        <Visualiser src={src} />
+        <Suspense fallback={<Loader onLoad={onLoad} />}>
+          <Visualiser />
+        </Suspense>
       </Bounds>
       <Environment preset={environment} />
       {/* <Perf /> */}
     </>
   );
-});
+};
 
-const Visualiser = React.memo(
-  ({ src }: { src: SrcObj }) => {
-    function renderVisualizer(src: SrcObj) {
-      switch (src.type) {
-        case "iiif":
-          return <IIIF src={src.url} />;
-        default:
-          return null;
-      }
+const Visualiser = () => {
+  const src = useAppContext((state: AppState) => state.src)!;
+
+  function renderVisualizer(src: SrcObj) {
+    switch (src.type) {
+      case "iiif":
+        return <IIIF src={src.url} />;
+      default:
+        return null;
     }
-
-    return <>{renderVisualizer(src)}</>;
-  },
-  (prevProps, nextProps) => {
-    // only re-render if the src url changes
-    return prevProps.src.url === nextProps.src.url;
   }
-);
+
+  return <>{renderVisualizer(src)}</>;
+};
 
 const Viewer = (
   props: ViewerProps,
   ref: ((instance: unknown) => void) | RefObject<unknown> | null | undefined
 ) => {
+  const { onLoad } = props;
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const triggerDoubleClickEvent = useEventTrigger(DBL_CLICK);
@@ -212,7 +211,7 @@ const Viewer = (
           triggerDoubleClickEvent(e);
         }}
       >
-        <Scene {...props} />
+        <Scene onLoad={onLoad} />
       </Canvas>
     </>
   );

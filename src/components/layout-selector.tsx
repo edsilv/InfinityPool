@@ -1,11 +1,12 @@
 "use client";
 
-import useStore from "@/Store";
+import { useAppContext } from "@/lib/hooks/use-app-context";
 import { OptionSelector } from "./option-selector";
 import { Layout } from "@/types";
+import { AppState } from "@/Store";
 
 export function LayoutSelector() {
-  const { layout, setLayout } = useStore();
+  const layout = useAppContext((state: AppState) => state.layout)!;
 
   return (
     <OptionSelector

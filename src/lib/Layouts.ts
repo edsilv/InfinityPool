@@ -4,16 +4,9 @@ import { useEffect, useMemo } from "react";
 import { gridLayout } from "./GridLayout";
 import { listLayout } from "./ListLayout";
 import { Point } from "@/types";
-import useStore from "@/Store";
 
 const useLayout = ({ points }: { points: Point[] }) => {
-  const { layout } = useStore();
-
-  // get all "visible" points, i.e. ones that have data
-  const visiblePoints = useMemo(
-    () => points.filter((d) => d.visible),
-    [points]
-  );
+  const layout = useAppContext((state: AppState) => state.layout)!;
 
   // set the scale to 0 for all filtered out points
   //console.log("hideFilteredOutPoints")

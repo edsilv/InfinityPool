@@ -1,17 +1,15 @@
+import { AppState } from "@/Store";
+import { useAppContext } from "@/lib/hooks/use-app-context";
 import { SrcObj } from "@/types";
 import { Html, useProgress } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 
-export function Loader({
-  onLoad,
-  src,
-}: {
-  onLoad?: (src: SrcObj) => void;
-  src: SrcObj;
-  setLoading: (loading: boolean) => void;
-}) {
+export function Loader({ onLoad }: { onLoad?: (src: SrcObj) => void }) {
+  const src = useAppContext((state: AppState) => state.src)!;
+
   const { gl } = useThree();
   const { progress } = useProgress();
+
   if (progress === 100) {
     setTimeout(() => {
       if (onLoad) {
