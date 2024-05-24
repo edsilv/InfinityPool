@@ -44,7 +44,7 @@ const Scene = () => {
   const cameraPosition = new Vector3();
   const cameraTarget = new Vector3();
   const environment = "apartment";
-  const minDistance = 0.1;
+  const minDistance = 0.01;
   const { camera } = useThree();
 
   const ambientLightIntensity = useAppContext(
