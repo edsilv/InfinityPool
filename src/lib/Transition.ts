@@ -3,25 +3,24 @@ import {
   resetSourcePositionScale,
   useSourceTargetLayout,
 } from "@/lib/Layouts";
-import { Point } from "@/types";
 import { useSpring } from "@react-spring/core";
+import { useAppContext } from "./hooks/use-app-context";
+import { AppState } from "@/Store";
 
 export function useAnimatedTransition({
-  points,
   onChange,
   onRest,
   onStart,
 }: {
-  points: Point[];
   onChange: (state: any) => void;
   onRest: () => void;
   onStart: () => void;
 }) {
+  const points = useAppContext((state: AppState) => state.points)!;
+
   // compute layout remembering initial position, scale as source and
   // end position, scale as target
-  useSourceTargetLayout({
-    points,
-  });
+  useSourceTargetLayout();
 
   const numPoints = points.length;
 

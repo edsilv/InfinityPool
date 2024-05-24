@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import InstancedPoints from "../../instanced-points";
 import { Point } from "@/types/Point";
 import { suspend } from "suspend-react";
@@ -10,18 +9,15 @@ import { AppState } from "@/Store";
 
 const IIIF = () => {
   const src = useAppContext((state: AppState) => state.src)!;
-  const pointsRef = useRef<Point[] | null>(null);
+  const setPoints = useAppContext((state: AppState) => state.setPoints)!;
 
-  pointsRef.current = suspend(async () => {
+  suspend(async () => {
     const loader = new IIIFLoader();
     const points: Point[] = await loader.load(src.url);
-
-    // todo: set loaded state to true, and trigger useAnimatedTransition
-
-    return points;
+    setPoints(points);
   }, [src]);
 
-  return <InstancedPoints src={src.url} points={pointsRef.current} />;
+  return <InstancedPoints />;
 };
 
 export default IIIF;

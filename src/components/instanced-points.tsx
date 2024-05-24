@@ -5,6 +5,8 @@ import { DataArrayTexture, InstancedMesh, Object3D } from "three";
 import { Point } from "@/types/Point";
 import axios, { CancelTokenSource } from "axios";
 import { useAnimatedTransition } from "@/lib/Transition";
+import { useAppContext } from "@/lib/hooks/use-app-context";
+import { AppState } from "@/Store";
 
 const o = new Object3D();
 
@@ -44,22 +46,21 @@ function updateInstancedMeshMatrices({
 
 function useThumbnails({
   instancesRef,
-  src,
   thumbnailWidth,
   thumbnailHeight,
   padding,
   loadingPagedSize,
-  points,
 }: {
   instancesRef: InstancedMesh;
-  src: string;
   thumbnailWidth: number;
   thumbnailHeight: number;
   padding: number;
   loadingPagedSize: number;
-  points: Point[];
 }) {
+  const src = useAppContext((state: AppState) => state.src)!;
+  const points = useAppContext((state: AppState) => state.points)!;
   const [texture, setTexture] = useState<any>(null);
+
   const cancelTokenSourceRef = useRef<CancelTokenSource | null>(null);
 
   useEffect(() => {
@@ -220,63 +221,48 @@ function useThumbnails({
   return { texture };
 }
 
-const InstancedPoints: React.FC<{
-  src: string;
-  points: Point[] | null;
+const InstancedPoints = ({
+  thumbnailWidth = 100,
+  thumbnailHeight = 100,
+  padding = 18,
+  loadingPagedSize = 4,
+}: {
   thumbnailWidth?: number;
   thumbnailHeight?: number;
   padding?: number;
   loadingPagedSize?: number;
-}> = React.memo(
-  ({
-    src,
-    points,
-    thumbnailWidth = 100,
-    thumbnailHeight = 100,
-    padding = 18,
-    loadingPagedSize = 4,
-  }) => {
-    if (!points) {
-      return null;
-    }
+}) => {
+  const points = useAppContext((state: AppState) => state.points)!;
 
-    const instancesRef = useRef<any>();
+  const instancesRef = useRef<any>();
 
-    const { texture } = useThumbnails({
-      instancesRef: instancesRef.current,
-      src,
-      points,
-      thumbnailWidth,
-      thumbnailHeight,
-      padding,
-      loadingPagedSize,
-    });
+  const { texture } = useThumbnails({
+    instancesRef: instancesRef.current,
+    thumbnailWidth,
+    thumbnailHeight,
+    padding,
+    loadingPagedSize,
+  });
 
-    useAnimatedTransition({
-      points,
-      onStart: () => {},
-      onChange: () => {
-        updateInstancedMeshMatrices({ o, mesh: instancesRef.current, points });
-      },
-      onRest: () => {},
-    });
+  useAnimatedTransition({
+    onStart: () => {},
+    onChange: () => {
+      updateInstancedMeshMatrices({ o, mesh: instancesRef.current, points });
+    },
+    onRest: () => {},
+  });
 
-    return (
-      <>
-        <instancedMesh
-          ref={instancesRef}
-          args={[undefined, undefined, points.length]}
-        >
-          <planeGeometry args={[0.1, 0.1]} />
-          <ThumbnailMaterial map={texture} brightness={1.4} contrast={0.75} />
-        </instancedMesh>
-      </>
-    );
-  },
-  (prevProps, nextProps) => {
-    // Only re-render if the src changes
-    return prevProps.src === nextProps.src;
-  }
-);
+  return (
+    <>
+      <instancedMesh
+        ref={instancesRef}
+        args={[undefined, undefined, points.length]}
+      >
+        <planeGeometry args={[0.1, 0.1]} />
+        <ThumbnailMaterial map={texture} brightness={1.4} contrast={0.75} />
+      </instancedMesh>
+    </>
+  );
+};
 
 export default InstancedPoints;
