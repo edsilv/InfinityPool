@@ -1,7 +1,12 @@
 import { useRef } from "react";
-import { AppContext, AppProps, AppStore, createAppStore } from "./Store";
+import {
+  AppContext,
+  AppStore,
+  RequiredAppProps,
+  createAppStore,
+} from "./Store";
 
-type AppProviderProps = React.PropsWithChildren<AppProps>;
+type AppProviderProps = React.PropsWithChildren<RequiredAppProps>;
 
 export function AppProvider({ children, ...props }: AppProviderProps) {
   const storeRef = useRef<AppStore>();

@@ -4,14 +4,16 @@ import { createContext } from "react";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 // https://docs.pmnd.rs/zustand/guides/initialize-state-with-props
-export interface AppProps {
-  ambientLightIntensity?: number;
-  boundsEnabled?: boolean;
-  layout?: Layout;
-  orthographicEnabled?: boolean;
-  points?: Point[];
-  src?: SrcObj | undefined;
-  upVector?: [number, number, number];
+export interface RequiredAppProps {}
+
+export interface AppProps extends RequiredAppProps {
+  ambientLightIntensity: number;
+  boundsEnabled: boolean;
+  layout: Layout;
+  orthographicEnabled: boolean;
+  points: Point[];
+  src: SrcObj;
+  upVector: [number, number, number];
 }
 
 export interface AppState extends AppProps {

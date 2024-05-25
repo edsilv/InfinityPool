@@ -54,7 +54,7 @@ const Scene = () => {
   const orthographicEnabled = useAppContext(
     (state: AppState) => state.orthographicEnabled
   );
-  const upVector = useAppContext((state: AppState) => state.upVector)!;
+  const upVector = useAppContext((state: AppState) => state.upVector);
 
   const triggerCameraUpdateEvent = useEventTrigger(CAMERA_UPDATE);
   // const triggerCameraSleepEvent = useEventTrigger(CAMERA_SLEEP);
@@ -170,7 +170,7 @@ const Scene = () => {
 };
 
 const Visualiser = () => {
-  const src = useAppContext((state: AppState) => state.src)!;
+  const src = useAppContext((state: AppState) => state.src);
 
   if (!src) {
     return null;

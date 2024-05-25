@@ -8,8 +8,8 @@ import { AppState } from "@/Store";
 // import data from "./points";
 
 const IIIF = () => {
-  const src = useAppContext((state: AppState) => state.src)!;
-  const setPoints = useAppContext((state: AppState) => state.setPoints)!;
+  const src = useAppContext((state: AppState) => state.src);
+  const setPoints = useAppContext((state: AppState) => state.setPoints);
 
   suspend(async () => {
     const loader = new IIIFLoader();

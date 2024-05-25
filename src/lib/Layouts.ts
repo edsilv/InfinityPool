@@ -6,9 +6,9 @@ import { Point } from "@/types";
 import { AppState } from "@/Store";
 
 export function useSourceTargetLayout() {
-  const src = useAppContext((state: AppState) => state.src)!;
-  const points = useAppContext((state: AppState) => state.points)!;
-  const layout = useAppContext((state: AppState) => state.layout)!;
+  const src = useAppContext((state: AppState) => state.src);
+  const points = useAppContext((state: AppState) => state.points);
+  const layout = useAppContext((state: AppState) => state.layout);
 
   let layoutProps;
 

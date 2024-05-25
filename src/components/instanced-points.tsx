@@ -57,8 +57,8 @@ function useThumbnails({
   padding: number;
   loadingPagedSize: number;
 }) {
-  const src = useAppContext((state: AppState) => state.src)!;
-  const points = useAppContext((state: AppState) => state.points)!;
+  const src = useAppContext((state: AppState) => state.src);
+  const points = useAppContext((state: AppState) => state.points);
   const [texture, setTexture] = useState<any>(null);
 
   const cancelTokenSourceRef = useRef<CancelTokenSource | null>(null);
@@ -231,7 +231,7 @@ const InstancedPoints = ({
   padding?: number;
   loadingPagedSize?: number;
 }) => {
-  const points = useAppContext((state: AppState) => state.points)!;
+  const points = useAppContext((state: AppState) => state.points);
 
   const instancesRef = useRef<any>();
 

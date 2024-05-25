@@ -16,8 +16,8 @@ export function useAnimatedTransition({
   onRest: () => void;
   onStart: () => void;
 }) {
-  const points = useAppContext((state: AppState) => state.points)!;
-  const layout = useAppContext((state: AppState) => state.layout)!;
+  const points = useAppContext((state: AppState) => state.points);
+  const layout = useAppContext((state: AppState) => state.layout);
 
   // compute layout remembering initial position, scale as source and
   // end position, scale as target
