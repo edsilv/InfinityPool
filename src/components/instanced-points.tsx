@@ -6,6 +6,7 @@ import axios, { CancelTokenSource } from "axios";
 import { useAnimatedTransition } from "@/lib/Transition";
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { AppState } from "@/Store";
+import { config } from "@/Config";
 
 const o = new Object3D();
 
@@ -78,7 +79,6 @@ function useThumbnails({
     const maxThumbnailsInTexture = maxThumbnailsInRow * maxThumbnailsInColumn;
 
     // If there are more thumbnails than can fit into a 4k x 4k texture, limit the count
-    // In this case, we can fit 2025 90x90px thumbnails within a 4096 x 4096 texture
     if (count > maxThumbnailsInTexture) {
       count = maxThumbnailsInTexture;
       console.warn(
@@ -94,7 +94,7 @@ function useThumbnails({
     thumbnailHeight = thumbnailHeight - padding;
 
     const size: number = thumbnailWidth * thumbnailHeight;
-    const textureData: Uint8Array = new Uint8Array(4 * size * count).fill(128);
+    const textureData: Uint8Array = new Uint8Array(4 * size * count); //.fill(128);
     const imgsToData: ImageData[] = [];
 
     const updateTexture = () => {
@@ -221,10 +221,10 @@ function useThumbnails({
 }
 
 const InstancedPoints = ({
-  thumbnailWidth = 100,
-  thumbnailHeight = 100,
-  padding = 18,
-  loadingPagedSize = 4,
+  thumbnailWidth = config.thumbnailWidth,
+  thumbnailHeight = config.thumbnailHeight,
+  padding = config.padding,
+  loadingPagedSize = config.loadingPagedSize,
 }: {
   thumbnailWidth?: number;
   thumbnailHeight?: number;

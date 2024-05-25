@@ -2,10 +2,11 @@ import { Point } from "@/types/Point";
 import { Vault, createThumbnailHelper } from "@iiif/helpers";
 import { ImageServiceLoader } from "@atlas-viewer/iiif-image-api";
 import { ContentLoader } from "@/types/ContentLoader";
+import { config } from "@/Config";
 
 export class IIIFLoader implements ContentLoader {
-  private thumbailWidth: number = 100;
-  private thumbnailHeight: number = 100;
+  private thumbailWidth: number = config.thumbnailWidth;
+  private thumbnailHeight: number = config.thumbnailHeight;
 
   constructor() {}
 
