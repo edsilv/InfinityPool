@@ -74,15 +74,19 @@ function useThumbnails({
     const thumbnailSrcsGenerator = getThumbnailSrcsIterator(thumbnailSrcs);
 
     // Calculate the maximum number of thumbnails that can fit into a 4k x 4k texture
-    const maxThumbnailsInRow = Math.floor(4096 / thumbnailWidth);
-    const maxThumbnailsInColumn = Math.floor(4096 / thumbnailHeight);
+    const maxThumbnailsInRow = Math.floor(
+      config.maxTextureSize / thumbnailWidth
+    );
+    const maxThumbnailsInColumn = Math.floor(
+      config.maxTextureSize / thumbnailHeight
+    );
     const maxThumbnailsInTexture = maxThumbnailsInRow * maxThumbnailsInColumn;
 
     // If there are more thumbnails than can fit into a 4k x 4k texture, limit the count
     if (count > maxThumbnailsInTexture) {
       count = maxThumbnailsInTexture;
       console.warn(
-        "Too many thumbnails to fit into a 4k x 4k texture. Limiting to",
+        `Too many thumbnails to fit into ${config.maxTextureSize} x ${config.maxTextureSize} texture. Limiting to`,
         count
       );
     }
@@ -257,7 +261,7 @@ const InstancedPoints = ({
         ref={instancesRef}
         args={[undefined, undefined, points.length]}
       >
-        <planeGeometry args={[0.1, 0.1]} />
+        <planeGeometry args={[1, 1]} />
         <ThumbnailMaterial map={texture} brightness={1.4} contrast={0.75} />
       </instancedMesh>
     </>

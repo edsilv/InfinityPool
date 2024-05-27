@@ -6,7 +6,7 @@ import { AppState } from "@/Store";
 import { SrcObj } from "@/types";
 
 export function SourceSelector() {
-  let src: SrcObj = useAppContext((state: AppState) => state.src);
+  let src: SrcObj | null = useAppContext((state: AppState) => state.src);
   const setSrc = useAppContext((state: AppState) => state.setSrc);
 
   const srcs: { value: string; label: string }[] = [

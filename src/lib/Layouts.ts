@@ -2,8 +2,20 @@ import { useEffect } from "react";
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { gridLayout } from "./GridLayout";
 import { listLayout } from "./ListLayout";
-import { Point } from "@/types";
+import { Layout, Point } from "@/types";
 import { AppState } from "@/Store";
+
+export function applyLayout(layout: Layout, points: Point[]) {
+  switch (layout) {
+    case "list":
+      listLayout(points);
+      break;
+    case "grid":
+    default: {
+      gridLayout(points);
+    }
+  }
+}
 
 export function useSourceTargetLayout() {
   const src = useAppContext((state: AppState) => state.src);
@@ -14,7 +26,7 @@ export function useSourceTargetLayout() {
 
   // prep for new animation by storing source
   useEffect(() => {
-    console.log("get source positions");
+    // console.log("get source positions");
     for (let i = 0; i < points.length; ++i) {
       const point: Point = points[i];
       point.sourcePosition = { ...point.position! } || [0, 0, 0];
@@ -23,24 +35,13 @@ export function useSourceTargetLayout() {
 
   // run layout (get target positions)
   useEffect(() => {
-    console.log("apply layout");
-
-    if (layout) {
-      switch (layout) {
-        case "list":
-          layoutProps = listLayout(points);
-          break;
-        case "grid":
-        default: {
-          layoutProps = gridLayout(points);
-        }
-      }
-    }
+    // console.log("apply layout");
+    applyLayout(layout, points);
   }, [src, layout]);
 
   // store target positions
   useEffect(() => {
-    console.log("get target positions");
+    // console.log("get target positions");
     for (let i = 0; i < points.length; ++i) {
       const point = points[i];
       point.targetPosition = { ...point.position! };

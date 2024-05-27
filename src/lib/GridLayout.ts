@@ -3,7 +3,7 @@ import { Point } from "@/types";
 export const gridLayout = (points: Point[]) => {
   const numPoints = points.length;
   const numCols = Math.ceil(Math.sqrt(numPoints));
-  const spacing = 0.15;
+  const spacing = 1.5;
 
   for (let i = 0; i < numPoints; i++) {
     const point: Point = points[i];

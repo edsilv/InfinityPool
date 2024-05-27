@@ -2,7 +2,7 @@ import { Point } from "@/types";
 
 export const listLayout = (points: Point[]) => {
   const numPoints = points.length;
-  const spacing = 0.15;
+  const spacing = 1.5;
 
   for (let i = 0; i < numPoints; i++) {
     const point: Point = points[i];

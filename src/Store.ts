@@ -12,7 +12,7 @@ export interface AppProps extends RequiredAppProps {
   layout: Layout;
   orthographicEnabled: boolean;
   points: Point[];
-  src: SrcObj;
+  src: SrcObj | null;
   upVector: [number, number, number];
 }
 
@@ -35,7 +35,7 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
     layout: "grid",
     orthographicEnabled: false,
     points: [],
-    src: undefined,
+    src: null,
     upVector: [0, 1, 0],
   };
   return create<AppState>()((set) => ({
