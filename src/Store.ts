@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { Layout, Point, SrcObj } from "./types";
+import { Facets, Layout, Point, SrcObj } from "./types";
 import { createContext } from "react";
+import { config } from "./Config";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 // https://docs.pmnd.rs/zustand/guides/initialize-state-with-props
@@ -9,6 +10,8 @@ export interface RequiredAppProps {}
 export interface AppProps extends RequiredAppProps {
   ambientLightIntensity: number;
   boundsEnabled: boolean;
+  facet: string;
+  facets: Facets;
   layout: Layout;
   orthographicEnabled: boolean;
   points: Point[];
@@ -19,6 +22,8 @@ export interface AppProps extends RequiredAppProps {
 export interface AppState extends AppProps {
   setAmbientLightIntensity: (ambientLightIntensity: number) => void;
   setBoundsEnabled: (boundsEnabled: boolean) => void;
+  setFacet: (facets: string) => void;
+  setFacets: (facets: Facets) => void;
   setLayout: (layout: Layout) => void;
   setOrthographicEnabled: (orthographicEnabled: boolean) => void;
   setPoints: (points: Point[]) => void;
@@ -32,7 +37,9 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
   const DEFAULT_PROPS: AppProps = {
     ambientLightIntensity: 1,
     boundsEnabled: false,
-    layout: "grid",
+    facet: "none",
+    facets: {},
+    layout: config.layouts[0],
     orthographicEnabled: false,
     points: [],
     src: null,
@@ -49,6 +56,16 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
     setBoundsEnabled: (boundsEnabled: boolean) =>
       set({
         boundsEnabled,
+      }),
+
+    setFacet: (facet: string) =>
+      set({
+        facet,
+      }),
+
+    setFacets: (facets: Facets) =>
+      set({
+        facets,
       }),
 
     setLayout: (layout: Layout) =>

@@ -1,1 +1,5 @@
-export type Layout = "grid" | "list";
+export type Layout = {
+  type: "grid" | "list";
+  label: string;
+  facetingEnabled: boolean;
+};

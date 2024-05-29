@@ -6,7 +6,7 @@ import { Layout, Point } from "@/types";
 import { AppState } from "@/Store";
 
 export function applyLayout(layout: Layout, points: Point[]) {
-  switch (layout) {
+  switch (layout.type) {
     case "list":
       listLayout(points);
       break;

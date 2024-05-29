@@ -7,4 +7,5 @@ export type Point = {
     width: number;
     height?: number;
   };
+  metadata?: any;
 };

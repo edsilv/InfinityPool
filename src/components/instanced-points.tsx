@@ -224,17 +224,19 @@ function useThumbnails({
   return { texture };
 }
 
+interface InstancedPointsProps {
+  thumbnailWidth?: number;
+  thumbnailHeight?: number;
+  padding?: number;
+  loadingPagedSize?: number;
+}
+
 const InstancedPoints = ({
   thumbnailWidth = config.thumbnailWidth,
   thumbnailHeight = config.thumbnailHeight,
   padding = config.padding,
   loadingPagedSize = config.loadingPagedSize,
-}: {
-  thumbnailWidth?: number;
-  thumbnailHeight?: number;
-  padding?: number;
-  loadingPagedSize?: number;
-}) => {
+}: InstancedPointsProps) => {
   const points = useAppContext((state: AppState) => state.points);
 
   const instancesRef = useRef<any>();

@@ -1,5 +1,4 @@
 import InstancedPoints from "../../instanced-points";
-import { Point } from "@/types/Point";
 import { suspend } from "suspend-react";
 import { load } from "./Loader";
 import { useAppContext } from "@/lib/hooks/use-app-context";
@@ -12,14 +11,14 @@ const IIIF = () => {
   const src = useAppContext((state: AppState) => state.src)!;
   const layout = useAppContext((state: AppState) => state.layout)!;
   const setPoints = useAppContext((state: AppState) => state.setPoints);
+  const setFacets = useAppContext((state: AppState) => state.setFacets);
 
   suspend(async () => {
-    // const loader = new IIIFLoader();
-    // const points: Point[] = await loader.load(src.url);
-    const points: Point[] = await load(src.url);
+    const { points, facets } = await load(src.url);
     // run current layout on points
     applyLayout(layout, points);
     setPoints(points);
+    setFacets(facets);
   }, [src]);
 
   return <InstancedPoints />;

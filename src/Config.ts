@@ -1,9 +1,40 @@
-export const config = {
+import { Layout } from "./types";
+
+type Src = {
+  value: string;
+  label: string;
+};
+
+export type Config = {
+  layouts: Layout[];
+  loadingPagedSize: number;
+  maxTextureSize: number;
+  padding: number;
+  thumbnailHeight: number;
+  thumbnailWidth: number;
+  facetsIgnore: string[];
+  srcs: Src[];
+};
+
+export const config: Config = {
   loadingPagedSize: 4,
   maxTextureSize: 4096,
   padding: 18,
   thumbnailHeight: 100,
   thumbnailWidth: 100,
+  facetsIgnore: ["id", "description", "title"],
+  layouts: [
+    {
+      type: "grid",
+      label: "Grid",
+      facetingEnabled: true,
+    },
+    {
+      type: "list",
+      label: "List",
+      facetingEnabled: true,
+    },
+  ],
   srcs: [
     {
       value: "https://media.nga.gov/public/manifests/nga_highlights.json",

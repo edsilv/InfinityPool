@@ -2,8 +2,13 @@ import { Point } from "@/types/Point";
 import { Vault, createThumbnailHelper } from "@iiif/helpers";
 import { ImageServiceLoader } from "@atlas-viewer/iiif-image-api";
 import { config } from "@/Config";
+import metadata from "./metadata.json";
+import { Facets } from "@/types";
 
-export async function load(url: string): Promise<Point[]> {
+export async function load(url: string): Promise<{
+  points: Point[];
+  facets: Facets;
+}> {
   const vault = new Vault();
 
   vault.on("error", (error) => {
@@ -51,7 +56,33 @@ export async function load(url: string): Promise<Point[]> {
     } as Point;
   });
 
-  return points;
+  // available facets in the facets menu
+  // facets are a dictionary of
+  // {
+  //   "facet": Set["prop1", "prop2", "prop..."]
+  // }
+  const facets: Facets = {};
+
+  // if it's the NGA Highlights manifest, add test metadata
+  // todo: look for a linked metadata file in all manifests using seeAlso
+  if (url === "https://media.nga.gov/public/manifests/nga_highlights.json") {
+    points.forEach((point, idx) => {
+      point.metadata = metadata[idx];
+
+      Object.keys(point.metadata).forEach((key) => {
+        if (!config.facetsIgnore.includes(key)) {
+          // if the key isn't already tracked in facets, add it
+          if (!facets[key]) {
+            facets[key] = new Set();
+          }
+
+          facets[key].add(point.metadata[key]);
+        }
+      });
+    });
+  }
+
+  return { points, facets };
 }
 
 // export class IIIFLoader implements ContentLoader {
