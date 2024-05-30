@@ -8,6 +8,7 @@ import { applyLayout } from "@/lib/Layouts";
 // import data from "./points";
 
 const IIIF = () => {
+  const facet = useAppContext((state: AppState) => state.facet)!;
   const src = useAppContext((state: AppState) => state.src)!;
   const layout = useAppContext((state: AppState) => state.layout)!;
   const setPoints = useAppContext((state: AppState) => state.setPoints);
@@ -16,7 +17,7 @@ const IIIF = () => {
   suspend(async () => {
     const { points, facets } = await load(src.url);
     // run current layout on points
-    applyLayout(layout, points);
+    applyLayout(layout, facet, points);
     setPoints(points);
     setFacets(facets);
   }, [src]);

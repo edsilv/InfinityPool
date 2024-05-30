@@ -262,6 +262,7 @@ const InstancedPoints = ({
       <instancedMesh
         ref={instancesRef}
         args={[undefined, undefined, points.length]}
+        frustumCulled={false}
       >
         <planeGeometry args={[1, 1]} />
         <ThumbnailMaterial map={texture} brightness={1.4} contrast={0.75} />

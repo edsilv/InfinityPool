@@ -36,7 +36,7 @@ export type AppStore = ReturnType<typeof createAppStore>;
 export const createAppStore = (initProps?: Partial<AppProps>) => {
   const DEFAULT_PROPS: AppProps = {
     ambientLightIntensity: 1,
-    boundsEnabled: false,
+    boundsEnabled: true,
     facet: "none",
     facets: {},
     layout: config.layouts[0],
