@@ -39,21 +39,3 @@ const layout = (pointGroup: PointGroup, totalRows: number) => {
 
   return totalRows + numRows;
 };
-
-// const layout = (pointGroup: PointGroup) => {
-//   const numPoints = pointGroup.points.length;
-//   const numCols = Math.ceil(Math.sqrt(numPoints));
-//   const colWidth = 1 + 1 / numCols;
-
-//   for (let i = 0; i < numPoints; i++) {
-//     const point = pointGroup.points[i];
-//     const col = i % numCols;
-//     const row = numCols - 1 - Math.floor(i / numCols);
-
-//     point.position = [
-//       (col * colWidth + pointGroup.position![0]) * config.pointSpacing,
-//       (row * colWidth + pointGroup.position![1]) * config.pointSpacing,
-//       pointGroup.position![2],
-//     ];
-//   }
-// };
