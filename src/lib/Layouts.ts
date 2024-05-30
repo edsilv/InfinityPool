@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAppContext } from "@/lib/hooks/use-app-context";
-import { gridLayout } from "./GridLayout";
-import { listLayout } from "./ListLayout";
+import { layout as gridLayout } from "./GridLayout";
+import { layout as listLayout } from "./ListLayout";
 import { Layout, Point, PointGroup } from "@/types";
 import { AppState } from "@/Store";
 import { groupBy } from "./utils";
