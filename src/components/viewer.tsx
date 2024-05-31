@@ -50,7 +50,6 @@ const Scene = () => {
   const ambientLightIntensity = useAppContext(
     (state: AppState) => state.ambientLightIntensity
   );
-  const boundsEnabled = useAppContext((state: AppState) => state.boundsEnabled);
   const orthographicEnabled = useAppContext(
     (state: AppState) => state.orthographicEnabled
   );
@@ -155,7 +154,6 @@ const Scene = () => {
       <ambientLight intensity={ambientLightIntensity} />
       <Bounds
         boundsRef={boundsRef}
-        lineVisible={boundsEnabled}
         zoomToObject={zoomToObject}
         recenter={recenter}
       >

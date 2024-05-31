@@ -9,7 +9,6 @@ export interface RequiredAppProps {}
 
 export interface AppProps extends RequiredAppProps {
   ambientLightIntensity: number;
-  boundsEnabled: boolean;
   facet: string;
   facets: Facets;
   layout: Layout;
@@ -21,7 +20,6 @@ export interface AppProps extends RequiredAppProps {
 
 export interface AppState extends AppProps {
   setAmbientLightIntensity: (ambientLightIntensity: number) => void;
-  setBoundsEnabled: (boundsEnabled: boolean) => void;
   setFacet: (facets: string) => void;
   setFacets: (facets: Facets) => void;
   setLayout: (layout: Layout) => void;
@@ -36,7 +34,6 @@ export type AppStore = ReturnType<typeof createAppStore>;
 export const createAppStore = (initProps?: Partial<AppProps>) => {
   const DEFAULT_PROPS: AppProps = {
     ambientLightIntensity: 1,
-    boundsEnabled: true,
     facet: "none",
     facets: {},
     layout: config.layouts[0],
@@ -51,11 +48,6 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
     setAmbientLightIntensity: (ambientLightIntensity: number) =>
       set({
         ambientLightIntensity,
-      }),
-
-    setBoundsEnabled: (boundsEnabled: boolean) =>
-      set({
-        boundsEnabled,
       }),
 
     setFacet: (facet: string) =>

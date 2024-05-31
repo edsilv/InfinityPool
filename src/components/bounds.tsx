@@ -1,27 +1,18 @@
-import React, { useRef } from "react";
-import { useHelper } from "@react-three/drei";
-import { BoxHelper, Group } from "three";
+import { Group } from "three";
 import useDoubleClick from "@/lib/hooks/use-double-click";
+import { useAppContext } from "@/lib/hooks/use-app-context";
+import { AppState } from "@/Store";
 
 type BoundsProps = {
   boundsRef: React.MutableRefObject<Group | null>;
-  lineVisible?: boolean;
   zoomToObject: (object: any) => void;
   recenter: () => void;
   children: React.ReactNode;
 };
 
-function Bounds({
-  boundsRef,
-  lineVisible,
-  zoomToObject,
-  recenter,
-  children,
-}: BoundsProps) {
-  const boundsLineRef = useRef<Group | null>(null);
-
-  // @ts-ignore
-  useHelper(boundsLineRef, BoxHelper, "white");
+function Bounds({ boundsRef, zoomToObject, recenter, children }: BoundsProps) {
+  const layout = useAppContext((state: AppState) => state.layout);
+  const facet = useAppContext((state: AppState) => state.facet);
 
   // zoom to object on double click in scene mode
   const handleDoubleClickEvent = (e: any) => {
@@ -39,6 +30,7 @@ function Bounds({
   return (
     <group
       ref={boundsRef}
+      key={`bounds/${layout.type}/${facet}`}
       onDoubleClick={handleDoubleClickEvent}
       onPointerMissed={(e: MouseEvent) => {
         const tagName = (e.target as HTMLElement).tagName;
@@ -50,7 +42,7 @@ function Bounds({
         }
       }}
     >
-      {lineVisible ? <group ref={boundsLineRef}>{children}</group> : children}
+      {children}
     </group>
   );
 }
