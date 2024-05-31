@@ -4,6 +4,7 @@ import React, {
   RefObject,
   Suspense,
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
 } from "react";
@@ -30,6 +31,8 @@ import IIIF from "./visualisers/iiif";
 import Bounds from "./bounds";
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { Loader } from "./loader";
+import CameraControlsImpl from "camera-controls";
+// import { CameraControls } from "./camera-controls";
 // import { Perf } from "r3f-perf";
 
 const Scene = () => {
@@ -61,6 +64,16 @@ const Scene = () => {
   // set the camera up vector
   camera.up.copy(new Vector3(upVector[0], upVector[1], upVector[2]));
   cameraRefs.controls.current?.updateCameraUp();
+
+  useEffect(() => {
+    if (cameraRefs.controls.current) {
+      console.log("setting camera controls");
+      cameraRefs.controls.current!.mouseButtons.left =
+        CameraControlsImpl.ACTION.TRUCK;
+      cameraRefs.controls.current!.mouseButtons.right =
+        CameraControlsImpl.ACTION.NONE;
+    }
+  }, [cameraRefs.controls.current]);
 
   // when loaded or camera type changed, zoom to object(s) instantaneously
   // useTimeout(
