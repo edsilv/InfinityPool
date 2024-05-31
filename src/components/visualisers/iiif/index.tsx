@@ -1,4 +1,4 @@
-import InstancedPoints from "../../instanced-points";
+import Visualisation from "../../visualisation";
 import { suspend } from "suspend-react";
 import { load } from "./Loader";
 import { useAppContext } from "@/lib/hooks/use-app-context";
@@ -22,7 +22,7 @@ const IIIF = () => {
     setFacets(facets);
   }, [src]);
 
-  return <InstancedPoints />;
+  return <Visualisation />;
 };
 
 export default IIIF;

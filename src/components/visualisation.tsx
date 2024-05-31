@@ -44,7 +44,7 @@ function updateInstancedMeshMatrices({
   mesh.instanceMatrix.needsUpdate = true;
 }
 
-function useThumbnails({
+function useImagesTexture({
   instancesRef,
   thumbnailWidth,
   thumbnailHeight,
@@ -116,7 +116,7 @@ function useThumbnails({
     };
 
     const loadImages = async () => {
-      console.log(`Loading ${count} images...`);
+      // console.log(`Loading ${count} images...`);
       let i = 0;
       for (let src of thumbnailSrcsGenerator) {
         // Create a new cancel token source for each image load
@@ -202,12 +202,12 @@ function useThumbnails({
       // Final update to ensure all images are displayed
       updateTexture();
 
-      console.log("Images loaded");
+      // console.log("Images loaded");
     };
 
     loadImages().catch((error) => {
       if (axios.isCancel(error)) {
-        console.log("Image load cancelled");
+        // console.log("Image load cancelled");
       } else {
         // Handle the error
       }
@@ -224,24 +224,24 @@ function useThumbnails({
   return { texture };
 }
 
-interface InstancedPointsProps {
+interface ImagesProps {
   thumbnailWidth?: number;
   thumbnailHeight?: number;
   padding?: number;
   loadingPagedSize?: number;
 }
 
-const InstancedPoints = ({
+const Visualisation = ({
   thumbnailWidth = config.thumbnailWidth,
   thumbnailHeight = config.thumbnailHeight,
   padding = config.padding,
   loadingPagedSize = config.loadingPagedSize,
-}: InstancedPointsProps) => {
+}: ImagesProps) => {
   const points = useAppContext((state: AppState) => state.points);
 
   const instancesRef = useRef<any>();
 
-  const { texture } = useThumbnails({
+  const { texture } = useImagesTexture({
     instancesRef: instancesRef.current,
     thumbnailWidth,
     thumbnailHeight,
@@ -271,4 +271,4 @@ const InstancedPoints = ({
   );
 };
 
-export default InstancedPoints;
+export default Visualisation;
