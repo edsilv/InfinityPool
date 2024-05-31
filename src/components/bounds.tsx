@@ -11,7 +11,7 @@ type BoundsProps = {
   children: React.ReactNode;
 };
 
-const Bounds = React.memo<React.FC<BoundsProps>>(function Bounds({
+function Bounds({
   boundsRef,
   lineVisible,
   zoomToObject,
@@ -53,6 +53,6 @@ const Bounds = React.memo<React.FC<BoundsProps>>(function Bounds({
       {lineVisible ? <group ref={boundsLineRef}>{children}</group> : children}
     </group>
   );
-});
+}
 
 export default Bounds;

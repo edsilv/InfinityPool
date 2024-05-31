@@ -20,8 +20,6 @@ export const layout = (
     return options.orderBy === "ascending" ? comparison : -comparison;
   });
 
-  console.log("visiblePointGroups", visiblePointGroups);
-
   const totalGroups = visiblePointGroups.length;
 
   visiblePointGroups.forEach((group, i) => {

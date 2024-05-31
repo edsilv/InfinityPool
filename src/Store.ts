@@ -40,7 +40,7 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
     facet: "none",
     facets: {},
     layout: config.layouts[0],
-    orthographicEnabled: false,
+    orthographicEnabled: true,
     points: [],
     src: null,
     upVector: [0, 1, 0],
