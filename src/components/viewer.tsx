@@ -67,7 +67,6 @@ const Scene = () => {
 
   useEffect(() => {
     if (cameraRefs.controls.current) {
-      console.log("setting camera controls");
       cameraRefs.controls.current!.mouseButtons.left =
         CameraControlsImpl.ACTION.TRUCK;
       cameraRefs.controls.current!.mouseButtons.right =
@@ -221,6 +220,10 @@ const Viewer = (
         camera={{ fov: 30 }}
         onDoubleClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
           triggerDoubleClickEvent(e);
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
         }}
       >
         <Scene />

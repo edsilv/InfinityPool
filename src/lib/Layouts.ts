@@ -89,6 +89,16 @@ export const groupPointsByFacet = (
   points: Point[],
   facet: string
 ): PointGroup[] => {
+  if (facet === "none") {
+    return [
+      {
+        facet: "none",
+        points,
+        labels: [],
+      },
+    ];
+  }
+
   const groupedByFacet = groupBy(points, (n: Point) => n.metadata[facet]);
   const groups: PointGroup[] = [];
 

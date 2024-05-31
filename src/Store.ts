@@ -9,7 +9,7 @@ export interface RequiredAppProps {}
 
 export interface AppProps extends RequiredAppProps {
   ambientLightIntensity: number;
-  facet: string;
+  facet: "none" | string;
   facets: Facets;
   layout: Layout;
   orthographicEnabled: boolean;
@@ -78,6 +78,9 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
     setSrc: (src: SrcObj) =>
       set({
         src,
+        facets: {},
+        facet: "none",
+        points: [],
       }),
 
     setUpVector: (upVector: [number, number, number]) =>
