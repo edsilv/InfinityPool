@@ -6,5 +6,5 @@ export type SrcObj = {
   requiredStatement?: string;
   url: string;
   type: string | "iiif";
-  points?: Node[];
+  nodes?: Node[];
 };
