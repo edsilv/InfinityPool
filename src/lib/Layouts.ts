@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useAppContext } from "@/lib/hooks/use-app-context";
+import { layout as barChartLayout } from "./BarChartLayout";
 import { layout as gridLayout } from "./GridLayout";
 import { layout as listLayout } from "./ListLayout";
 import { Layout, Point, PointGroup } from "@/types";
@@ -9,6 +10,9 @@ import { Vector3 } from "three";
 
 export function applyLayout(layout: Layout, facet: string, points: Point[]) {
   switch (layout.type) {
+    case "barchart":
+      barChartLayout(points, facet);
+      break;
     case "list":
       listLayout(points, facet);
       break;

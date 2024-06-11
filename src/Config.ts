@@ -38,6 +38,11 @@ export const config: Config = {
       label: "List",
       facetingEnabled: true,
     },
+    {
+      type: "barchart",
+      label: "Bar Chart",
+      facetingEnabled: true,
+    },
   ],
   srcs: [
     {
