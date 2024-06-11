@@ -10,8 +10,8 @@ export type Config = {
   loadingPagedSize: number;
   maxTextureSize: number;
   padding: number;
-  pointSpacing: number;
-  pointGroupSpacing: number;
+  nodeSpacing: number;
+  nodeGroupSpacing: number;
   thumbnailHeight: number;
   thumbnailWidth: number;
   facetsIgnore: string[];
@@ -22,8 +22,8 @@ export const config: Config = {
   loadingPagedSize: 4,
   maxTextureSize: 4096,
   padding: 18,
-  pointSpacing: 1.2,
-  pointGroupSpacing: 1.5,
+  nodeSpacing: 1.2,
+  nodeGroupSpacing: 1.5,
   thumbnailHeight: 100,
   thumbnailWidth: 100,
   facetsIgnore: ["id", "description", "title"],

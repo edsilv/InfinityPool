@@ -4,21 +4,19 @@ import { load } from "./Loader";
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { AppState } from "@/Store";
 import { applyLayout } from "@/lib/Layouts";
-// @ts-ignore
-// import data from "./points";
 
 const IIIF = () => {
   const facet = useAppContext((state: AppState) => state.facet)!;
   const src = useAppContext((state: AppState) => state.src)!;
   const layout = useAppContext((state: AppState) => state.layout)!;
-  const setPoints = useAppContext((state: AppState) => state.setPoints);
+  const setNodes = useAppContext((state: AppState) => state.setNodes);
   const setFacets = useAppContext((state: AppState) => state.setFacets);
 
   suspend(async () => {
-    const { points, facets } = await load(src.url);
-    // run current layout on points
-    applyLayout(layout, facet, points);
-    setPoints(points);
+    const { nodes, facets } = await load(src.url);
+    // run current layout on nodes
+    applyLayout(layout, facet, nodes);
+    setNodes(nodes);
     setFacets(facets);
   }, [src]);
 

@@ -3,22 +3,22 @@ import { useAppContext } from "@/lib/hooks/use-app-context";
 import { layout as barChartLayout } from "./BarChartLayout";
 import { layout as gridLayout } from "./GridLayout";
 import { layout as listLayout } from "./ListLayout";
-import { Layout, Point, PointGroup } from "@/types";
+import { Layout, Node, NodeGroup } from "@/types";
 import { AppState } from "@/Store";
 import { groupBy } from "./utils";
 import { Vector3 } from "three";
 
-export function applyLayout(layout: Layout, facet: string, points: Point[]) {
+export function applyLayout(layout: Layout, facet: string, nodes: Node[]) {
   switch (layout.type) {
     case "barchart":
-      barChartLayout(points, facet);
+      barChartLayout(nodes, facet);
       break;
     case "list":
-      listLayout(points, facet);
+      listLayout(nodes, facet);
       break;
     case "grid":
     default: {
-      gridLayout(points, facet);
+      gridLayout(nodes, facet);
     }
   }
 }
@@ -26,7 +26,7 @@ export function applyLayout(layout: Layout, facet: string, points: Point[]) {
 export function useSourceTargetLayout() {
   const facet = useAppContext((state: AppState) => state.facet);
   const src = useAppContext((state: AppState) => state.src);
-  const points = useAppContext((state: AppState) => state.points);
+  const nodes = useAppContext((state: AppState) => state.nodes);
   const layout = useAppContext((state: AppState) => state.layout);
 
   let layoutProps;
@@ -34,25 +34,25 @@ export function useSourceTargetLayout() {
   // prep for new animation by storing source
   useEffect(() => {
     // console.log("get source positions");
-    for (let i = 0; i < points.length; ++i) {
-      const point: Point = points[i];
-      point.sourcePosition = { ...point.position! } || [0, 0, 0];
+    for (let i = 0; i < nodes.length; ++i) {
+      const node: Node = nodes[i];
+      node.sourcePosition = { ...node.position! } || [0, 0, 0];
     }
   }, [src, layout, facet]);
 
   // run layout (get target positions)
   useEffect(() => {
     // console.log("apply layout");
-    applyLayout(layout, facet, points);
+    applyLayout(layout, facet, nodes);
   }, [src, layout, facet]);
 
   // store target positions
   useEffect(() => {
     // console.log("get target positions");
-    for (let i = 0; i < points.length; ++i) {
-      const point = points[i];
-      point.targetPosition = { ...point.position! };
-      // point.targetScale = point.filteredOut ? [0, 0, 0] : { ...point.scale };
+    for (let i = 0; i < nodes.length; ++i) {
+      const node = nodes[i];
+      node.targetPosition = { ...node.position! };
+      // node.targetScale = node.filteredOut ? [0, 0, 0] : { ...node.scale };
     }
   }, [src, layout, facet]);
 
@@ -60,57 +60,57 @@ export function useSourceTargetLayout() {
 }
 
 export function interpolateSourceTargetPosition(
-  points: Point[],
+  nodes: Node[],
   progress: number
 ) {
-  const numPoints = points.length;
+  const numNodes = nodes.length;
 
-  for (let i = 0; i < numPoints; i++) {
-    const point = points[i];
+  for (let i = 0; i < numNodes; i++) {
+    const node = nodes[i];
 
-    if (point.position) {
-      point.position[0] =
-        (1 - progress) * point.sourcePosition![0] +
-        progress * point.targetPosition![0];
-      point.position[1] =
-        (1 - progress) * point.sourcePosition![1] +
-        progress * point.targetPosition![1];
-      point.position[2] =
-        (1 - progress) * point.sourcePosition![2] +
-        progress * point.targetPosition![2];
+    if (node.position) {
+      node.position[0] =
+        (1 - progress) * node.sourcePosition![0] +
+        progress * node.targetPosition![0];
+      node.position[1] =
+        (1 - progress) * node.sourcePosition![1] +
+        progress * node.targetPosition![1];
+      node.position[2] =
+        (1 - progress) * node.sourcePosition![2] +
+        progress * node.targetPosition![2];
     }
   }
 }
 
-export function resetSourcePositionScale(point: Point) {
-  if (point.position) {
-    point.sourcePosition = { ...point.position };
+export function resetSourcePositionScale(node: Node) {
+  if (node.position) {
+    node.sourcePosition = { ...node.position };
   }
 }
 
 // utils
-export const groupPointsByFacet = (
-  points: Point[],
+export const groupNodesByFacet = (
+  nodes: Node[],
   facet: string
-): PointGroup[] => {
+): NodeGroup[] => {
   if (facet === "none") {
     return [
       {
         facet: "none",
-        points,
+        nodes,
         labels: [],
       },
     ];
   }
 
-  const groupedByFacet = groupBy(points, (n: Point) => n.metadata[facet]);
-  const groups: PointGroup[] = [];
+  const groupedByFacet = groupBy(nodes, (n: Node) => n.metadata[facet]);
+  const groups: NodeGroup[] = [];
 
   // make each group an object
   Object.keys(groupedByFacet).forEach((key) => {
     groups.push({
       facet: key || "",
-      points: groupedByFacet[key],
+      nodes: groupedByFacet[key],
       labels: [],
       // lines: [],
     });
@@ -119,32 +119,32 @@ export const groupPointsByFacet = (
   return groups;
 };
 
-export const getUnfilteredPoints = (points: Point[]) => {
-  return points.filter((point) => !point.filteredOut);
+export const getUnfilteredNodes = (nodes: Node[]) => {
+  return nodes.filter((node) => !node.filteredOut);
 };
 
-// return the number of points in the largest facet
-export const getFacetMaxPoints = (pointGroups: PointGroup[]) => {
-  let maxPoints = 0;
-  pointGroups.forEach((group) => {
-    maxPoints = Math.max(maxPoints, group.points.length);
+// return the number of nodes in the largest facet
+export const getFacetMaxNodes = (nodeGroups: NodeGroup[]) => {
+  let maxNodes = 0;
+  nodeGroups.forEach((group) => {
+    maxNodes = Math.max(maxNodes, group.nodes.length);
   });
-  return maxPoints;
+  return maxNodes;
 };
 
-export const measurePointGroup = (pointGroup: PointGroup) => {
-  // loop through each point's position
+export const measureNodeGroup = (nodeGroup: NodeGroup) => {
+  // loop through each node's position
   // minus the groups's position
   // if the x, y, or z are greater than max, update max
 
   let max: [number, number, number] = [0, 0, 0];
 
-  const groupPos = new Vector3().fromArray(pointGroup.position!);
+  const groupPos = new Vector3().fromArray(nodeGroup.position!);
 
-  pointGroup.points.forEach((point) => {
-    const pointPos = new Vector3().fromArray(point.position!);
+  nodeGroup.nodes.forEach((node) => {
+    const nodePos = new Vector3().fromArray(node.position!);
 
-    const delta = pointPos.sub(groupPos);
+    const delta = nodePos.sub(groupPos);
 
     if (delta.x > max[0]) {
       max[0] = delta.x;
@@ -159,16 +159,16 @@ export const measurePointGroup = (pointGroup: PointGroup) => {
     }
   });
 
-  pointGroup.measurement = max;
+  nodeGroup.measurement = max;
 
   return max;
 };
 
-export const getMaxPointGroupSize = (pointGroups: PointGroup[]) => {
+export const getMaxNodeGroupSize = (nodeGroups: NodeGroup[]) => {
   const max: [number, number, number] = [0, 0, 0];
 
-  pointGroups.forEach((group) => {
-    const measurement = measurePointGroup(group);
+  nodeGroups.forEach((group) => {
+    const measurement = measureNodeGroup(group);
 
     if (measurement[0] > max[0]) {
       max[0] = measurement[0];
@@ -186,32 +186,32 @@ export const getMaxPointGroupSize = (pointGroups: PointGroup[]) => {
   return max;
 };
 
-export const getPointGroupsBounds = (
-  pointGroups: PointGroup[],
+export const getNodeGroupsBounds = (
+  nodeGroups: NodeGroup[],
   axis: "x" | "y" | "z"
 ) => {
   const bounds: [number, number, number] = [0, 0, 0];
 
-  pointGroups.forEach((pointGroup) => {
-    measurePointGroup(pointGroup);
+  nodeGroups.forEach((nodeGroup) => {
+    measureNodeGroup(nodeGroup);
 
     switch (axis) {
       case "x": {
-        bounds[0] += pointGroup.measurement![0];
-        bounds[1] = Math.max(bounds[1], pointGroup.measurement![1]);
-        bounds[2] = Math.max(bounds[2], pointGroup.measurement![2]);
+        bounds[0] += nodeGroup.measurement![0];
+        bounds[1] = Math.max(bounds[1], nodeGroup.measurement![1]);
+        bounds[2] = Math.max(bounds[2], nodeGroup.measurement![2]);
         return;
       }
       case "y": {
-        bounds[0] = Math.max(bounds[0], pointGroup.measurement![0]);
-        bounds[1] += pointGroup.measurement![1];
-        bounds[2] = Math.max(bounds[2], pointGroup.measurement![2]);
+        bounds[0] = Math.max(bounds[0], nodeGroup.measurement![0]);
+        bounds[1] += nodeGroup.measurement![1];
+        bounds[2] = Math.max(bounds[2], nodeGroup.measurement![2]);
         return;
       }
       case "z": {
-        bounds[0] = Math.max(bounds[0], pointGroup.measurement![0]);
-        bounds[1] = Math.max(bounds[1], pointGroup.measurement![1]);
-        bounds[2] += pointGroup.measurement![2];
+        bounds[0] = Math.max(bounds[0], nodeGroup.measurement![0]);
+        bounds[1] = Math.max(bounds[1], nodeGroup.measurement![1]);
+        bounds[2] += nodeGroup.measurement![2];
         return;
       }
     }
@@ -220,24 +220,24 @@ export const getPointGroupsBounds = (
   return bounds;
 };
 
-export const sortPointsByDate = (points: Point[]) => {
-  return points.sort((a, b) => {
+export const sortNodesByDate = (nodes: Node[]) => {
+  return nodes.sort((a, b) => {
     // @ts-ignore
     return new Date(a.metadata.date) - new Date(b.metadata.date);
   });
 };
 
-export const getPointsDateRange = (points: Point[]) => {
-  const minDate = new Date(points[0].metadata.date);
-  const maxDate = new Date(points[points.length - 1].metadata.date);
+export const getNodesDateRange = (nodes: Node[]) => {
+  const minDate = new Date(nodes[0].metadata.date);
+  const maxDate = new Date(nodes[nodes.length - 1].metadata.date);
   return { minDate, maxDate };
 };
 
-export const getDecoratorsForPointGroups = (pointGroups: PointGroup[]) => {
+export const getDecoratorsForNodeGroups = (nodeGroups: NodeGroup[]) => {
   let labels: string[] = [];
   // let lines = [];
 
-  pointGroups.forEach((group) => {
+  nodeGroups.forEach((group) => {
     labels = labels.concat(group.labels || []);
     // lines = lines.concat(group.lines || []);
   });

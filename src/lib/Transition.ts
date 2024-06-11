@@ -16,7 +16,7 @@ export function useAnimatedTransition({
   onRest: () => void;
   onStart: () => void;
 }) {
-  const points = useAppContext((state: AppState) => state.points);
+  const nodes = useAppContext((state: AppState) => state.nodes);
   const layout = useAppContext((state: AppState) => state.layout);
   const facet = useAppContext((state: AppState) => state.facet);
 
@@ -24,7 +24,7 @@ export function useAnimatedTransition({
   // end position, scale as target
   useSourceTargetLayout();
 
-  const numPoints = points.length;
+  const numNodes = nodes.length;
 
   const animProps = useSpring(
     {
@@ -40,22 +40,22 @@ export function useAnimatedTransition({
         //console.log("onchange")
         const { animationProgress } = value;
 
-        interpolateSourceTargetPosition(points, animationProgress);
+        interpolateSourceTargetPosition(nodes, animationProgress);
 
         // callback to indicate data has updated
         onChange({ animationProgress });
       },
       onRest: () => {
         // reset
-        for (let i = 0; i < numPoints; i++) {
-          const point = points[i];
-          resetSourcePositionScale(point);
+        for (let i = 0; i < numNodes; i++) {
+          const node = nodes[i];
+          resetSourcePositionScale(node);
         }
 
         onRest();
       },
     },
-    [points, layout, facet]
+    [nodes, layout, facet]
   );
 
   return { animProps };

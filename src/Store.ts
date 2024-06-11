@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Facets, Layout, Point, SrcObj } from "./types";
+import { Facets, Layout, Node, SrcObj } from "./types";
 import { createContext } from "react";
 import { config } from "./Config";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
@@ -13,7 +13,7 @@ export interface AppProps extends RequiredAppProps {
   facets: Facets;
   layout: Layout;
   orthographicEnabled: boolean;
-  points: Point[];
+  nodes: Node[];
   src: SrcObj | null;
   upVector: [number, number, number];
 }
@@ -24,7 +24,7 @@ export interface AppState extends AppProps {
   setFacets: (facets: Facets) => void;
   setLayout: (layout: Layout) => void;
   setOrthographicEnabled: (orthographicEnabled: boolean) => void;
-  setPoints: (points: Point[]) => void;
+  setNodes: (nodes: Node[]) => void;
   setSrc: (src: SrcObj) => void;
   setUpVector: (upVector: [number, number, number]) => void;
 }
@@ -38,7 +38,7 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
     facets: {},
     layout: config.layouts[0],
     orthographicEnabled: true,
-    points: [],
+    nodes: [],
     src: null,
     upVector: [0, 1, 0],
   };
@@ -65,9 +65,9 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
         layout,
       }),
 
-    setPoints: (points: Point[]) =>
+    setNodes: (nodes: Node[]) =>
       set({
-        points,
+        nodes,
       }),
 
     setOrthographicEnabled: (orthographicEnabled: boolean) =>
@@ -80,7 +80,7 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
         src,
         facets: {},
         facet: "none",
-        points: [],
+        nodes: [],
       }),
 
     setUpVector: (upVector: [number, number, number]) =>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ThumbnailMaterial from "./thumbnail-material";
 import { DataArrayTexture, InstancedMesh, Object3D } from "three";
-import { Point } from "@/types/Point";
+import { Node } from "@/types/Node";
 import axios, { CancelTokenSource } from "axios";
 import { useAnimatedTransition } from "@/lib/Transition";
 import { useAppContext } from "@/lib/hooks/use-app-context";
@@ -19,17 +19,17 @@ function* getThumbnailSrcsIterator(thumbnailSrcs: string[]) {
 function updateInstancedMeshMatrices({
   o,
   mesh,
-  points,
+  nodes,
 }: {
   o: Object3D;
   mesh: InstancedMesh;
-  points: Point[];
+  nodes: Node[];
 }) {
   if (!mesh) return;
 
   // set the transform matrix for each instance
-  for (let i = 0; i < points.length; ++i) {
-    const { position } = points[i];
+  for (let i = 0; i < nodes.length; ++i) {
+    const { position } = nodes[i];
 
     if (position) {
       o.position.set(position[0], position[1], position[2]);
@@ -58,19 +58,19 @@ function useImagesTexture({
   loadingPagedSize: number;
 }) {
   const src = useAppContext((state: AppState) => state.src);
-  const points = useAppContext((state: AppState) => state.points);
+  const nodes = useAppContext((state: AppState) => state.nodes);
   const [texture, setTexture] = useState<any>(null);
 
   const cancelTokenSourceRef = useRef<CancelTokenSource | null>(null);
 
   useEffect(() => {
-    let count = points.length;
+    let count = nodes.length;
 
     if (count === 0) {
       return;
     }
 
-    const thumbnailSrcs = points.map((point: Point) => point.thumbnail.src);
+    const thumbnailSrcs = nodes.map((node: Node) => node.thumbnail.src);
     const thumbnailSrcsGenerator = getThumbnailSrcsIterator(thumbnailSrcs);
 
     // Calculate the maximum number of thumbnails that can fit into a 4k x 4k texture
@@ -237,7 +237,7 @@ const Visualisation = ({
   padding = config.padding,
   loadingPagedSize = config.loadingPagedSize,
 }: ImagesProps) => {
-  const points = useAppContext((state: AppState) => state.points);
+  const nodes = useAppContext((state: AppState) => state.nodes);
 
   const instancesRef = useRef<any>();
 
@@ -252,7 +252,11 @@ const Visualisation = ({
   useAnimatedTransition({
     onStart: () => {},
     onChange: () => {
-      updateInstancedMeshMatrices({ o, mesh: instancesRef.current, points });
+      updateInstancedMeshMatrices({
+        o,
+        mesh: instancesRef.current,
+        nodes: nodes,
+      });
     },
     onRest: () => {},
   });
@@ -261,7 +265,7 @@ const Visualisation = ({
     <>
       <instancedMesh
         ref={instancesRef}
-        args={[undefined, undefined, points.length]}
+        args={[undefined, undefined, nodes.length]}
         frustumCulled={false}
       >
         <planeGeometry args={[1, 1]} />

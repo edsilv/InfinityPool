@@ -1,5 +1,5 @@
-import { Point, PointGroup } from "@/types";
-import { getUnfilteredPoints, groupPointsByFacet } from "./Layouts";
+import { Node, NodeGroup } from "@/types";
+import { getUnfilteredNodes, groupNodesByFacet } from "./Layouts";
 import { config } from "@/Config";
 
 interface GridLayoutOptions {
@@ -7,54 +7,54 @@ interface GridLayoutOptions {
 }
 
 export const layout = (
-  points: Point[],
+  nodes: Node[],
   facet: string,
   options: GridLayoutOptions = { orderBy: "ascending" }
 ) => {
-  const visiblePoints = getUnfilteredPoints(points);
-  let visiblePointGroups = groupPointsByFacet(visiblePoints, facet);
+  const visibleNodes = getUnfilteredNodes(nodes);
+  let visibleNodeGroups = groupNodesByFacet(visibleNodes, facet);
 
-  // Sort the groups by the number of points
-  visiblePointGroups = visiblePointGroups.sort((a, b) => {
-    const comparison = a.points.length - b.points.length;
+  // Sort the groups by the number of nodes
+  visibleNodeGroups = visibleNodeGroups.sort((a, b) => {
+    const comparison = a.nodes.length - b.nodes.length;
     return options.orderBy === "ascending" ? comparison : -comparison;
   });
 
   // Calculate total number of rows first
   let totalRows = 0;
-  visiblePointGroups.forEach((group) => {
-    const numPoints = group.points.length;
-    const numRows = Math.ceil(numPoints / Math.ceil(Math.sqrt(numPoints)));
+  visibleNodeGroups.forEach((group) => {
+    const numNodes = group.nodes.length;
+    const numRows = Math.ceil(numNodes / Math.ceil(Math.sqrt(numNodes)));
     totalRows += numRows;
   });
 
   // Position rows from bottom upwards
-  visiblePointGroups.forEach((group) => {
-    const numPoints = group.points.length;
-    const numRows = Math.ceil(numPoints / Math.ceil(Math.sqrt(numPoints)));
-    group.position = [0, (totalRows - numRows) * config.pointGroupSpacing, 0];
+  visibleNodeGroups.forEach((group) => {
+    const numNodes = group.nodes.length;
+    const numRows = Math.ceil(numNodes / Math.ceil(Math.sqrt(numNodes)));
+    group.position = [0, (totalRows - numRows) * config.nodeGroupSpacing, 0];
     totalRows -= numRows;
     gridLayout(group);
   });
 
-  return { pointGroups: visiblePointGroups };
+  return { nodeGroups: visibleNodeGroups };
 };
 
-const gridLayout = (pointGroup: PointGroup) => {
-  // reverse the order of the points
-  const numPoints = pointGroup.points.length;
-  const numCols = Math.ceil(Math.sqrt(numPoints));
-  const numRows = Math.ceil(numPoints / numCols);
+const gridLayout = (nodeGroup: NodeGroup) => {
+  // reverse the order of the nodes
+  const numNodes = nodeGroup.nodes.length;
+  const numCols = Math.ceil(Math.sqrt(numNodes));
+  const numRows = Math.ceil(numNodes / numCols);
 
-  for (let i = 0; i < numPoints; i++) {
-    const point = pointGroup.points[i];
+  for (let i = 0; i < numNodes; i++) {
+    const node = nodeGroup.nodes[i];
     const col = i % numCols;
     const row = Math.floor(i / numCols);
 
-    point.position = [
-      (col + pointGroup.position![0]) * config.pointSpacing,
-      (numRows - 1 - row + pointGroup.position![1]) * config.pointSpacing,
-      pointGroup.position![2],
+    node.position = [
+      (col + nodeGroup.position![0]) * config.nodeSpacing,
+      (numRows - 1 - row + nodeGroup.position![1]) * config.nodeSpacing,
+      nodeGroup.position![2],
     ];
   }
 };

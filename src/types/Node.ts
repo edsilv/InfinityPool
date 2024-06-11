@@ -1,4 +1,4 @@
-export type Point = {
+export type Node = {
   position?: [number, number, number];
   sourcePosition?: [number, number, number];
   targetPosition?: [number, number, number];
@@ -14,11 +14,11 @@ export type Point = {
   metadata?: any;
 };
 
-export type PointGroup = {
+export type NodeGroup = {
   position?: [number, number, number];
   scale?: [number, number, number];
   facet: string;
-  points: Point[];
+  nodes: Node[];
   labels: any[];
   // lines: any[];
   measurement?: [number, number, number];

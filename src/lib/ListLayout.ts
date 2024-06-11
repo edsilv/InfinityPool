@@ -1,5 +1,5 @@
-import { Point, PointGroup } from "@/types";
-import { getUnfilteredPoints, groupPointsByFacet } from "./Layouts";
+import { Node, NodeGroup } from "@/types";
+import { getUnfilteredNodes, groupNodesByFacet } from "./Layouts";
 import { config } from "@/Config";
 
 interface GridLayoutOptions {
@@ -7,38 +7,38 @@ interface GridLayoutOptions {
 }
 
 export const layout = (
-  points: Point[],
+  nodes: Node[],
   facet: string,
   options: GridLayoutOptions = { orderBy: "ascending" }
 ) => {
-  const visiblePoints = getUnfilteredPoints(points);
-  let visiblePointGroups = groupPointsByFacet(visiblePoints, facet);
+  const visibleNodes = getUnfilteredNodes(nodes);
+  let visibleNodeGroups = groupNodesByFacet(visibleNodes, facet);
 
-  // Sort the groups by the number of points
-  visiblePointGroups = visiblePointGroups.sort((a, b) => {
-    const comparison = a.points.length - b.points.length;
+  // Sort the groups by the number of nodes
+  visibleNodeGroups = visibleNodeGroups.sort((a, b) => {
+    const comparison = a.nodes.length - b.nodes.length;
     return options.orderBy === "ascending" ? comparison : -comparison;
   });
 
-  const totalGroups = visiblePointGroups.length;
+  const totalGroups = visibleNodeGroups.length;
 
-  visiblePointGroups.forEach((group, i) => {
-    group.position = [0, (totalGroups - 1 - i) * config.pointGroupSpacing, 0];
+  visibleNodeGroups.forEach((group, i) => {
+    group.position = [0, (totalGroups - 1 - i) * config.nodeGroupSpacing, 0];
     listLayout(group);
   });
 
-  return { pointGroups: visiblePointGroups };
+  return { nodeGroups: visibleNodeGroups };
 };
 
-const listLayout = (pointGroup: PointGroup) => {
-  const numPoints = pointGroup.points.length;
+const listLayout = (nodeGroup: NodeGroup) => {
+  const numNodes = nodeGroup.nodes.length;
 
-  for (let i = 0; i < numPoints; i++) {
-    const point = pointGroup.points[i];
-    point.position = [
-      i * config.pointSpacing,
-      pointGroup.position![1] * config.pointSpacing,
-      pointGroup.position![2],
+  for (let i = 0; i < numNodes; i++) {
+    const node = nodeGroup.nodes[i];
+    node.position = [
+      i * config.nodeSpacing,
+      nodeGroup.position![1] * config.nodeSpacing,
+      nodeGroup.position![2],
     ];
   }
 };
