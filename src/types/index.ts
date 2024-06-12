@@ -2,6 +2,7 @@ export * from "./CameraRefs";
 export * from "./Environment";
 export * from "./Events";
 export * from "./Facets";
+export * from "./Filters";
 export * from "./Layout";
 export * from "./Node";
 export * from "./Src";

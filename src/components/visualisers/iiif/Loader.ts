@@ -56,7 +56,6 @@ export async function load(url: string): Promise<{
     } as Node;
   });
 
-  // available facets in the facets menu
   // facets are a dictionary of
   // {
   //   "facet": Set["prop1", "prop2", "prop..."]

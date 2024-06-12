@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Facets, Layout, Node, SrcObj } from "./types";
+import { Facets, Filters, Layout, Node, SrcObj } from "./types";
 import { createContext } from "react";
 import { config } from "./Config";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
@@ -11,6 +11,7 @@ export interface AppProps extends RequiredAppProps {
   ambientLightIntensity: number;
   facet: "none" | string;
   facets: Facets;
+  filters: Filters;
   layout: Layout;
   orthographicEnabled: boolean;
   nodes: Node[];
@@ -22,6 +23,7 @@ export interface AppState extends AppProps {
   setAmbientLightIntensity: (ambientLightIntensity: number) => void;
   setFacet: (facets: string) => void;
   setFacets: (facets: Facets) => void;
+  setFilters: (filters: Filters) => void;
   setLayout: (layout: Layout) => void;
   setOrthographicEnabled: (orthographicEnabled: boolean) => void;
   setNodes: (nodes: Node[]) => void;
@@ -36,6 +38,7 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
     ambientLightIntensity: 1,
     facet: "none",
     facets: {},
+    filters: [],
     layout: config.layouts[0],
     orthographicEnabled: true,
     nodes: [],
@@ -59,6 +62,13 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
       set({
         facets,
       }),
+
+    setFilters: (filters: Filters) => {
+      console.log("setFilters", filters);
+      set({
+        filters,
+      });
+    },
 
     setLayout: (layout: Layout) =>
       set({
