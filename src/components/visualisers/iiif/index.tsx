@@ -14,10 +14,9 @@ const IIIF = () => {
 
   suspend(async () => {
     const { nodes, facets } = await load(src.url);
-    // run current layout on nodes
-    applyLayout(layout, facet, nodes);
     setNodes(nodes);
     setFacets(facets);
+    applyLayout(layout, facet, nodes);
   }, [src]);
 
   return <Visualisation />;

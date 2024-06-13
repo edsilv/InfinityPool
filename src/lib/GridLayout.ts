@@ -56,5 +56,7 @@ const gridLayout = (nodeGroup: NodeGroup) => {
       (numRows - 1 - row + nodeGroup.position![1]) * config.nodeSpacing,
       nodeGroup.position![2],
     ];
+
+    node.scale = [1, 1, 1];
   }
 };

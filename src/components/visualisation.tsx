@@ -29,12 +29,12 @@ function updateInstancedMeshMatrices({
 
   // set the transform matrix for each instance
   for (let i = 0; i < nodes.length; ++i) {
-    const { position } = nodes[i];
+    const { position, scale } = nodes[i];
 
     if (position) {
       o.position.set(position[0], position[1], position[2]);
       // o.rotation.set(0.5 * Math.PI, 0, 0); // cylinders face z direction
-      // o.scale.set(scale[0], scale[1], scale[2]);
+      o.scale.set(scale![0], scale![1], scale![2]);
       o.updateMatrix();
 
       mesh.setMatrixAt(i, o.matrix);
@@ -224,7 +224,7 @@ function useImagesTexture({
   return { texture };
 }
 
-interface ImagesProps {
+interface VisualisationProps {
   thumbnailWidth?: number;
   thumbnailHeight?: number;
   padding?: number;
@@ -236,7 +236,7 @@ const Visualisation = ({
   thumbnailHeight = config.thumbnailHeight,
   padding = config.padding,
   loadingPagedSize = config.loadingPagedSize,
-}: ImagesProps) => {
+}: VisualisationProps) => {
   const nodes = useAppContext((state: AppState) => state.nodes);
 
   const instancesRef = useRef<any>();

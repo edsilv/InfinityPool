@@ -19,6 +19,7 @@ export function useAnimatedTransition({
   const nodes = useAppContext((state: AppState) => state.nodes);
   const layout = useAppContext((state: AppState) => state.layout);
   const facet = useAppContext((state: AppState) => state.facet);
+  const filters = useAppContext((state: AppState) => state.filters);
 
   // compute layout remembering initial position, scale as source and
   // end position, scale as target
@@ -55,7 +56,7 @@ export function useAnimatedTransition({
         onRest();
       },
     },
-    [nodes, layout, facet]
+    [nodes, layout, facet, filters]
   );
 
   return { animProps };

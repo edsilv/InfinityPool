@@ -28,6 +28,7 @@ export function useSourceTargetLayout() {
   const src = useAppContext((state: AppState) => state.src);
   const nodes = useAppContext((state: AppState) => state.nodes);
   const layout = useAppContext((state: AppState) => state.layout);
+  const filters = useAppContext((state: AppState) => state.filters);
 
   let layoutProps;
 
@@ -37,14 +38,15 @@ export function useSourceTargetLayout() {
     for (let i = 0; i < nodes.length; ++i) {
       const node: Node = nodes[i];
       node.sourcePosition = { ...node.position! } || [0, 0, 0];
+      node.sourceScale = { ...node.scale! } || [1, 1, 1];
     }
-  }, [src, layout, facet]);
+  }, [src, layout, facet, filters]);
 
   // run layout (get target positions)
   useEffect(() => {
     // console.log("apply layout");
     applyLayout(layout, facet, nodes);
-  }, [src, layout, facet]);
+  }, [src, layout, facet, filters]);
 
   // store target positions
   useEffect(() => {
@@ -52,9 +54,9 @@ export function useSourceTargetLayout() {
     for (let i = 0; i < nodes.length; ++i) {
       const node = nodes[i];
       node.targetPosition = { ...node.position! };
-      // node.targetScale = node.filteredOut ? [0, 0, 0] : { ...node.scale };
+      node.targetScale = node.filteredOut ? [0, 0, 0] : { ...node.scale! };
     }
-  }, [src, layout, facet]);
+  }, [src, layout, facet, filters]);
 
   return layoutProps;
 }
@@ -64,6 +66,7 @@ export function interpolateSourceTargetPosition(
   progress: number
 ) {
   const numNodes = nodes.length;
+  console.log("interpolate");
 
   for (let i = 0; i < numNodes; i++) {
     const node = nodes[i];
@@ -79,12 +82,25 @@ export function interpolateSourceTargetPosition(
         (1 - progress) * node.sourcePosition![2] +
         progress * node.targetPosition![2];
     }
+
+    if (node.scale) {
+      console.log("node.scale", node.scale);
+      node.scale[0] =
+        (1 - progress) * node.sourceScale![0] + progress * node.targetScale![0];
+      node.scale[1] =
+        (1 - progress) * node.sourceScale![1] + progress * node.targetScale![1];
+      node.scale[2] =
+        (1 - progress) * node.sourceScale![2] + progress * node.targetScale![2];
+    }
   }
 }
 
 export function resetSourcePositionScale(node: Node) {
   if (node.position) {
     node.sourcePosition = { ...node.position };
+  }
+  if (node.scale) {
+    node.sourceScale = { ...node.scale };
   }
 }
 
@@ -103,7 +119,7 @@ export const groupNodesByFacet = (
     ];
   }
 
-  const groupedByFacet = groupBy(nodes, (n: Node) => n.metadata[facet]);
+  const groupedByFacet = groupBy(nodes, (n: Node) => n.metadata![facet]!);
   const groups: NodeGroup[] = [];
 
   // make each group an object
@@ -228,8 +244,8 @@ export const sortNodesByDate = (nodes: Node[]) => {
 };
 
 export const getNodesDateRange = (nodes: Node[]) => {
-  const minDate = new Date(nodes[0].metadata.date);
-  const maxDate = new Date(nodes[nodes.length - 1].metadata.date);
+  const minDate = new Date(nodes[0].metadata!.date!);
+  const maxDate = new Date(nodes[nodes.length - 1].metadata!.date!);
   return { minDate, maxDate };
 };
 

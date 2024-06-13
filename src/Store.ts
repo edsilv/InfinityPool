@@ -64,10 +64,17 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
       }),
 
     setFilters: (filters: Filters) => {
-      console.log("setFilters", filters);
-      set({
-        filters,
-      });
+      set((state) => ({
+        filters: filters,
+        nodes: state.nodes.map((node: Node) => {
+          return {
+            ...node,
+            filteredOut: !filters.every(({ facet, value }) => {
+              return node.metadata![facet] === value;
+            }),
+          };
+        }),
+      }));
     },
 
     setLayout: (layout: Layout) =>
