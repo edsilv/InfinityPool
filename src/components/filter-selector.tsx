@@ -9,7 +9,7 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { Checkbox } from "./ui/checkbox";
-import { Filters } from "@/types";
+import { Facet, Facets, Filter, Filters } from "@/types";
 
 function FilterCheckbox({
   label,
@@ -38,27 +38,29 @@ function FilterCheckbox({
 export function FilterSelector() {
   const layout = useAppContext((state: AppState) => state.layout);
   const filters: Filters = useAppContext((state: AppState) => state.filters);
-  const facets = useAppContext((state: AppState) => state.facets);
+  const facets: Facets = useAppContext((state: AppState) => state.facets);
   const setFilters = useAppContext((state: AppState) => state.setFilters);
 
   return (
     <Accordion type="single" collapsible>
       {layout && layout.facetingEnabled
-        ? Object.keys(facets).map((facet) => {
+        ? Object.keys(facets).map((facet: string) => {
             return (
               <AccordionItem key={facet} value={facet}>
                 <AccordionTrigger className="text-white">
                   {facet}
                 </AccordionTrigger>
-                {Array.from(facets[facet]).map((x, idx) => {
+                {Array.from(facets[facet]).map((f: Facet, idx) => {
                   return (
                     <AccordionContent key={idx} className="text-white">
                       <FilterCheckbox
-                        label={x}
-                        id={`${facet}-${x}`}
-                        key={x}
-                        checked={filters.some((f) => {
-                          return f.facet === facet && f.value === x;
+                        label={`${f.value} (${f.total})`}
+                        id={`${facet}-${f.value}`}
+                        key={f.value}
+                        checked={filters.some((filter: Filter) => {
+                          return (
+                            filter.facet === facet && filter.value === f.value
+                          );
                         })}
                         onChange={(checked) => {
                           setFilters(
@@ -67,11 +69,13 @@ export function FilterSelector() {
                                   ...filters,
                                   {
                                     facet,
-                                    value: x,
+                                    value: f.value,
                                   },
                                 ]
                               : filters.filter(
-                                  (f) => f.facet !== facet || f.value !== x
+                                  (filter) =>
+                                    filter.facet !== facet ||
+                                    filter.value !== f.value
                                 )
                           );
                         }}

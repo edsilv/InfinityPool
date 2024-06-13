@@ -1,3 +1,7 @@
+export type Metadata = {
+  [key: string]: string | undefined;
+};
+
 export type Node = {
   position?: [number, number, number];
   sourcePosition?: [number, number, number];
@@ -11,7 +15,7 @@ export type Node = {
     width: number;
     height?: number;
   };
-  metadata?: any;
+  metadata?: Metadata;
 };
 
 export type NodeGroup = {

@@ -1,3 +1,8 @@
+export type Facet = {
+  value: string;
+  total: number;
+};
+
 export type Facets = {
-  [key: string]: Set<string>;
+  [key: string]: Set<Facet>;
 };
