@@ -42,51 +42,56 @@ export function FilterSelector() {
   const setFilters = useAppContext((state: AppState) => state.setFilters);
 
   return (
-    <Accordion type="single" collapsible>
-      {layout && layout.facetingEnabled
-        ? Object.keys(facets).map((facet: string) => {
-            return (
-              <AccordionItem key={facet} value={facet}>
-                <AccordionTrigger className="text-white">
-                  {facet}
-                </AccordionTrigger>
-                {Array.from(facets[facet]).map((f: Facet, idx) => {
-                  return (
-                    <AccordionContent key={idx} className="text-white">
-                      <FilterCheckbox
-                        label={`${f.value} (${f.total})`}
-                        id={`${facet}-${f.value}`}
-                        key={f.value}
-                        checked={filters.some((filter: Filter) => {
-                          return (
-                            filter.facet === facet && filter.value === f.value
-                          );
-                        })}
-                        onChange={(checked) => {
-                          setFilters(
-                            checked
-                              ? [
-                                  ...filters,
-                                  {
-                                    facet,
-                                    value: f.value,
-                                  },
-                                ]
-                              : filters.filter(
-                                  (filter) =>
-                                    filter.facet !== facet ||
-                                    filter.value !== f.value
-                                )
-                          );
-                        }}
-                      />
-                    </AccordionContent>
-                  );
-                })}
-              </AccordionItem>
-            );
-          })
-        : null}
-    </Accordion>
+    <div className="overflow-y-auto overflow-x-hidden mt-4 h-72 pr-2">
+      <Accordion type="single" collapsible>
+        {layout && layout.facetingEnabled
+          ? Object.keys(facets).map((facet: string) => {
+              return (
+                <AccordionItem key={facet} value={facet}>
+                  <AccordionTrigger className="text-white">
+                    {facet}
+                  </AccordionTrigger>
+                  {Array.from(facets[facet])
+                    .sort((a: Facet, b: Facet) => b.total - a.total)
+                    .map((f: Facet, idx) => {
+                      return (
+                        <AccordionContent key={idx} className="text-white">
+                          <FilterCheckbox
+                            label={`${f.value} (${f.total})`}
+                            id={`${facet}-${f.value}`}
+                            key={f.value}
+                            checked={filters.some((filter: Filter) => {
+                              return (
+                                filter.facet === facet &&
+                                filter.value === f.value
+                              );
+                            })}
+                            onChange={(checked) => {
+                              setFilters(
+                                checked
+                                  ? [
+                                      ...filters,
+                                      {
+                                        facet,
+                                        value: f.value,
+                                      },
+                                    ]
+                                  : filters.filter(
+                                      (filter) =>
+                                        filter.facet !== facet ||
+                                        filter.value !== f.value
+                                    )
+                              );
+                            }}
+                          />
+                        </AccordionContent>
+                      );
+                    })}
+                </AccordionItem>
+              );
+            })
+          : null}
+      </Accordion>
+    </div>
   );
 }

@@ -36,5 +36,7 @@ const barChartLayout = (nodeGroup: NodeGroup) => {
   for (let i = 0; i < numNodes; i++) {
     const node = nodeGroup.nodes[i];
     node.position = [nodeGroup.position![0], i * config.nodeSpacing, 0];
+    // it's visible
+    node.scale = [1, 1, 1];
   }
 };

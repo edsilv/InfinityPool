@@ -57,6 +57,7 @@ const gridLayout = (nodeGroup: NodeGroup) => {
       nodeGroup.position![2],
     ];
 
+    // it's visible
     node.scale = [1, 1, 1];
   }
 };
