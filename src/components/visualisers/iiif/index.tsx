@@ -6,7 +6,7 @@ import { AppState } from "@/Store";
 import { applyLayout } from "@/lib/Layouts";
 
 const IIIF = () => {
-  const facet = useAppContext((state: AppState) => state.facet)!;
+  const facet = useAppContext((state: AppState) => state.sort)!;
   const src = useAppContext((state: AppState) => state.src)!;
   const layout = useAppContext((state: AppState) => state.layout)!;
   const setNodes = useAppContext((state: AppState) => state.setNodes);

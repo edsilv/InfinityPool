@@ -4,16 +4,16 @@ import { useAppContext } from "@/lib/hooks/use-app-context";
 import { OptionSelector } from "./option-selector";
 import { AppState } from "@/Store";
 
-export function FacetsSelector() {
+export function SortSelector() {
   const layout = useAppContext((state: AppState) => state.layout);
-  const facet = useAppContext((state: AppState) => state.facet);
+  const sort = useAppContext((state: AppState) => state.sort);
   const facets = useAppContext((state: AppState) => state.facets);
-  const setFacet = useAppContext((state: AppState) => state.setFacet);
+  const setFacet = useAppContext((state: AppState) => state.setSort);
 
   return (
     <OptionSelector
-      label="Facet"
-      value={facet}
+      label="Sort"
+      value={sort}
       onChange={(value: string) => {
         setFacet(value);
       }}
@@ -31,7 +31,7 @@ export function FacetsSelector() {
             })
           : []),
       ]}
-      description="Set the facet."
+      description="Sort by."
     />
   );
 }

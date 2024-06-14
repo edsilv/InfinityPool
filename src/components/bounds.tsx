@@ -2,6 +2,8 @@ import { Group } from "three";
 import useDoubleClick from "@/lib/hooks/use-double-click";
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { AppState } from "@/Store";
+// import { BoxHelper } from "three";
+// import { useHelper } from "@react-three/drei";
 
 type BoundsProps = {
   boundsRef: React.MutableRefObject<Group | null>;
@@ -12,7 +14,11 @@ type BoundsProps = {
 
 function Bounds({ boundsRef, zoomToObject, recenter, children }: BoundsProps) {
   const layout = useAppContext((state: AppState) => state.layout);
-  const facet = useAppContext((state: AppState) => state.facet);
+  const sort = useAppContext((state: AppState) => state.sort);
+  const filters = useAppContext((state: AppState) => state.filters);
+
+  // @ts-ignore
+  // useHelper(boundsRef, BoxHelper, "white");
 
   // zoom to object on double click in scene mode
   const handleDoubleClickEvent = (e: any) => {
@@ -30,7 +36,7 @@ function Bounds({ boundsRef, zoomToObject, recenter, children }: BoundsProps) {
   return (
     <group
       ref={boundsRef}
-      key={`bounds/${layout.type}/${facet}`}
+      key={`bounds/${layout.type}/${filters.length}/${sort}`}
       onDoubleClick={handleDoubleClickEvent}
       onPointerMissed={(e: MouseEvent) => {
         const tagName = (e.target as HTMLElement).tagName;

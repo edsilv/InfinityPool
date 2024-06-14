@@ -9,7 +9,7 @@ export interface RequiredAppProps {}
 
 export interface AppProps extends RequiredAppProps {
   ambientLightIntensity: number;
-  facet: "none" | string;
+  sort: "none" | string;
   facets: Facets;
   filters: Filters;
   layout: Layout;
@@ -21,7 +21,7 @@ export interface AppProps extends RequiredAppProps {
 
 export interface AppState extends AppProps {
   setAmbientLightIntensity: (ambientLightIntensity: number) => void;
-  setFacet: (facets: string) => void;
+  setSort: (sort: string) => void;
   setFacets: (facets: Facets) => void;
   setFilters: (filters: Filters) => void;
   setLayout: (layout: Layout) => void;
@@ -36,7 +36,7 @@ export type AppStore = ReturnType<typeof createAppStore>;
 export const createAppStore = (initProps?: Partial<AppProps>) => {
   const DEFAULT_PROPS: AppProps = {
     ambientLightIntensity: 1,
-    facet: "none",
+    sort: "none",
     facets: {},
     filters: [],
     layout: config.layouts[0],
@@ -53,9 +53,9 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
         ambientLightIntensity,
       }),
 
-    setFacet: (facet: string) =>
+    setSort: (sort: string) =>
       set({
-        facet,
+        sort,
       }),
 
     setFacets: (facets: Facets) =>
@@ -96,7 +96,7 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
       set({
         src,
         facets: {},
-        facet: "none",
+        sort: "none",
         nodes: [],
       }),
 

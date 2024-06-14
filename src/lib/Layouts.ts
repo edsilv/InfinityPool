@@ -24,7 +24,7 @@ export function applyLayout(layout: Layout, facet: string, nodes: Node[]) {
 }
 
 export function useSourceTargetLayout() {
-  const facet = useAppContext((state: AppState) => state.facet);
+  const facet = useAppContext((state: AppState) => state.sort);
   const src = useAppContext((state: AppState) => state.src);
   const nodes = useAppContext((state: AppState) => state.nodes);
   const layout = useAppContext((state: AppState) => state.layout);
@@ -66,7 +66,6 @@ export function interpolateSourceTargetPosition(
   progress: number
 ) {
   const numNodes = nodes.length;
-  console.log("interpolate");
 
   for (let i = 0; i < numNodes; i++) {
     const node = nodes[i];
@@ -84,7 +83,6 @@ export function interpolateSourceTargetPosition(
     }
 
     if (node.scale) {
-      console.log("node.scale", node.scale);
       node.scale[0] =
         (1 - progress) * node.sourceScale![0] + progress * node.targetScale![0];
       node.scale[1] =

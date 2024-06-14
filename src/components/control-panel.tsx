@@ -1,5 +1,5 @@
 import "../index.css";
-import { FacetsSelector } from "./facets-selector";
+import { SortSelector } from "./sort-selector";
 import { FilterSelector } from "./filter-selector";
 import { LayoutSelector } from "./layout-selector";
 import { SourceSelector } from "./source-selector";
@@ -10,7 +10,7 @@ export function ControlPanel() {
       <SourceSelector />
       <LayoutSelector />
       <FilterSelector />
-      <FacetsSelector />
+      <SortSelector />
     </div>
   );
 }

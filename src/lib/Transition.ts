@@ -18,7 +18,7 @@ export function useAnimatedTransition({
 }) {
   const nodes = useAppContext((state: AppState) => state.nodes);
   const layout = useAppContext((state: AppState) => state.layout);
-  const facet = useAppContext((state: AppState) => state.facet);
+  const facet = useAppContext((state: AppState) => state.sort);
   const filters = useAppContext((state: AppState) => state.filters);
 
   // compute layout remembering initial position, scale as source and
