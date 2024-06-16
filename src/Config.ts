@@ -1,9 +1,4 @@
-import { Layout } from "./types";
-
-type Src = {
-  value: string;
-  label: string;
-};
+import { Layout, SrcObj } from "./types";
 
 export type Config = {
   layouts: Layout[];
@@ -15,7 +10,7 @@ export type Config = {
   thumbnailHeight: number;
   thumbnailWidth: number;
   facetsIgnore: string[];
-  srcs: Src[];
+  srcs: SrcObj[];
 };
 
 export const config: Config = {
@@ -33,11 +28,11 @@ export const config: Config = {
       label: "Grid",
       facetingEnabled: true,
     },
-    {
-      type: "list",
-      label: "List",
-      facetingEnabled: true,
-    },
+    // {
+    //   type: "list",
+    //   label: "List",
+    //   facetingEnabled: true,
+    // },
     {
       type: "barchart",
       label: "Bar Chart",
@@ -46,34 +41,49 @@ export const config: Config = {
   ],
   srcs: [
     {
-      value: "https://media.nga.gov/public/manifests/nga_highlights.json",
+      type: "getty",
+      url: "",
+      label: "Getty Collection",
+    },
+    // {
+    //   type: "met",
+    //   // url: "https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=department=9",
+    //   url: "https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=van%20gogh",
+    //   label: "Met Collection",
+    // },
+    {
+      type: "iiif",
+      url: "https://media.nga.gov/public/manifests/nga_highlights.json",
       label: "National Gallery Highlights",
     },
     {
-      value:
-        "https://iiif.vam.ac.uk/collections/MSL:1876:Forster:141:II/manifest.json",
+      type: "iiif",
+      url: "https://iiif.vam.ac.uk/collections/MSL:1876:Forster:141:II/manifest.json",
       label: "Codex Forster",
     },
     {
-      value:
-        "https://culturedigitalskills.org/presentation/testcompressed/2024-05-19T17-49-24.json",
+      type: "iiif",
+      url: "https://culturedigitalskills.org/presentation/testcompressed/2024-05-19T17-49-24.json",
       label: "Design Archives",
     },
     {
-      value:
-        "https://iiif.bodleian.ox.ac.uk/iiif/manifest/390fd0e8-9eae-475d-9564-ed916ab9035c.json",
+      type: "iiif",
+      url: "https://iiif.bodleian.ox.ac.uk/iiif/manifest/390fd0e8-9eae-475d-9564-ed916ab9035c.json",
       label: "Shakespeare First Folio",
     },
     {
-      value: "https://wellcomelibrary.org/iiif/b18035723/manifest",
+      type: "iiif",
+      url: "https://wellcomelibrary.org/iiif/b18035723/manifest",
       label: "Wunder der Vererbung",
     },
     {
-      value: "https://wellcomelibrary.org/iiif/b18035978/manifest",
+      type: "iiif",
+      url: "https://wellcomelibrary.org/iiif/b18035978/manifest",
       label: "The Biocrats",
     },
     {
-      value: "https://digital.library.villanova.edu/Item/vudl:60609/Manifest",
+      type: "iiif",
+      url: "https://digital.library.villanova.edu/Item/vudl:60609/Manifest",
       label: "The Holy Bible",
     },
   ],

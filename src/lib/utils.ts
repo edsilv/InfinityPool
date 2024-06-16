@@ -21,8 +21,15 @@ export function groupBy<T, K extends keyof any>(
   );
 }
 
-export function getNodeFacets(nodes: Node[], metadata: Metadata[]): Facets {
+export function getNodeFacets(
+  nodes: Node[],
+  metadata: Metadata[],
+  ignore?: string[]
+): Facets {
   const facets: Facets = {};
+
+  // if ignore isn't passed, use the default config
+  ignore = ignore || config.facetsIgnore;
 
   const counts: Record<string, Record<string, number>> = {};
 
@@ -30,7 +37,7 @@ export function getNodeFacets(nodes: Node[], metadata: Metadata[]): Facets {
     node.metadata = metadata[idx];
 
     Object.keys(node.metadata).forEach((key) => {
-      if (!config.facetsIgnore.includes(key)) {
+      if (!ignore.includes(key)) {
         if (!facets[key]) {
           facets[key] = new Set<Facet>();
           counts[key] = {};

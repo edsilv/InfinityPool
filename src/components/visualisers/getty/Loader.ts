@@ -1,0 +1,77 @@
+import { Node } from "@/types";
+import { config } from "@/Config";
+import metadata from "./metadata.json";
+import { Facets } from "@/types";
+import { getNodeFacets } from "@/lib/utils";
+import {
+  getPrimaryName,
+  getFieldValuesByClassifications,
+  getMaterialStatements,
+  getValueByClassification,
+  normalizeFieldToArray,
+  getDimensionsDescriptions,
+  getProductionTimespans,
+  getDigitalImages,
+  getCultures,
+  // @ts-ignore // no ts declaration file
+} from "@thegetty/linkedart.js";
+
+// metadata from: https://observablehq.com/@jrladd/linked-art-3
+// to construct new queries use the Getty's SPARQL endpoint: https://data.getty.edu/museum/collection/sparql-ui
+export async function load(_url: string): Promise<{
+  nodes: Node[];
+  facets: Facets;
+}> {
+  const objects = (metadata as any[]).map((l) => {
+    return {
+      title: getPrimaryName(l),
+      artist: getFieldValuesByClassifications(
+        l.produced_by,
+        "referred_to_by",
+        "https://data.getty.edu/museum/ontology/linked-data/tms/object/producer-description"
+      )[0],
+      materials: getMaterialStatements(l)[0],
+      type: getValueByClassification(
+        normalizeFieldToArray(l, "referred_to_by"),
+        "http://vocab.getty.edu/aat/300435443"
+      ),
+      dimensions: getDimensionsDescriptions(l)[0],
+      begin: getProductionTimespans(l)[0].begin_of_the_begin,
+      end: getProductionTimespans(l)[0].end_of_the_end,
+      image: getDigitalImages(l)[0],
+      cultures: getCultures(l)[0],
+    };
+  });
+
+  const nodes = objects
+    .filter((obj) => obj.image) // Filter out objects without an image
+    .map(
+      (obj) =>
+        ({
+          position: [0, 0, 0],
+          sourcePosition: [0, 0, 0],
+          targetPosition: [0, 0, 0],
+          scale: [1, 1, 1],
+          sourceScale: [1, 1, 1],
+          targetScale: [1, 1, 1],
+          thumbnail: {
+            src: obj.image.replace(
+              "full/full",
+              `full/${config.thumbnailWidth},`
+            ),
+            width: config.thumbnailWidth,
+          },
+          metadata: obj,
+        }) as Node
+    );
+
+  const facets = getNodeFacets(nodes, objects, [
+    "title",
+    "dimensions",
+    "begin",
+    "end",
+    "image",
+  ]);
+
+  return { nodes, facets };
+}

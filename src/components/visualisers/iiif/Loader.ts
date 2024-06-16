@@ -66,5 +66,5 @@ export async function load(url: string): Promise<{
     facets = getNodeFacets(nodes, metadata);
   }
 
-  return { nodes: nodes, facets };
+  return { nodes, facets };
 }

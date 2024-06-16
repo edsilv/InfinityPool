@@ -32,6 +32,8 @@ import Bounds from "./bounds";
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { Loader } from "./loader";
 import CameraControlsImpl from "camera-controls";
+import GETTY from "./visualisers/getty";
+import MET from "./visualisers/met";
 // import { CameraControls } from "./camera-controls";
 // import { Perf } from "r3f-perf";
 
@@ -188,6 +190,10 @@ const Visualiser = () => {
 
   function renderVisualizer(src: SrcObj) {
     switch (src.type) {
+      case "getty":
+        return <GETTY />;
+      case "met":
+        return <MET />;
       case "iiif":
         return <IIIF />;
       default:

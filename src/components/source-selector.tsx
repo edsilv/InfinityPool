@@ -10,15 +10,10 @@ export function SourceSelector() {
   let src: SrcObj | null = useAppContext((state: AppState) => state.src);
   const setSrc = useAppContext((state: AppState) => state.setSrc);
 
-  const srcs: { value: string; label: string }[] = config.srcs;
+  const srcs: SrcObj[] = config.srcs;
 
   if (!src) {
-    src = {
-      url: srcs[0].value,
-      type: "iiif",
-    };
-
-    setSrc(src);
+    (src = srcs[0]), setSrc(src);
   }
 
   return (
@@ -26,12 +21,15 @@ export function SourceSelector() {
       label="Source"
       value={src.url}
       onChange={(value: string) => {
-        setSrc({
-          url: value,
-          type: "iiif",
-        });
+        const src: SrcObj = srcs.find((src) => src.url === value)!;
+        setSrc(src);
       }}
-      options={srcs}
+      options={srcs.map((src) => {
+        return {
+          label: src.label,
+          value: src.url,
+        };
+      })}
       description="Set the source."
     />
   );
