@@ -53,6 +53,10 @@ export async function load(url: string): Promise<{
       scale: [1, 1, 1],
       sourceScale: [1, 1, 1],
       targetScale: [1, 1, 1],
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
       thumbnail: {
         src,
         width: config.thumbnailWidth,

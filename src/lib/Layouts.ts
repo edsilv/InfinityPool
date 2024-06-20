@@ -3,6 +3,7 @@ import { useAppContext } from "@/lib/hooks/use-app-context";
 import { layout as barChartLayout } from "./BarChartLayout";
 import { layout as gridLayout } from "./GridLayout";
 import { layout as listLayout } from "./ListLayout";
+import { forceDirectedLayout } from './ForceDirectedLayout';
 import { Layout, Node, NodeGroup } from "@/types";
 import { AppState } from "@/Store";
 import { groupBy } from "./utils";
@@ -12,6 +13,9 @@ export function applyLayout(layout: Layout, facet: string, nodes: Node[]) {
   switch (layout.type) {
     case "barchart":
       barChartLayout(nodes, facet);
+      break;
+    case "force":
+      forceDirectedLayout(nodes);
       break;
     case "list":
       listLayout(nodes, facet);

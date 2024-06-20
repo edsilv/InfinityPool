@@ -34,6 +34,11 @@ export const config: Config = {
       facetingEnabled: true,
     },
     {
+      type: "force",
+      label: "Force",
+      facetingEnabled: true,
+    },
+    {
       type: "list",
       label: "List",
       facetingEnabled: true,
