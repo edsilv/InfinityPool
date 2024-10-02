@@ -50,13 +50,15 @@ export async function load(_url: string): Promise<{
       (obj) =>
         ({
           ...node,
-          thumbnail: {
-            src: obj.image.replace(
-              "full/full",
-              `full/${config.thumbnailWidth},`
-            ),
-            width: config.thumbnailWidth,
-          },
+          thumbnail: obj.image
+            ? {
+                src: obj.image.replace(
+                  "full/full",
+                  `full/${config.thumbnailWidth},`
+                ),
+                width: config.thumbnailWidth,
+              }
+            : undefined,
           metadata: obj,
         }) as Node
     );

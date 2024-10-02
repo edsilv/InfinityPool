@@ -35,6 +35,7 @@ import CameraControlsImpl from "camera-controls";
 import GETTY from "./visualisers/getty";
 import MET from "./visualisers/met";
 import CRM from "./visualisers/crm";
+import ScienceMuseum from "./visualisers/sciencemuseum";
 // import { CameraControls } from "./camera-controls";
 // import { Perf } from "r3f-perf";
 
@@ -199,6 +200,8 @@ const Visualiser = () => {
         return <MET />;
       case "iiif":
         return <IIIF />;
+      case "sciencemuseum":
+        return <ScienceMuseum />;
       default:
         return null;
     }

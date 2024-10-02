@@ -52,6 +52,11 @@ export const config: Config = {
       url: "crm",
       label: "CRM",
     },
+    {
+      type: "sciencemuseum",
+      url: "sciencemuseum",
+      label: "Science Museum",
+    },
     // {
     //   type: "met",
     //   // url: "https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=department=9",
