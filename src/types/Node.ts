@@ -12,7 +12,7 @@ export type Node = {
   targetScale?: [number, number, number];
   layoutScale?: [number, number, number];
   filteredOut?: boolean;
-  thumbnail: {
+  thumbnail?: {
     src: string;
     width: number;
     height?: number;

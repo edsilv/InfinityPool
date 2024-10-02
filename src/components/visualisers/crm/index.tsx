@@ -5,7 +5,7 @@ import { useAppContext } from "@/lib/hooks/use-app-context";
 import { AppState } from "@/Store";
 import { applyLayout } from "@/lib/Layouts";
 
-const GETTY = () => {
+const CRM = () => {
   const facet = useAppContext((state: AppState) => state.sort)!;
   const src = useAppContext((state: AppState) => state.src)!;
   const layout = useAppContext((state: AppState) => state.layout)!;
@@ -22,4 +22,4 @@ const GETTY = () => {
   return <Visualisation />;
 };
 
-export default GETTY;
+export default CRM;

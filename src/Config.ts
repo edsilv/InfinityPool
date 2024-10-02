@@ -1,22 +1,24 @@
 import { Layout, SrcObj } from "./types";
 
 export type Config = {
+  facetsIgnore: string[];
   layouts: Layout[];
   loadingPagedSize: number;
   maxTextureSize: number;
-  padding: number;
-  nodeSpacing: number;
   nodeGroupSpacing: number;
+  nodeSpacing: number;
+  padding: number;
+  placeholderImage: string;
+  srcs: SrcObj[];
   thumbnailHeight: number;
   thumbnailWidth: number;
-  facetsIgnore: string[];
-  srcs: SrcObj[];
 };
 
 export const config: Config = {
   loadingPagedSize: 4,
   maxTextureSize: 4096,
   padding: 18,
+  placeholderImage: "/images/placeholder.png",
   nodeSpacing: 1.2,
   nodeGroupSpacing: 1.5,
   thumbnailHeight: 100,
@@ -42,8 +44,13 @@ export const config: Config = {
   srcs: [
     {
       type: "getty",
-      url: "",
+      url: "getty",
       label: "Getty Collection",
+    },
+    {
+      type: "crm",
+      url: "crm",
+      label: "CRM",
     },
     // {
     //   type: "met",

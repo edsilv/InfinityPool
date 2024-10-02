@@ -10,7 +10,7 @@ import { config } from "@/Config";
 
 const o = new Object3D();
 
-function* getThumbnailSrcsIterator(thumbnailSrcs: string[]) {
+function* getThumbnailSrcsIterator(thumbnailSrcs: (string | undefined)[]) {
   for (let src of thumbnailSrcs) {
     yield src;
   }
@@ -70,7 +70,10 @@ function useImagesTexture({
       return;
     }
 
-    const thumbnailSrcs = nodes.map((node: Node) => node.thumbnail.src);
+    const thumbnailSrcs: (string | undefined)[] = nodes.map((node: Node) => {
+      return node.thumbnail?.src;
+    });
+
     const thumbnailSrcsGenerator = getThumbnailSrcsIterator(thumbnailSrcs);
 
     // Calculate the maximum number of thumbnails that can fit into a 4k x 4k texture
@@ -118,23 +121,35 @@ function useImagesTexture({
     const loadImages = async () => {
       // console.log(`Loading ${count} images...`);
       let i = 0;
+      let cachedPlaceholderImage: ImageBitmap | null = null;
+
       for (let src of thumbnailSrcsGenerator) {
-        // Create a new cancel token source for each image load
-        cancelTokenSourceRef.current = axios.CancelToken.source();
+        let img: ImageBitmap;
 
-        // console.log(`Loading image ${i + 1} of ${count}...`);
+        if (src === undefined) {
+          if (!cachedPlaceholderImage) {
+            // Load the image only once and cache it
+            const response = await axios.get(config.placeholderImage, {
+              responseType: "blob",
+            });
+            cachedPlaceholderImage = await createImageBitmap(response.data);
+          }
+          img = cachedPlaceholderImage;
+        } else {
+          // Create a new cancel token source for each image load
+          cancelTokenSourceRef.current = axios.CancelToken.source();
 
-        const response = await axios.get(src, {
-          responseType: "blob",
-          cancelToken: cancelTokenSourceRef.current.token,
-        });
+          const response = await axios.get(src, {
+            responseType: "blob",
+            cancelToken: cancelTokenSourceRef.current.token,
+          });
 
-        // console.log(`Image ${i + 1} loaded`);
-
-        const img = await createImageBitmap(response.data);
+          img = await createImageBitmap(response.data);
+        }
 
         canvas.width = img.width;
         canvas.height = img.height;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.translate(0, canvas.height);
 
@@ -166,7 +181,7 @@ function useImagesTexture({
           scaledHeight
         );
 
-        // Draw a white border around the image
+        // Draw a white border outline around the image
         // ctx.strokeStyle = "white";
         // ctx.lineWidth = 2; // Adjust border thickness here
         // ctx.strokeRect(

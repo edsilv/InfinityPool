@@ -15,6 +15,7 @@ import {
   getCultures,
   // @ts-ignore // no ts declaration file
 } from "@thegetty/linkedart.js";
+import { node } from "@/lib/Node";
 
 // metadata from: https://observablehq.com/@jrladd/linked-art-3
 // to construct new queries use the Getty's SPARQL endpoint: https://data.getty.edu/museum/collection/sparql-ui
@@ -48,12 +49,7 @@ export async function load(_url: string): Promise<{
     .map(
       (obj) =>
         ({
-          position: [0, 0, 0],
-          sourcePosition: [0, 0, 0],
-          targetPosition: [0, 0, 0],
-          scale: [1, 1, 1],
-          sourceScale: [1, 1, 1],
-          targetScale: [1, 1, 1],
+          ...node,
           thumbnail: {
             src: obj.image.replace(
               "full/full",

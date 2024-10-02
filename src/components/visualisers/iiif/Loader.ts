@@ -5,6 +5,7 @@ import { config } from "@/Config";
 import metadata from "./metadata.json";
 import { Facets } from "@/types";
 import { getNodeFacets } from "@/lib/utils";
+import { node } from "@/lib/Node";
 
 export async function load(url: string): Promise<{
   nodes: Node[];
@@ -47,12 +48,7 @@ export async function load(url: string): Promise<{
 
   const nodes = thumbnailSrcs.map((src: string) => {
     return {
-      position: [0, 0, 0],
-      sourcePosition: [0, 0, 0],
-      targetPosition: [0, 0, 0],
-      scale: [1, 1, 1],
-      sourceScale: [1, 1, 1],
-      targetScale: [1, 1, 1],
+      ...node,
       thumbnail: {
         src,
         width: config.thumbnailWidth,
