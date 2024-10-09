@@ -58,6 +58,7 @@ function useImagesTexture({
   padding: number;
   loadingPagedSize: number;
 }) {
+  const src = useAppContext((state: AppState) => state.src);
   const nodes = useAppContext((state: AppState) => state.nodes);
   const [texture, setTexture] = useState<any>(null);
 
@@ -243,7 +244,7 @@ function useImagesTexture({
       // Cancel the image load
       cancelTokenSourceRef.current?.cancel();
     };
-  }, [loadImages]);
+  }, [src]);
 
   return { texture };
 }
