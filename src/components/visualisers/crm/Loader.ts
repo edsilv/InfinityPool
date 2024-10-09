@@ -4,13 +4,13 @@ import { Facets } from "@/types";
 import { getNodeFacets } from "@/lib/utils";
 // import { config } from "@/Config";
 import { node } from "../../../lib/Node";
-import { generateAccounts } from "./genAccounts";
+// import { generateAccounts } from "./genAccounts";
 
 export async function load(_url: string): Promise<{
   nodes: Node[];
   facets: Facets;
 }> {
-  generateAccounts();
+  // generateAccounts();
 
   const nodes: Node[] = metadata.records.map((r) => {
     return {

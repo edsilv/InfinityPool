@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import ThumbnailMaterial from "./thumbnail-material";
 import { DataArrayTexture, InstancedMesh, Object3D } from "three";
 import { Node } from "@/types/Node";
@@ -9,6 +9,7 @@ import { AppState } from "@/Store";
 import { config } from "@/Config";
 
 const o = new Object3D();
+const imageCache: { [key: string]: ImageBitmap } = {};
 
 function* getThumbnailSrcsIterator(thumbnailSrcs: (string | undefined)[]) {
   for (let src of thumbnailSrcs) {
@@ -57,13 +58,14 @@ function useImagesTexture({
   padding: number;
   loadingPagedSize: number;
 }) {
-  const src = useAppContext((state: AppState) => state.src);
   const nodes = useAppContext((state: AppState) => state.nodes);
   const [texture, setTexture] = useState<any>(null);
 
   const cancelTokenSourceRef = useRef<CancelTokenSource | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
-  useEffect(() => {
+  const loadImages = useCallback(async () => {
     let count = nodes.length;
 
     if (count === 0) {
@@ -94,8 +96,15 @@ function useImagesTexture({
       );
     }
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
+    if (!canvasRef.current) {
+      canvasRef.current = document.createElement("canvas");
+    }
+    const canvas = canvasRef.current;
+
+    if (!ctxRef.current) {
+      ctxRef.current = canvas.getContext("2d", { willReadFrequently: true })!;
+    }
+    const ctx = ctxRef.current;
 
     thumbnailWidth = thumbnailWidth - padding;
     thumbnailHeight = thumbnailHeight - padding;
@@ -118,108 +127,109 @@ function useImagesTexture({
       }
     };
 
-    const loadImages = async () => {
-      // console.log(`Loading ${count} images...`);
-      let i = 0;
-      let cachedPlaceholderImage: ImageBitmap | null = null;
+    let i = 0;
 
-      for (let src of thumbnailSrcsGenerator) {
-        let img: ImageBitmap;
+    for (let src of thumbnailSrcsGenerator) {
+      let img: ImageBitmap;
 
-        if (src === undefined) {
-          if (!cachedPlaceholderImage) {
-            // Load the image only once and cache it
-            const response = await axios.get(config.placeholderImage, {
-              responseType: "blob",
-            });
-            cachedPlaceholderImage = await createImageBitmap(response.data);
-          }
-          img = cachedPlaceholderImage;
-        } else {
-          // Create a new cancel token source for each image load
-          cancelTokenSourceRef.current = axios.CancelToken.source();
-
-          const response = await axios.get(src, {
+      if (src === undefined) {
+        if (!imageCache[config.placeholderImage]) {
+          // Load the placeholder image only once and cache it
+          const response = await axios.get(config.placeholderImage, {
             responseType: "blob",
-            cancelToken: cancelTokenSourceRef.current.token,
           });
-
-          img = await createImageBitmap(response.data);
+          imageCache[config.placeholderImage] = await createImageBitmap(
+            response.data
+          );
         }
+        img = imageCache[config.placeholderImage];
+      } else if (imageCache[src]) {
+        // Use cached image if available
+        img = imageCache[src];
+      } else {
+        // Create a new cancel token source for each image load
+        cancelTokenSourceRef.current = axios.CancelToken.source();
 
-        canvas.width = img.width;
-        canvas.height = img.height;
+        const response = await axios.get(src, {
+          responseType: "blob",
+          cancelToken: cancelTokenSourceRef.current.token,
+        });
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.translate(0, canvas.height);
-
-        // Determine the longest edge of the image
-        const longestEdge = Math.max(img.width, img.height);
-
-        // Calculate the scale factor to fit the longest edge of the image within the thumbnail
-        const scale = Math.min(
-          thumbnailWidth / longestEdge,
-          thumbnailHeight / longestEdge
-        );
-
-        // Calculate the dimensions of the image after scaling
-        const scaledWidth = img.width * scale;
-        const scaledHeight = img.height * scale;
-
-        // Calculate the position to center the image within the thumbnail, taking into account the offset
-        const posX = (thumbnailWidth - scaledWidth) / 2;
-        const posY = (thumbnailHeight - scaledHeight) / 2;
-
-        ctx.scale(1, -1);
-
-        // Draw the image scaled and centered within the thumbnail, taking into account the offset
-        ctx.drawImage(
-          img,
-          posX,
-          canvas.height - posY - scaledHeight,
-          scaledWidth,
-          scaledHeight
-        );
-
-        // Draw a white border outline around the image
-        // ctx.strokeStyle = "white";
-        // ctx.lineWidth = 2; // Adjust border thickness here
-        // ctx.strokeRect(
-        //   posX,
-        //   canvas.height - posY - scaledHeight,
-        //   scaledWidth,
-        //   scaledHeight
-        // );
-
-        const imgData: ImageData = ctx.getImageData(
-          0,
-          0,
-          thumbnailWidth,
-          thumbnailHeight
-        );
-
-        imgsToData.push(imgData);
-
-        // populate the data array with the image data
-        for (let j = 0; j < imgsToData.length; j++) {
-          const img: ImageData = imgsToData[j];
-          textureData.set(img.data, j * size * 4);
-        }
-
-        // Update the texture after every 'loadingPagedSize' images
-        if (i % loadingPagedSize === 0) {
-          updateTexture();
-        }
-
-        i++;
+        img = await createImageBitmap(response.data);
+        // Cache the loaded image
+        imageCache[src] = img;
       }
 
-      // Final update to ensure all images are displayed
-      updateTexture();
+      canvas.width = img.width;
+      canvas.height = img.height;
 
-      // console.log("Images loaded");
-    };
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.translate(0, canvas.height);
 
+      // Determine the longest edge of the image
+      const longestEdge = Math.max(img.width, img.height);
+
+      // Calculate the scale factor to fit the longest edge of the image within the thumbnail
+      const scale = Math.min(
+        thumbnailWidth / longestEdge,
+        thumbnailHeight / longestEdge
+      );
+
+      // Calculate the dimensions of the image after scaling
+      const scaledWidth = img.width * scale;
+      const scaledHeight = img.height * scale;
+
+      // Calculate the position to center the image within the thumbnail, taking into account the offset
+      const posX = (thumbnailWidth - scaledWidth) / 2;
+      const posY = (thumbnailHeight - scaledHeight) / 2;
+
+      ctx.scale(1, -1);
+
+      // Draw the image scaled and centered within the thumbnail, taking into account the offset
+      ctx.drawImage(
+        img,
+        posX,
+        canvas.height - posY - scaledHeight,
+        scaledWidth,
+        scaledHeight
+      );
+
+      const imgData: ImageData = ctx.getImageData(
+        0,
+        0,
+        thumbnailWidth,
+        thumbnailHeight
+      );
+
+      imgsToData.push(imgData);
+
+      // populate the data array with the image data
+      for (let j = 0; j < imgsToData.length; j++) {
+        const img: ImageData = imgsToData[j];
+        textureData.set(img.data, j * size * 4);
+      }
+
+      // Update the texture after every 'loadingPagedSize' images
+      if (i % loadingPagedSize === 0) {
+        updateTexture();
+      }
+
+      i++;
+    }
+
+    // Final update to ensure all images are displayed
+    updateTexture();
+  }, [
+    nodes,
+    config,
+    thumbnailWidth,
+    thumbnailHeight,
+    padding,
+    loadingPagedSize,
+    instancesRef,
+  ]);
+
+  useEffect(() => {
     loadImages().catch((error) => {
       if (axios.isCancel(error)) {
         // console.log("Image load cancelled");
@@ -232,9 +242,8 @@ function useImagesTexture({
       texture?.dispose();
       // Cancel the image load
       cancelTokenSourceRef.current?.cancel();
-      count = 0;
     };
-  }, [src]);
+  }, [loadImages]);
 
   return { texture };
 }
