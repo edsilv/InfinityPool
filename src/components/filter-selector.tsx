@@ -52,30 +52,6 @@ export function FilterSelector() {
   const setFilters = useAppContext((state: AppState) => state.setFilters);
   const [filteredFacets, setFilteredFacets] = useState<Facets>(facets);
 
-  // useEffect(() => {
-  //   // Recalculate facets based on the selected filters
-  //   const newFilteredFacets: Facets = {}; // Initialize new filtered facets
-
-  //   Object.keys(facets).forEach((facet) => {
-  //     const selectedFilters = filters.filter(
-  //       (filter) => filter.facet === facet
-  //     );
-  //     newFilteredFacets[facet] = new Set(
-  //       Array.from(facets[facet]).map((f) => {
-  //         const applicable =
-  //           selectedFilters.length === 0 ||
-  //           selectedFilters.some((filter) => filter.value === f.value);
-  //         return {
-  //           ...f,
-  //           total: applicable ? f.total : 0,
-  //         };
-  //       })
-  //     );
-  //   });
-
-  //   setFilteredFacets(newFilteredFacets);
-  // }, [filters, facets]);
-
   useEffect(() => {
     // Filter nodes based on the selected filters
     const remainingNodes = nodes.filter((n) => {
