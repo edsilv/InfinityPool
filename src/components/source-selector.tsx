@@ -12,6 +12,7 @@ export function SourceSelector() {
 
   const srcs: SrcObj[] = config.srcs;
 
+  // set default src
   if (!src) {
     (src = srcs[0]), setSrc(src);
   }
@@ -21,8 +22,8 @@ export function SourceSelector() {
       label="Source"
       value={src.url}
       onChange={(value: string) => {
-        const src: SrcObj = srcs.find((src) => src.url === value)!;
-        setSrc(src);
+        const nextSrc: SrcObj = srcs.find((src) => src.url === value)!;
+        setSrc(nextSrc);
       }}
       options={srcs.map((src) => {
         return {

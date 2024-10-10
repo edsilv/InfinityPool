@@ -12,12 +12,20 @@ const GETTY = () => {
   const setNodes = useAppContext((state: AppState) => state.setNodes);
   const setFacets = useAppContext((state: AppState) => state.setFacets);
 
-  suspend(async () => {
-    const { nodes, facets } = await load(src.url);
-    setNodes(nodes);
-    setFacets(facets);
-    applyLayout(layout, facet, nodes);
-  }, [src]);
+  console.log("GETTY", src.url);
+
+  suspend(
+    async () => {
+      console.log("GETTY suspend");
+      const { nodes, facets } = await load(src.url);
+      console.log("GETTY nodes", nodes);
+      setNodes(nodes);
+      setFacets(facets);
+      applyLayout(layout, facet, nodes);
+    },
+    [src.url]
+    // { lifespan: 1 } // don't cache the data so that it's reloaded each time the user navigates to the page
+  );
 
   return <Visualisation />;
 };
