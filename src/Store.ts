@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { Facets, Filters, Layout, Node, SrcObj } from "./types";
 import { createContext } from "react";
 import { config } from "./Config";
+import { filterNodes } from "./lib/utils";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 // https://docs.pmnd.rs/zustand/guides/initialize-state-with-props
@@ -66,14 +67,15 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
     setFilters: (filters: Filters) => {
       set((state) => ({
         filters: filters,
-        nodes: state.nodes.map((node: Node) => {
-          return {
-            ...node,
-            filteredOut: !filters.every(({ facet, value }) => {
-              return node.metadata![facet] === value;
-            }),
-          };
-        }),
+        nodes: filterNodes(state.nodes, filters),
+        // nodes: state.nodes.map((node: Node) => {
+        //   return {
+        //     ...node,
+        //     filteredOut: !filters.every(({ facet, value }) => {
+        //       return node.metadata![facet] === value;
+        //     }),
+        //   };
+        // }),
       }));
     },
 

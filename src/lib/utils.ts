@@ -1,5 +1,5 @@
 import { config } from "@/Config";
-import { Facet, Facets, Metadata, Node } from "@/types";
+import { Facet, Facets, Filter, Metadata, Node } from "@/types";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -67,4 +67,15 @@ export function getNodeFacets(
   });
 
   return facets;
+}
+
+export function filterNodes(nodes: Node[], filters: Filter[]): Node[] {
+  return nodes.map((node: Node) => {
+    return {
+      ...node,
+      filteredOut: !filters.every(({ facet, value }) => {
+        return node.metadata![facet] === value;
+      }),
+    };
+  });
 }
