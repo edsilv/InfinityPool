@@ -7,7 +7,6 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState,
 } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import {
@@ -54,8 +53,6 @@ const Scene = () => {
   const environment = "apartment";
   const minDistance = 0.01;
   const { camera } = useThree();
-
-  const src = useAppContext((state: AppState) => state.src);
 
   const ambientLightIntensity = useAppContext(
     (state: AppState) => state.ambientLightIntensity
@@ -190,59 +187,30 @@ const Scene = () => {
 
 const Visualiser = () => {
   const src = useAppContext((state: AppState) => state.src);
-  const [addedComponents, setAddedComponents] = useState<Set<string>>(
-    new Set()
-  );
-
-  useEffect(() => {
-    if (src) {
-      setAddedComponents((prev) => new Set(prev).add(src.type));
-    }
-  }, [src]);
 
   if (!src) {
     return null;
   }
 
-  return (
-    <>
-      {addedComponents.has("crm") && src.type === "crm" && <CRM />}
-      {addedComponents.has("getty") && src.type === "getty" && <GETTY />}
-      {addedComponents.has("met") && src.type === "met" && <MET />}
-      {addedComponents.has("iiif") && src.type === "iiif" && <IIIF />}
-      {addedComponents.has("sciencemuseum") && src.type === "sciencemuseum" && (
-        <ScienceMuseum />
-      )}
-    </>
-  );
+  function renderVisualizer(src: SrcObj) {
+    switch (src.type) {
+      case "crm":
+        return <CRM />;
+      case "getty":
+        return <GETTY />;
+      case "met":
+        return <MET />;
+      case "iiif":
+        return <IIIF />;
+      case "sciencemuseum":
+        return <ScienceMuseum />;
+      default:
+        return null;
+    }
+  }
+
+  return <>{renderVisualizer(src)}</>;
 };
-
-// const Visualiser = () => {
-//   const src = useAppContext((state: AppState) => state.src);
-
-//   if (!src) {
-//     return null;
-//   }
-
-//   function renderVisualizer(src: SrcObj) {
-//     switch (src.type) {
-//       case "crm":
-//         return <CRM />;
-//       case "getty":
-//         return <GETTY />;
-//       case "met":
-//         return <MET />;
-//       case "iiif":
-//         return <IIIF />;
-//       case "sciencemuseum":
-//         return <ScienceMuseum />;
-//       default:
-//         return null;
-//     }
-//   }
-
-//   return <>{renderVisualizer(src)}</>;
-// };
 
 const Viewer = (
   _props: ViewerProps,

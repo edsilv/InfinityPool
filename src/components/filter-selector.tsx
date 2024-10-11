@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { AppState } from "@/Store";
 import {
