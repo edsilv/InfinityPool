@@ -2,34 +2,10 @@ import { useEffect } from "react";
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { layout as barChartLayout } from "./BarChartLayout";
 import { layout as gridLayout } from "./GridLayout";
-import { layout as listLayout } from "./ListLayout";
-import { Decorator, Label, Layout, Node, NodeGroup } from "@/types";
+import { Decorator, Label, Node, NodeGroup } from "@/types";
 import { AppState } from "@/Store";
 import { groupBy } from "./utils";
 import { Vector3 } from "three";
-
-// export function applyLayout(layout: Layout, facet: string, nodes: Node[]) {
-//   // const setDecorators = useAppContext((state: AppState) => state.setDecorators);
-
-//   let layoutProps;
-
-//   switch (layout.type) {
-//     case "barchart":
-//       layoutProps = barChartLayout(nodes, facet);
-//       break;
-//     case "list":
-//       layoutProps = listLayout(nodes, facet);
-//       break;
-//     case "grid":
-//     default: {
-//       layoutProps = gridLayout(nodes, facet);
-//     }
-//   }
-
-//   // const decorators = getDecoratorsForNodeGroups(layoutProps.nodeGroups);
-
-//   //setDecorators(decorators);
-// }
 
 export function useLayout() {
   const src = useAppContext((state: AppState) => state.src);
@@ -45,9 +21,6 @@ export function useLayout() {
     switch (layout.type) {
       case "barchart":
         layoutProps = barChartLayout(nodes, facet);
-        break;
-      case "list":
-        layoutProps = listLayout(nodes, facet);
         break;
       case "grid":
       default: {
