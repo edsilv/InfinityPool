@@ -6,6 +6,7 @@ export * from "./Facets";
 export * from "./Filters";
 export * from "./Label";
 export * from "./Layout";
+export * from "./Loader";
 export * from "./Node";
 export * from "./Src";
 export * from "./ViewerProps";

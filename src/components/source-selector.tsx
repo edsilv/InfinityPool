@@ -20,15 +20,16 @@ export function SourceSelector() {
   return (
     <OptionSelector
       label="Source"
-      value={src.url}
-      onChange={(value: string) => {
-        const nextSrc: SrcObj = srcs.find((src) => src.url === value)!;
+      value={src.id}
+      onChange={(id: string) => {
+        const nextSrc: SrcObj = srcs.find((src) => src.id === id)!;
+        console.log("nextSrc", nextSrc);
         setSrc(nextSrc);
       }}
       options={srcs.map((src) => {
         return {
           label: src.label,
-          value: src.url,
+          value: src.id,
         };
       })}
       description="Set the source."

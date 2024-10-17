@@ -1,7 +1,6 @@
-import { Node } from "@/types";
+import { Loader, Node } from "@/types";
 import { config } from "@/Config";
 import metadata from "./metadata.json";
-import { Facets } from "@/types";
 import { getNodeFacets } from "@/lib/utils";
 import {
   getPrimaryName,
@@ -19,10 +18,7 @@ import { node } from "@/lib/Node";
 
 // metadata from: https://observablehq.com/@jrladd/linked-art-3
 // to construct new queries use the Getty's SPARQL endpoint: https://data.getty.edu/museum/collection/sparql-ui
-export async function load(_url: string): Promise<{
-  nodes: Node[];
-  facets: Facets;
-}> {
+const loadFunction = async () => {
   const objects = (metadata as any[]).map((l) => {
     return {
       title: getPrimaryName(l),
@@ -72,4 +68,6 @@ export async function load(_url: string): Promise<{
   ]);
 
   return { nodes, facets };
-}
+};
+
+export const load: Loader = loadFunction;

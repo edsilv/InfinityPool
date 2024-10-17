@@ -1,5 +1,5 @@
 import { config } from "@/Config";
-import { Node } from "@/types";
+import { Loader, Node } from "@/types";
 import { Facets } from "@/types";
 import metadata from "./metadata.json";
 // import axios from "axios";
@@ -14,10 +14,7 @@ type METAPIObject = {
 
 // https://github.com/bahaaador/met-museum-react
 // the issue with this one is that the image requests can't be loaded via js in visualisation.tsx because of CORS policy
-export async function load(_url: string): Promise<{
-  nodes: Node[];
-  facets: Facets;
-}> {
+const loadFunction = async () => {
   // const response = await axios.get(url, {
   //   responseType: "json",
   // });
@@ -82,4 +79,6 @@ export async function load(_url: string): Promise<{
   // }
 
   return { nodes, facets };
-}
+};
+
+export const load: Loader = loadFunction;

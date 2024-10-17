@@ -1,4 +1,4 @@
-import { Node } from "@/types";
+import { Loader, Node } from "@/types";
 import { Vault, createThumbnailHelper } from "@iiif/helpers";
 import { ImageServiceLoader } from "@atlas-viewer/iiif-image-api";
 import { config } from "@/Config";
@@ -7,10 +7,7 @@ import { Facets } from "@/types";
 import { getNodeFacets } from "@/lib/utils";
 import { node } from "@/lib/Node";
 
-export async function load(url: string): Promise<{
-  nodes: Node[];
-  facets: Facets;
-}> {
+const loadFunction = async (url?: string) => {
   const vault = new Vault();
 
   vault.on("error", (error) => {
@@ -28,7 +25,7 @@ export async function load(url: string): Promise<{
     imageServiceLoader: loader,
   });
 
-  const manifest = await vault.loadManifest(url);
+  const manifest = await vault.loadManifest(url!);
 
   const thumbnailSrcs: string[] = [];
 
@@ -63,4 +60,6 @@ export async function load(url: string): Promise<{
   }
 
   return { nodes, facets };
-}
+};
+
+export const load: Loader = loadFunction;

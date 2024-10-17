@@ -1,4 +1,8 @@
 import { Layout, SrcObj } from "./types";
+import { load as CRMLoader } from "@/components/visualisers/crm/Loader";
+import { load as GETTYLoader } from "@/components/visualisers/getty/Loader";
+import { load as IIIFLoader } from "@/components/visualisers/iiif/Loader";
+import { load as ScienceMuseumLoader } from "@/components/visualisers/sciencemuseum/Loader";
 
 export type Config = {
   facetsIgnore: string[];
@@ -43,58 +47,65 @@ export const config: Config = {
   ],
   srcs: [
     {
-      type: "getty",
-      url: "getty",
+      id: "getty",
+      loader: GETTYLoader,
       label: "Getty Collection",
     },
     {
-      type: "crm",
-      url: "crm",
+      id: "crm",
+      loader: CRMLoader,
       label: "CRM",
     },
     {
-      type: "sciencemuseum",
-      url: "sciencemuseum",
+      id: "sciencemuseum",
+      loader: ScienceMuseumLoader,
       label: "Science Museum",
     },
     // {
-    //   type: "met",
+    //   id: "met",
     //   // url: "https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=department=9",
     //   url: "https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=van%20gogh",
     //   label: "Met Collection",
     // },
     {
-      type: "iiif",
+      id: "nghighlights",
+      loader: IIIFLoader,
       url: "https://media.nga.gov/public/manifests/nga_highlights.json",
       label: "National Gallery Highlights",
     },
     {
-      type: "iiif",
+      id: "codexforster",
+      loader: IIIFLoader,
       url: "https://iiif.vam.ac.uk/collections/MSL:1876:Forster:141:II/manifest.json",
       label: "Codex Forster",
     },
     {
-      type: "iiif",
+      id: "designarchives",
+      loader: IIIFLoader,
       url: "https://culturedigitalskills.org/presentation/testcompressed/2024-05-19T17-49-24.json",
       label: "Design Archives",
     },
     {
-      type: "iiif",
+      id: "shakespeare",
+      loader: IIIFLoader,
       url: "https://iiif.bodleian.ox.ac.uk/iiif/manifest/390fd0e8-9eae-475d-9564-ed916ab9035c.json",
       label: "Shakespeare First Folio",
     },
     {
-      type: "iiif",
+      id: "wunder",
+      loader: IIIFLoader,
       url: "https://wellcomelibrary.org/iiif/b18035723/manifest",
       label: "Wunder der Vererbung",
     },
     {
-      type: "iiif",
+      id: "biocrats",
+      loader: IIIFLoader,
       url: "https://wellcomelibrary.org/iiif/b18035978/manifest",
       label: "The Biocrats",
     },
     {
-      type: "iiif",
+      id: "bible",
+      loader: IIIFLoader,
       url: "https://digital.library.villanova.edu/Item/vudl:60609/Manifest",
       label: "The Holy Bible",
     },

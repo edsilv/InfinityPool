@@ -37,6 +37,8 @@ import MET from "./visualisers/met";
 import CRM from "./visualisers/crm";
 import ScienceMuseum from "./visualisers/sciencemuseum";
 import { Labels } from "./labels";
+import { suspend } from "suspend-react";
+import Visualisation from "./visualisation";
 // import { CameraControls } from "./camera-controls";
 // import { Perf } from "r3f-perf";
 
@@ -188,30 +190,25 @@ const Scene = () => {
 };
 
 const Visualiser = () => {
-  const src = useAppContext((state: AppState) => state.src);
+  const src: SrcObj | null = useAppContext((state: AppState) => state.src);
+  const setNodes = useAppContext((state: AppState) => state.setNodes);
+  const setFacets = useAppContext((state: AppState) => state.setFacets);
 
   if (!src) {
     return null;
   }
 
-  function renderVisualizer(src: SrcObj) {
-    switch (src.type) {
-      case "crm":
-        return <CRM />;
-      case "getty":
-        return <GETTY />;
-      case "met":
-        return <MET />;
-      case "iiif":
-        return <IIIF />;
-      case "sciencemuseum":
-        return <ScienceMuseum />;
-      default:
-        return null;
-    }
-  }
+  suspend(
+    async () => {
+      const { nodes, facets } = await src.loader(src.url);
+      setNodes(nodes);
+      setFacets(facets);
+    },
+    [src.url]
+    // { lifespan: 1 } // don't cache the data so that it's reloaded each time the user navigates to the page
+  );
 
-  return <>{renderVisualizer(src)}</>;
+  return <Visualisation />;
 };
 
 const Viewer = (
