@@ -41,5 +41,4 @@ const loadFunction = async () => {
   return { nodes, facets };
 };
 
-// Assign the load function to the Loader type
 export const load: Loader = loadFunction;

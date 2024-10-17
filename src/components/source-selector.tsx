@@ -5,6 +5,7 @@ import { OptionSelector } from "./option-selector";
 import { AppState } from "@/Store";
 import { SrcObj } from "@/types";
 import { config } from "@/Config";
+import { clear } from "suspend-react";
 
 export function SourceSelector() {
   let src: SrcObj | null = useAppContext((state: AppState) => state.src);
@@ -23,7 +24,8 @@ export function SourceSelector() {
       value={src.id}
       onChange={(id: string) => {
         const nextSrc: SrcObj = srcs.find((src) => src.id === id)!;
-        console.log("nextSrc", nextSrc);
+        // clear cached data
+        clear();
         setSrc(nextSrc);
       }}
       options={srcs.map((src) => {
