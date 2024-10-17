@@ -7,7 +7,25 @@ import { AppState } from "@/Store";
 import { groupBy } from "./utils";
 import { Vector3 } from "three";
 
-export function useLayout() {
+function useSourcePositionScale() {
+  const src = useAppContext((state: AppState) => state.src);
+  const layout = useAppContext((state: AppState) => state.layout);
+  const facet = useAppContext((state: AppState) => state.sort);
+  const nodes = useAppContext((state: AppState) => state.nodes);
+  const filters = useAppContext((state: AppState) => state.filters);
+
+  // prep for new animation by storing source
+  useEffect(() => {
+    // console.log("get source positions");
+    for (let i = 0; i < nodes.length; ++i) {
+      const node: Node = nodes[i];
+      node.sourcePosition = node.position ? { ...node.position } : [0, 0, 0];
+      node.sourceScale = node.scale ? { ...node.scale } : [1, 1, 1];
+    }
+  }, [src, layout, facet, filters]);
+}
+
+function useLayout() {
   const src = useAppContext((state: AppState) => state.src);
   const layout = useAppContext((state: AppState) => state.layout);
   const facet = useAppContext((state: AppState) => state.sort);
@@ -33,41 +51,33 @@ export function useLayout() {
   }, [src, layout, facet, filters]);
 }
 
-export function useSourceTargetLayout() {
-  const facet = useAppContext((state: AppState) => state.sort);
+function useTargetPositionScale() {
   const src = useAppContext((state: AppState) => state.src);
-  const nodes = useAppContext((state: AppState) => state.nodes);
   const layout = useAppContext((state: AppState) => state.layout);
+  const facet = useAppContext((state: AppState) => state.sort);
+  const nodes = useAppContext((state: AppState) => state.nodes);
   const filters = useAppContext((state: AppState) => state.filters);
 
-  let layoutProps;
-
-  // prep for new animation by storing source
   useEffect(() => {
-    // console.log("get source positions");
-    for (let i = 0; i < nodes.length; ++i) {
-      const node: Node = nodes[i];
-      node.sourcePosition = node.position ? { ...node.position } : [0, 0, 0];
-      node.sourceScale = node.scale ? { ...node.scale } : [1, 1, 1];
-    }
-  }, [src, layout, facet, filters]);
-
-  // run layout (get target positions)
-  useLayout();
-  // useEffect(() => {
-  //   // console.log("apply layout");
-  //   applyLayout(layout, facet, nodes);
-  // }, [src, layout, facet, filters]);
-
-  // store target positions
-  useEffect(() => {
-    // console.log("get target positions");
     for (let i = 0; i < nodes.length; ++i) {
       const node = nodes[i];
       node.targetPosition = { ...node.position! };
       node.targetScale = node.filteredOut ? [0, 0, 0] : { ...node.scale! };
     }
   }, [src, layout, facet, filters]);
+}
+
+export function useSourceTargetLayout() {
+  let layoutProps;
+
+  // prep for new animation by storing source
+  useSourcePositionScale();
+
+  // run layout (get target positions)
+  useLayout();
+
+  // store target positions
+  useTargetPositionScale();
 
   return layoutProps;
 }
