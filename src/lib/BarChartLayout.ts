@@ -11,8 +11,8 @@ export const layout = (
   facet: string,
   options: GridLayoutOptions = { orderBy: "ascending" }
 ) => {
-  const visibleNodes = getUnfilteredNodes(nodes);
-  let visibleNodeGroups = groupNodesByFacet(visibleNodes, facet);
+  const visibleNodes: Node[] = getUnfilteredNodes(nodes);
+  let visibleNodeGroups: NodeGroup[] = groupNodesByFacet(visibleNodes, facet);
 
   // Sort the groups by the number of nodes
   visibleNodeGroups = visibleNodeGroups.sort((a, b) => {
@@ -23,6 +23,7 @@ export const layout = (
   // Position groups along the x-axis
   visibleNodeGroups.forEach((group, index) => {
     group.position = [index * config.nodeGroupSpacing, 0, 0];
+    group.labels = [{ text: group.facet, position: group.position }];
     barChartLayout(group);
   });
 

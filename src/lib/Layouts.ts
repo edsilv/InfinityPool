@@ -3,24 +3,61 @@ import { useAppContext } from "@/lib/hooks/use-app-context";
 import { layout as barChartLayout } from "./BarChartLayout";
 import { layout as gridLayout } from "./GridLayout";
 import { layout as listLayout } from "./ListLayout";
-import { Layout, Node, NodeGroup } from "@/types";
+import { Decorator, Label, Layout, Node, NodeGroup } from "@/types";
 import { AppState } from "@/Store";
 import { groupBy } from "./utils";
 import { Vector3 } from "three";
 
-export function applyLayout(layout: Layout, facet: string, nodes: Node[]) {
-  switch (layout.type) {
-    case "barchart":
-      barChartLayout(nodes, facet);
-      break;
-    case "list":
-      listLayout(nodes, facet);
-      break;
-    case "grid":
-    default: {
-      gridLayout(nodes, facet);
+// export function applyLayout(layout: Layout, facet: string, nodes: Node[]) {
+//   // const setDecorators = useAppContext((state: AppState) => state.setDecorators);
+
+//   let layoutProps;
+
+//   switch (layout.type) {
+//     case "barchart":
+//       layoutProps = barChartLayout(nodes, facet);
+//       break;
+//     case "list":
+//       layoutProps = listLayout(nodes, facet);
+//       break;
+//     case "grid":
+//     default: {
+//       layoutProps = gridLayout(nodes, facet);
+//     }
+//   }
+
+//   // const decorators = getDecoratorsForNodeGroups(layoutProps.nodeGroups);
+
+//   //setDecorators(decorators);
+// }
+
+export function useLayout() {
+  const src = useAppContext((state: AppState) => state.src);
+  const layout = useAppContext((state: AppState) => state.layout);
+  const facet = useAppContext((state: AppState) => state.sort);
+  const nodes = useAppContext((state: AppState) => state.nodes);
+  const filters = useAppContext((state: AppState) => state.filters);
+  const setDecorators = useAppContext((state: AppState) => state.setDecorators);
+
+  useEffect(() => {
+    let layoutProps;
+
+    switch (layout.type) {
+      case "barchart":
+        layoutProps = barChartLayout(nodes, facet);
+        break;
+      case "list":
+        layoutProps = listLayout(nodes, facet);
+        break;
+      case "grid":
+      default: {
+        layoutProps = gridLayout(nodes, facet);
+      }
     }
-  }
+
+    const decorators = getDecoratorsForNodeGroups(layoutProps.nodeGroups);
+    setDecorators(decorators);
+  }, [src, layout, facet, filters]);
 }
 
 export function useSourceTargetLayout() {
@@ -37,16 +74,17 @@ export function useSourceTargetLayout() {
     // console.log("get source positions");
     for (let i = 0; i < nodes.length; ++i) {
       const node: Node = nodes[i];
-      node.sourcePosition = { ...node.position! } || [0, 0, 0];
-      node.sourceScale = { ...node.scale! } || [1, 1, 1];
+      node.sourcePosition = node.position ? { ...node.position } : [0, 0, 0];
+      node.sourceScale = node.scale ? { ...node.scale } : [1, 1, 1];
     }
   }, [src, layout, facet, filters]);
 
   // run layout (get target positions)
-  useEffect(() => {
-    // console.log("apply layout");
-    applyLayout(layout, facet, nodes);
-  }, [src, layout, facet, filters]);
+  useLayout();
+  // useEffect(() => {
+  //   // console.log("apply layout");
+  //   applyLayout(layout, facet, nodes);
+  // }, [src, layout, facet, filters]);
 
   // store target positions
   useEffect(() => {
@@ -248,13 +286,19 @@ export const getNodesDateRange = (nodes: Node[]) => {
 };
 
 export const getDecoratorsForNodeGroups = (nodeGroups: NodeGroup[]) => {
-  let labels: string[] = [];
+  const decorator: Decorator = {
+    labels: [],
+  };
+
+  let labels: Label[] = [];
   // let lines = [];
 
-  nodeGroups.forEach((group) => {
+  nodeGroups.forEach((group: NodeGroup) => {
     labels = labels.concat(group.labels || []);
     // lines = lines.concat(group.lines || []);
   });
 
-  return { labels };
+  decorator.labels = labels;
+
+  return [decorator];
 };

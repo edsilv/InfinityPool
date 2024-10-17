@@ -1,3 +1,5 @@
+import { Label } from "./Label";
+
 export type Metadata = {
   [key: string]: string | undefined;
 };
@@ -25,7 +27,7 @@ export type NodeGroup = {
   scale?: [number, number, number];
   facet: string;
   nodes: Node[];
-  labels: any[];
+  labels: Label[];
   // lines: any[];
   measurement?: [number, number, number];
 };

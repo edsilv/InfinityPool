@@ -1,8 +1,9 @@
 import { create } from "zustand";
-import { Facets, Filters, Layout, Node, SrcObj } from "./types";
+import { Facets, Filters, Label, Layout, Node, SrcObj } from "./types";
 import { createContext } from "react";
 import { config } from "./Config";
 import { filterNodes } from "./lib/utils";
+import { Decorator } from "./types/Decorator";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 // https://docs.pmnd.rs/zustand/guides/initialize-state-with-props
@@ -10,24 +11,26 @@ export interface RequiredAppProps {}
 
 export interface AppProps extends RequiredAppProps {
   ambientLightIntensity: number;
-  sort: "none" | string;
+  decorators: Decorator[];
   facets: Facets;
   filters: Filters;
   layout: Layout;
-  orthographicEnabled: boolean;
   nodes: Node[];
+  orthographicEnabled: boolean;
+  sort: "none" | string;
   src: SrcObj | null;
   upVector: [number, number, number];
 }
 
 export interface AppState extends AppProps {
   setAmbientLightIntensity: (ambientLightIntensity: number) => void;
-  setSort: (sort: string) => void;
+  setDecorators: (decorators: Decorator[]) => void;
   setFacets: (facets: Facets) => void;
   setFilters: (filters: Filters) => void;
   setLayout: (layout: Layout) => void;
-  setOrthographicEnabled: (orthographicEnabled: boolean) => void;
   setNodes: (nodes: Node[]) => void;
+  setOrthographicEnabled: (orthographicEnabled: boolean) => void;
+  setSort: (sort: string) => void;
   setSrc: (src: SrcObj) => void;
   setUpVector: (upVector: [number, number, number]) => void;
 }
@@ -37,12 +40,13 @@ export type AppStore = ReturnType<typeof createAppStore>;
 export const createAppStore = (initProps?: Partial<AppProps>) => {
   const DEFAULT_PROPS: AppProps = {
     ambientLightIntensity: 1,
-    sort: "none",
+    decorators: [],
     facets: {},
     filters: [],
     layout: config.layouts[0],
-    orthographicEnabled: true,
     nodes: [],
+    orthographicEnabled: true,
+    sort: "none",
     src: null,
     upVector: [0, 1, 0],
   };
@@ -68,16 +72,13 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
       set((state) => ({
         filters: filters,
         nodes: filterNodes(state.nodes, filters),
-        // nodes: state.nodes.map((node: Node) => {
-        //   return {
-        //     ...node,
-        //     filteredOut: !filters.every(({ facet, value }) => {
-        //       return node.metadata![facet] === value;
-        //     }),
-        //   };
-        // }),
       }));
     },
+
+    setDecorators: (decorators: Decorator[]) =>
+      set({
+        decorators,
+      }),
 
     setLayout: (layout: Layout) =>
       set({

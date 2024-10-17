@@ -36,6 +36,7 @@ import GETTY from "./visualisers/getty";
 import MET from "./visualisers/met";
 import CRM from "./visualisers/crm";
 import ScienceMuseum from "./visualisers/sciencemuseum";
+import { Labels } from "./labels";
 // import { CameraControls } from "./camera-controls";
 // import { Perf } from "r3f-perf";
 
@@ -180,6 +181,7 @@ const Scene = () => {
         </Suspense>
       </Bounds>
       <Environment preset={environment} />
+      <Labels />
       {/* <Perf /> */}
     </>
   );

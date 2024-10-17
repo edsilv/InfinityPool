@@ -1,4 +1,4 @@
-import { Node } from "@/types";
+import { Label, Node } from "@/types";
 import metadata from "./accounts-500.json";
 import { Facets } from "@/types";
 import { getNodeFacets } from "@/lib/utils";
