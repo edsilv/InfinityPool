@@ -1,5 +1,5 @@
 export * from "./CameraRefs";
-export * from "./Decorator";
+export * from "./Decorators";
 export * from "./Environment";
 export * from "./Events";
 export * from "./Facets";

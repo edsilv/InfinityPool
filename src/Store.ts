@@ -3,7 +3,7 @@ import { Facets, Filters, Label, Layout, Node, SrcObj } from "./types";
 import { createContext } from "react";
 import { config } from "./Config";
 import { filterNodes } from "./lib/utils";
-import { Decorator } from "./types/Decorator";
+import { Decorators } from "./types/Decorators";
 // import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 // https://docs.pmnd.rs/zustand/guides/initialize-state-with-props
@@ -11,7 +11,7 @@ export interface RequiredAppProps {}
 
 export interface AppProps extends RequiredAppProps {
   ambientLightIntensity: number;
-  decorators: Decorator[];
+  decorators: Decorators | null;
   facets: Facets;
   filters: Filters;
   layout: Layout;
@@ -24,7 +24,7 @@ export interface AppProps extends RequiredAppProps {
 
 export interface AppState extends AppProps {
   setAmbientLightIntensity: (ambientLightIntensity: number) => void;
-  setDecorators: (decorators: Decorator[]) => void;
+  setDecorators: (decorators: Decorators) => void;
   setFacets: (facets: Facets) => void;
   setFilters: (filters: Filters) => void;
   setLayout: (layout: Layout) => void;
@@ -40,7 +40,7 @@ export type AppStore = ReturnType<typeof createAppStore>;
 export const createAppStore = (initProps?: Partial<AppProps>) => {
   const DEFAULT_PROPS: AppProps = {
     ambientLightIntensity: 1,
-    decorators: [],
+    decorators: null,
     facets: {},
     filters: [],
     layout: config.layouts[0],
@@ -75,7 +75,7 @@ export const createAppStore = (initProps?: Partial<AppProps>) => {
       }));
     },
 
-    setDecorators: (decorators: Decorator[]) =>
+    setDecorators: (decorators: Decorators) =>
       set({
         decorators,
       }),

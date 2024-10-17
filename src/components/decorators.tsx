@@ -1,50 +1,52 @@
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { AppState } from "@/Store";
-import { Label } from "@/types";
+import { Decorators, Label } from "@/types";
 import { Html } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import React from "react";
+import React, { useEffect } from "react";
 import { Intersection, Object3D, Object3DEventMap, Vector3 } from "three";
 
-export function Labels() {
-  //   const { scene, camera, pointer, raycaster, size } = useThree();
+export function DecoratorsDisplay() {
+  const { scene, camera, pointer, raycaster, size } = useThree();
 
-  //   const labels = useAppContext((state: AppState) => state.decorators);
+  const decorators: Decorators | null = useAppContext(
+    (state: AppState) => state.decorators
+  );
 
-  //   const v1 = new Vector3();
+  const v1 = new Vector3();
 
-  //   useFrame(() => {
-  //     updateLabelPositions();
-  //   });
+  useFrame(() => {
+    updateLabelPositions();
+  });
 
-  //   function updateLabelPosition(idx: number, x: number, y: number) {
-  //     const labelEl: HTMLElement = document.getElementById(`label-${idx}`)!;
+  function updateLabelPosition(idx: number, x: number, y: number) {
+    const labelEl: HTMLElement = document.getElementById(`label-${idx}`)!;
 
-  //     if (labelEl) {
-  //       labelEl.setAttribute("transform", `translate(${x}, ${y})`);
-  //     } else {
-  //       console.error("could not find label element");
-  //     }
-  //   }
+    if (labelEl) {
+      labelEl.setAttribute("transform", `translate(${x}, ${y})`);
+    } else {
+      console.error("could not find label element");
+    }
+  }
 
-  //   function updateLabelPositions() {
-  //     labels.forEach((label: Label, idx: number) => {
-  //       const [x, y] = calculatePosition(label);
-  //       updateLabelPosition(idx, x, y);
-  //     });
-  //   }
+  function updateLabelPositions() {
+    decorators?.labels.forEach((label: Label, idx: number) => {
+      const [x, y] = calculatePosition(label);
+      updateLabelPosition(idx, x, y);
+    });
+  }
 
   // https://github.com/pmndrs/drei/blob/master/src/web/Html.tsx#L25
-  //   function calculatePosition(label: Label) {
-  //     const objectPos = v1.copy(label.position);
-  //     objectPos.project(camera);
-  //     const widthHalf = size.width / 2;
-  //     const heightHalf = size.height / 2;
-  //     return [
-  //       objectPos.x * widthHalf + widthHalf,
-  //       -(objectPos.y * heightHalf) + heightHalf,
-  //     ];
-  //   }
+  function calculatePosition(label: Label) {
+    const objectPos = v1.copy(v1.fromArray(label.position));
+    objectPos.project(camera);
+    const widthHalf = size.width / 2;
+    const heightHalf = size.height / 2;
+    return [
+      objectPos.x * widthHalf + widthHalf,
+      -(objectPos.y * heightHalf) + heightHalf,
+    ];
+  }
 
   //   function getIntersects(): Intersection<Object3D<Object3DEventMap>>[] {
   //     raycaster.setFromCamera(pointer, camera);
@@ -83,24 +85,25 @@ export function Labels() {
         }}
       >
         {/* draw labels */}
-        {/* {labels.map((_label: Label, index: number) => {
+        {decorators?.labels.map((label: Label, index: number) => {
           return (
             <React.Fragment key={index}>
               <g id={`label-${index}`} data-idx={index}>
                 <text
                   x="0"
                   y="0"
-                  textAnchor="middle"
+                  textAnchor="end"
                   dominantBaseline="central"
                   fontSize="10"
-                  fill="black"
+                  fill="white"
+                  transform="rotate(-45)" // rotate the text by -45 degrees
                 >
-                  {index + 1}
+                  {label.text}
                 </text>
               </g>
             </React.Fragment>
           );
-        })} */}
+        })}
       </svg>
     </Html>
   );

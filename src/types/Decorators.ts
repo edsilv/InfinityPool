@@ -1,5 +1,5 @@
 import { Label } from ".";
 
-export type Decorator = {
+export type Decorators = {
   labels: Label[];
 };

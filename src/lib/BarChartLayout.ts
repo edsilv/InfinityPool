@@ -23,7 +23,12 @@ export const layout = (
   // Position groups along the x-axis
   visibleNodeGroups.forEach((group, index) => {
     group.position = [index * config.nodeGroupSpacing, 0, 0];
-    group.labels = [{ text: group.facet, position: group.position }];
+    const labelPos: [number, number, number] = [
+      group.position[0],
+      -config.nodeSpacing,
+      0,
+    ];
+    group.labels = [{ text: group.facet, position: labelPos }];
     barChartLayout(group);
   });
 

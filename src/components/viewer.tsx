@@ -27,19 +27,13 @@ import {
   SrcObj,
 } from "@/types";
 import { useEventListener, useEventTrigger } from "@/lib/hooks/use-event";
-import IIIF from "./visualisers/iiif";
 import Bounds from "./bounds";
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { Loader } from "./loader";
 import CameraControlsImpl from "camera-controls";
-import GETTY from "./visualisers/getty";
-import MET from "./visualisers/met";
-import CRM from "./visualisers/crm";
-import ScienceMuseum from "./visualisers/sciencemuseum";
-import { Labels } from "./labels";
+import { DecoratorsDisplay } from "./decorators";
 import { suspend } from "suspend-react";
 import Visualisation from "./visualisation";
-// import { CameraControls } from "./camera-controls";
 // import { Perf } from "r3f-perf";
 
 const Scene = () => {
@@ -183,7 +177,7 @@ const Scene = () => {
         </Suspense>
       </Bounds>
       <Environment preset={environment} />
-      <Labels />
+      <DecoratorsDisplay />
       {/* <Perf /> */}
     </>
   );

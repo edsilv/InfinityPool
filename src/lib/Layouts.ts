@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { layout as barChartLayout } from "./BarChartLayout";
 import { layout as gridLayout } from "./GridLayout";
-import { Decorator, Label, Node, NodeGroup } from "@/types";
+import { Decorators, Label, Node, NodeGroup } from "@/types";
 import { AppState } from "@/Store";
 import { groupBy } from "./utils";
 import { Vector3 } from "three";
@@ -46,7 +46,10 @@ function useLayout() {
       }
     }
 
-    const decorators = getDecoratorsForNodeGroups(layoutProps.nodeGroups);
+    const decorators: Decorators = getDecoratorsForNodeGroups(
+      layoutProps.nodeGroups
+    );
+
     setDecorators(decorators);
   }, [src, layout, facet, filters]);
 }
@@ -269,7 +272,7 @@ export const getNodesDateRange = (nodes: Node[]) => {
 };
 
 export const getDecoratorsForNodeGroups = (nodeGroups: NodeGroup[]) => {
-  const decorator: Decorator = {
+  const decorators: Decorators = {
     labels: [],
   };
 
@@ -281,7 +284,7 @@ export const getDecoratorsForNodeGroups = (nodeGroups: NodeGroup[]) => {
     // lines = lines.concat(group.lines || []);
   });
 
-  decorator.labels = labels;
+  decorators.labels = labels;
 
-  return [decorator];
+  return decorators;
 };
