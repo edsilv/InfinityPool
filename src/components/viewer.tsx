@@ -34,6 +34,7 @@ import CameraControlsImpl from "camera-controls";
 import { DecoratorsDisplay } from "./decorators";
 import { suspend } from "suspend-react";
 import Visualisation from "./visualisation";
+import { useTruck } from "@/lib/hooks/use-truck";
 // import { Perf } from "r3f-perf";
 
 const Scene = () => {
@@ -68,14 +69,16 @@ const Scene = () => {
   camera.up.copy(new Vector3(upVector[0], upVector[1], upVector[2]));
   cameraRefs.controls.current?.updateCameraUp();
 
-  useEffect(() => {
-    if (cameraRefs.controls.current) {
-      cameraRefs.controls.current!.mouseButtons.left =
-        CameraControlsImpl.ACTION.TRUCK;
-      cameraRefs.controls.current!.mouseButtons.right =
-        CameraControlsImpl.ACTION.NONE;
-    }
-  }, [cameraRefs.controls.current]);
+  useTruck(cameraRefs.controls);
+
+  // useEffect(() => {
+  //   if (cameraRefs.controls.current) {
+  //     cameraRefs.controls.current!.mouseButtons.left =
+  //       CameraControlsImpl.ACTION.TRUCK;
+  //     cameraRefs.controls.current!.mouseButtons.right =
+  //       CameraControlsImpl.ACTION.NONE;
+  //   }
+  // }, [cameraRefs.controls.current]);
 
   // when loaded or camera type changed, zoom to object(s) instantaneously
   // useTimeout(
