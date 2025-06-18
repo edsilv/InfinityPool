@@ -51,6 +51,25 @@ export function FilterSelector() {
   const facets: Facets = useAppContext((state: AppState) => state.facets);
   const setFilters = useAppContext((state: AppState) => state.setFilters);
   const [filteredFacets, setFilteredFacets] = useState<Facets>(facets);
+  const [originalOrder, setOriginalOrder] = useState<{
+    [key: string]: Facet[];
+  }>({});
+
+  // Store the original order when facets first load
+  useEffect(() => {
+    if (
+      Object.keys(originalOrder).length === 0 &&
+      Object.keys(facets).length > 0
+    ) {
+      const initialOrder: { [key: string]: Facet[] } = {};
+      Object.keys(facets).forEach((facet) => {
+        initialOrder[facet] = Array.from(facets[facet]).sort(
+          (a: Facet, b: Facet) => b.total - a.total
+        );
+      });
+      setOriginalOrder(initialOrder);
+    }
+  }, [facets, originalOrder]);
 
   useEffect(() => {
     // Filter nodes based on the selected filters
@@ -127,36 +146,83 @@ export function FilterSelector() {
                     <AccordionTrigger className="text-white">
                       {facet}
                     </AccordionTrigger>
-                    {Array.from(filteredFacets[facet])
-                      .sort((a: Facet, b: Facet) => b.total - a.total)
-                      .map((f: Facet, idx) => {
-                        const facetArray = Array.from(filteredFacets[facet]);
-                        const availableOptions = facetArray.filter(
-                          (opt: Facet) => opt.total > 0
-                        );
-                        const isChecked =
-                          filters.some((filter: Filter) => {
-                            return (
-                              filter.facet === facet && filter.value === f.value
+                    {originalOrder[facet]
+                      ? originalOrder[facet].map((f: Facet, idx) => {
+                          // Get the updated facet data with current counts
+                          const updatedFacet = Array.from(
+                            filteredFacets[facet]
+                          ).find((uf: Facet) => uf.value === f.value);
+                          if (!updatedFacet) return null;
+
+                          const facetArray = Array.from(filteredFacets[facet]);
+                          const availableOptions = facetArray.filter(
+                            (opt: Facet) => opt.total > 0
+                          );
+                          const isChecked =
+                            filters.some((filter: Filter) => {
+                              return (
+                                filter.facet === facet &&
+                                filter.value === updatedFacet.value
+                              );
+                            }) ||
+                            (availableOptions.length === 1 &&
+                              updatedFacet.total > 0); // Auto-check if only one available option
+                          const isDisabled = updatedFacet.total === 0;
+                          return (
+                            <AccordionContent key={idx} className="text-white">
+                              <FilterCheckbox
+                                label={`${updatedFacet.value} (${updatedFacet.total})`}
+                                id={`${facet}-${updatedFacet.value}`}
+                                key={updatedFacet.value}
+                                checked={isChecked}
+                                onChange={(checked) =>
+                                  handleFilterChange(
+                                    facet,
+                                    updatedFacet.value,
+                                    checked
+                                  )
+                                }
+                                disabled={isDisabled}
+                              />
+                            </AccordionContent>
+                          );
+                        })
+                      : Array.from(filteredFacets[facet])
+                          .sort((a: Facet, b: Facet) => b.total - a.total)
+                          .map((f: Facet, idx) => {
+                            const facetArray = Array.from(
+                              filteredFacets[facet]
                             );
-                          }) ||
-                          (availableOptions.length === 1 && f.total > 0); // Auto-check if only one available option
-                        const isDisabled = f.total === 0;
-                        return (
-                          <AccordionContent key={idx} className="text-white">
-                            <FilterCheckbox
-                              label={`${f.value} (${f.total})`}
-                              id={`${facet}-${f.value}`}
-                              key={f.value}
-                              checked={isChecked}
-                              onChange={(checked) =>
-                                handleFilterChange(facet, f.value, checked)
-                              }
-                              disabled={isDisabled}
-                            />
-                          </AccordionContent>
-                        );
-                      })}
+                            const availableOptions = facetArray.filter(
+                              (opt: Facet) => opt.total > 0
+                            );
+                            const isChecked =
+                              filters.some((filter: Filter) => {
+                                return (
+                                  filter.facet === facet &&
+                                  filter.value === f.value
+                                );
+                              }) ||
+                              (availableOptions.length === 1 && f.total > 0); // Auto-check if only one available option
+                            const isDisabled = f.total === 0;
+                            return (
+                              <AccordionContent
+                                key={idx}
+                                className="text-white"
+                              >
+                                <FilterCheckbox
+                                  label={`${f.value} (${f.total})`}
+                                  id={`${facet}-${f.value}`}
+                                  key={f.value}
+                                  checked={isChecked}
+                                  onChange={(checked) =>
+                                    handleFilterChange(facet, f.value, checked)
+                                  }
+                                  disabled={isDisabled}
+                                />
+                              </AccordionContent>
+                            );
+                          })}
                   </AccordionItem>
                 );
               })
