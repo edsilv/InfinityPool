@@ -92,7 +92,7 @@ export function DecoratorsDisplay() {
                 <text
                   x="0"
                   y="0"
-                  textAnchor="middle" // Center align the text
+                  textAnchor="end" // Center align the text
                   dominantBaseline="central"
                   fontSize="10"
                   fill="white"
