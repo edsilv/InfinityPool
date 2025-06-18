@@ -1,15 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, RefObject } from "react";
 import CameraControlsImpl from "camera-controls";
 
-export const useTruck = (
-  cameraControls: React.RefObject<CameraControlsImpl>
-) => {
+export const useTruck = (cameraControlsRef: RefObject<CameraControlsImpl>) => {
   useEffect(() => {
-    if (cameraControls.current) {
-      cameraControls.current.mouseButtons.left =
+    if (cameraControlsRef.current) {
+      cameraControlsRef.current.mouseButtons.left =
         CameraControlsImpl.ACTION.TRUCK;
-      cameraControls.current.mouseButtons.right =
+      cameraControlsRef.current.mouseButtons.right =
         CameraControlsImpl.ACTION.NONE;
     }
-  }, [cameraControls]);
+  }, [cameraControlsRef.current]); // This dependency will trigger when the ref's current value changes
 };
