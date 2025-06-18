@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Facets, Filters, Label, Layout, Node, SrcObj } from "./types";
+import { Facets, Filters, Layout, Node, SrcObj } from "./types";
 import { createContext } from "react";
 import { config } from "./Config";
 import { filterNodes } from "./lib/utils";
