@@ -1,12 +1,12 @@
-import { Loader, Node } from "@/types";
+import { Facets, Node } from "@/types";
 import metadata from "./accounts-500.json";
 import { getNodeFacets } from "@/lib/utils";
 // import { config } from "@/Config";
 import { node } from "../../../lib/Node";
 // import { generateAccounts } from "./genAccounts";
 
-// Define the load function separately
-const loadFunction = async () => {
+// Define the load function with proper typing
+export const load = async (): Promise<{ nodes: Node[]; facets: Facets }> => {
   // generateAccounts();
 
   const nodes: Node[] = metadata.records.map((r) => {
@@ -37,8 +37,6 @@ const loadFunction = async () => {
   // const facets = getNodeFacets(nodes, metadata.records, ["Opportunity Name"]);
   const facets = getNodeFacets(nodes, metadata.records, []);
 
-  // Return the nodes or any other data as needed
+  // Return the nodes and facets
   return { nodes, facets };
 };
-
-export const load: Loader = loadFunction;

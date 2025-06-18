@@ -64,7 +64,7 @@ const Scene = () => {
   // const triggerCameraSleepEvent = useEventTrigger(CAMERA_SLEEP);
 
   // set the camera up vector
-  camera.up.copy(new Vector3(upVector[0], upVector[1], upVector[2]));
+  camera.up.copy(new Vector3(...upVector)); // Convert array to Vector3 using spread operator
   cameraRefs.controls.current?.updateCameraUp();
 
   useTruck(cameraRefs.controls);

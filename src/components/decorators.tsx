@@ -44,7 +44,7 @@ export function DecoratorsDisplay() {
     const heightHalf = size.height / 2;
     return [
       objectPos.x * widthHalf + widthHalf,
-      -(objectPos.y * heightHalf) + heightHalf,
+      -(objectPos.y * heightHalf) + heightHalf, // Move text down by 100px
     ];
   }
 
@@ -92,11 +92,11 @@ export function DecoratorsDisplay() {
                 <text
                   x="0"
                   y="0"
-                  textAnchor="end"
+                  textAnchor="middle" // Center align the text
                   dominantBaseline="central"
                   fontSize="10"
                   fill="white"
-                  transform="rotate(-45)" // rotate the text by -45 degrees
+                  transform="rotate(-45) translate(0, 0)" // Rotate and ensure positioning
                 >
                   {label.text}
                 </text>

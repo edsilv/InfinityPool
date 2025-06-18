@@ -1,13 +1,14 @@
-import { Loader, Node } from "@/types";
+import { Facets, Node } from "@/types";
 import { Vault, createThumbnailHelper } from "@iiif/helpers";
 import { ImageServiceLoader } from "@atlas-viewer/iiif-image-api";
 import { config } from "@/Config";
 import metadata from "./metadata.json";
-import { Facets } from "@/types";
 import { getNodeFacets } from "@/lib/utils";
 import { node } from "@/lib/Node";
 
-const loadFunction = async (url?: string) => {
+export const load = async (
+  url?: string
+): Promise<{ nodes: Node[]; facets: Facets }> => {
   const vault = new Vault();
 
   vault.on("error", (error) => {
@@ -61,5 +62,3 @@ const loadFunction = async (url?: string) => {
 
   return { nodes, facets };
 };
-
-export const load: Loader = loadFunction;

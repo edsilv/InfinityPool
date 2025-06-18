@@ -1,11 +1,11 @@
-import { Loader, Node } from "@/types";
+import { Facets, Node } from "@/types";
 import { config } from "@/Config";
 import { getNodeFacets } from "@/lib/utils";
 import { node } from "@/lib/Node";
 
 // https://github.com/TheScienceMuseum/collectionsonline/wiki/Collections-Online-API
 // https://github.com/TheScienceMuseum/collectionsonline-api/blob/master/examples/simple-example/example-fetch.js
-const loadFunction = async () => {
+export const load = async (): Promise<{ nodes: Node[]; facets: Facets }> => {
   const url =
     "https://collection.sciencemuseumgroup.org.uk/search/museum/Science%20Museum?page[number]=0&page[size]=100";
 
@@ -49,5 +49,3 @@ const loadFunction = async () => {
 
   return { nodes, facets };
 };
-
-export const load: Loader = loadFunction;

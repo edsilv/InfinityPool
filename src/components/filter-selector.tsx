@@ -78,17 +78,16 @@ export function FilterSelector() {
       });
 
       newFilteredFacets[facet] = new Set(
-        Array.from(facets[facet])
-          .map((f) => {
-            const applicable =
-              selectedFilters.length === 0 ||
-              selectedFilters.some((filter) => filter.value === f.value);
-            return {
-              ...f,
-              total: applicable ? facetCounts[f.value] || 0 : 0,
-            };
-          })
-          .filter((f) => f.total > 0) // Exclude facets with count 0
+        Array.from(facets[facet]).map((f) => {
+          const applicable =
+            selectedFilters.length === 0 ||
+            selectedFilters.some((filter) => filter.value === f.value);
+          return {
+            ...f,
+            total: applicable ? facetCounts[f.value] || 0 : 0,
+          };
+        })
+        // Keep all facets, including those with count 0 (they will be disabled)
       );
     });
 
@@ -100,9 +99,10 @@ export function FilterSelector() {
     value: string,
     checked: boolean
   ) => {
+    // Make filters mutually exclusive per facet
     const newFilters: Filter[] = checked
       ? [
-          ...filters.filter((filter) => filter.facet !== facet),
+          ...filters.filter((filter) => filter.facet !== facet), // Remove any existing filter for this facet
           { facet, value },
         ]
       : filters.filter(
@@ -130,12 +130,17 @@ export function FilterSelector() {
                     {Array.from(filteredFacets[facet])
                       .sort((a: Facet, b: Facet) => b.total - a.total)
                       .map((f: Facet, idx) => {
+                        const facetArray = Array.from(filteredFacets[facet]);
+                        const availableOptions = facetArray.filter(
+                          (opt: Facet) => opt.total > 0
+                        );
                         const isChecked =
                           filters.some((filter: Filter) => {
                             return (
                               filter.facet === facet && filter.value === f.value
                             );
-                          }) || Array.from(filteredFacets[facet]).length === 1;
+                          }) ||
+                          (availableOptions.length === 1 && f.total > 0); // Auto-check if only one available option
                         const isDisabled = f.total === 0;
                         return (
                           <AccordionContent key={idx} className="text-white">
