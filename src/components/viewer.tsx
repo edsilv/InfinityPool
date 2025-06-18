@@ -4,7 +4,6 @@ import React, {
   RefObject,
   Suspense,
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useRef,
 } from "react";
@@ -30,7 +29,6 @@ import { useEventListener, useEventTrigger } from "@/lib/hooks/use-event";
 import Bounds from "./bounds";
 import { useAppContext } from "@/lib/hooks/use-app-context";
 import { Loader } from "./loader";
-import CameraControlsImpl from "camera-controls";
 import { DecoratorsDisplay } from "./decorators";
 import { suspend } from "suspend-react";
 import Visualisation from "./visualisation";

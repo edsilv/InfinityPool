@@ -3,11 +3,11 @@ import { AppState } from "@/Store";
 import { Decorators, Label } from "@/types";
 import { Html } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import React, { useEffect } from "react";
-import { Intersection, Object3D, Object3DEventMap, Vector3 } from "three";
+import React from "react";
+import { Vector3 } from "three";
 
 export function DecoratorsDisplay() {
-  const { scene, camera, pointer, raycaster, size } = useThree();
+  const { camera, size } = useThree();
 
   const decorators: Decorators | null = useAppContext(
     (state: AppState) => state.decorators
