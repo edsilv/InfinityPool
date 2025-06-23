@@ -4,7 +4,6 @@ import React, {
   RefObject,
   Suspense,
   forwardRef,
-  useEffect,
   useImperativeHandle,
   useRef,
 } from "react";
@@ -33,7 +32,6 @@ import { Loader } from "./loader";
 import { DecoratorsDisplay } from "./decorators";
 import { suspend } from "suspend-react";
 import Visualisation from "./visualisation";
-import CameraControlsImpl from "camera-controls";
 import { useTruck } from "@/lib/hooks/use-truck";
 // import { Perf } from "r3f-perf";
 
